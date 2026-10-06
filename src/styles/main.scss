@@ -1,0 +1,31 @@
+@import 'modern-css-reset/dist/reset.css';
+
+@import '/src/styles/base/fonts';
+@import '/src/styles/blocks/+.css';
+
+html {
+  color: $primary;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+a {
+  color: $primary;
+  text-decoration: none;
+}
+
+.container {
+  @include grid;
+
+  block-size: 100vh;
+  inline-size: 100%;
+}

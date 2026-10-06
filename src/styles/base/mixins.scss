@@ -1,0 +1,154 @@
+@use '/src/styles/base/vars' as *;
+@use '/src/styles/base/functions' as *;
+
+// Fonts
+@mixin h1 {
+  font-family: 'Manrope-bold', sans-serif;
+  font-size: rem(56);
+  line-height: rem(64);
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+@mixin h2 {
+  font-family: 'Manrope-bold', sans-serif;
+  font-size: rem(48);
+  line-height: rem(52);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+@mixin h3 {
+  font-family: 'Manrope-bold', sans-serif;
+  font-size: rem(32);
+  line-height: rem(36);
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+
+@mixin h4 {
+  font-family: 'Manrope-bold', sans-serif;
+  font-size: rem(24);
+  line-height: rem(28);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+@mixin lead {
+  font-family: 'Manrope-regular', sans-serif;
+  font-size: rem(20);
+  line-height: rem(28);
+}
+
+@mixin lead-bold {
+  font-family: 'Manrope-bold', sans-serif;
+  font-size: rem(20);
+  line-height: rem(28);
+}
+
+@mixin body-L {
+  font-family: 'Manrope-regular', sans-serif;
+  font-size: rem(18);
+  line-height: rem(26);
+}
+
+@mixin body-M {
+  font-family: 'Manrope-regular', sans-serif;
+  font-size: rem(16);
+  line-height: rem(24);
+}
+
+@mixin body-S {
+  font-family: 'Manrope-regular', sans-serif;
+  font-size: rem(14);
+  line-height: rem(20);
+}
+
+@mixin caption {
+  font-family: 'Manrope-bold', sans-serif;
+  font-size: rem(12);
+  line-height: rem(16);
+}
+
+@mixin label {
+  font-family: 'Manrope-bold', sans-serif;
+  font-size: rem(12);
+  line-height: rem(14);
+}
+
+@mixin button-L {
+  font-family: 'Manrope-medium', sans-serif;
+  font-size: rem(14);
+  line-height: rem(14);
+  letter-spacing: 0.12em;
+  padding-inline: rem(24);
+  block-size: rem(52);
+  box-shadow: $shadow-sm;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  transition:
+    translate $medium $ease-out,
+    box-shadow $medium $ease-out;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    translate: 0 -4px;
+  }
+}
+
+@mixin button-M {
+  font-family: 'Manrope-medium', sans-serif;
+  font-size: rem(14);
+  line-height: rem(14);
+  letter-spacing: 0.12em;
+  padding-inline: rem(20);
+  block-size: rem(44);
+  box-shadow: $shadow-sm;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  transition:
+    translate $medium $ease-out,
+    box-shadow $medium $ease-out;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    translate: 0 -4px;
+  }
+}
+
+@mixin button-S {
+  font-family: 'Manrope-medium', sans-serif;
+  font-size: rem(12);
+  line-height: rem(12);
+  letter-spacing: 0.12em;
+  padding-inline: rem(16);
+  block-size: rem(36);
+  box-shadow: $shadow-sm;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  transition:
+    translate $medium $ease-out,
+    box-shadow $medium $ease-out;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    translate: 0 -4px;
+  }
+}
+
+@mixin grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 1px;
+  background-color: $accent;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}

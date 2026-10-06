@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>{{ pageTitle }}</title>
+    <meta name="description" content="" />
+    <meta property="og:title" content="" />
+    <meta property="og:description" content="" />
+    <meta property="og:image" content="#" />
+    <meta property="og:url" content="#" />
+    <meta property="og:type" content="website" />
+
+    <meta name="theme-color" content="#f8fafcff" />
+    <meta name="format-detection" content="telephone=no" />
+  </head>
+  <body>
+    <!-- {% include "header.njk" %} -->
+    <div id="smooth-wrapper">
+      <!-- <div class="animated-background" data-animated-background></div> -->
+      <main class="main" id="smooth-content">{% block content %}{% endblock %}</main>
+    </div>
+    <!-- {% include "footer.njk" %} -->
+    <script type="module" src="/src/scripts/main.ts"></script>
+  </body>
+</html>
