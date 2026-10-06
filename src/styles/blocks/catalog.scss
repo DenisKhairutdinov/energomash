@@ -1,79 +1,43 @@
-$corner-length: 6;
-$card-block-size: 440;
+$control-size: 40;
 
-// Каталог: слева заголовок и тип техники, справа фильтр и прокручиваемая сетка карточек
+// Подсветка значения под курсором — тот же цвет, что у пунктов выпадающего меню
+$option-hover: #f5f5f31f;
+
+// Каталог: слева на сетке из двух равных половин заголовок и тип техники,
+// справа сверху фильтр, под ним прокручиваемая сетка карточек
 .catalog {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+
   min-block-size: rem(901);
+
   background-color: $bg;
 
   @include section-full {
     min-block-size: 0;
   }
 
-  &__aside {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-block-size: 0;
-  }
-
-  &__intro {
-    display: flex;
-    flex-direction: column;
-    gap: rem(16);
-    align-items: flex-start;
-
-    padding: rem(32);
-  }
-
-  &__title {
-    @include h1;
-
-    margin: 0;
-    color: $primary;
-  }
-
-  &__count {
-    @include body-M;
-
-    margin: 0;
-    color: $primary;
-  }
-
-  &__reset {
-    @include body-S;
-
-    cursor: pointer;
-
-    padding: 0;
-    border: 0;
-
-    color: $dark-grey;
-    text-decoration: underline;
-    text-decoration-thickness: from-font;
-    text-underline-position: from-font;
-
-    background: none;
-
-    transition: color $fast $ease-out;
-
-    &:hover {
-      color: $accent;
-    }
-  }
-
-  // Плашки типа техники — как категории в hero, только на плотном тёмном фоне
+  // Плашки типа техники — как категории в hero: делят нижнюю половину колонки поровну
   &__types {
     display: flex;
+    grid-column: 1;
+    grid-row: 2;
     flex-direction: column;
+
+    min-inline-size: 0;
+    min-block-size: 0;
   }
 
   &__type {
     cursor: pointer;
+
     position: relative;
+
     display: block;
+    flex: 1 0 0;
+
+    min-block-size: 0;
 
     & + & {
       border-block-start: 1px solid $dark-grey;
@@ -97,7 +61,9 @@ $card-block-size: 440;
     flex-direction: column;
     gap: rem(20);
     align-items: flex-start;
+    justify-content: center;
 
+    block-size: 100%;
     padding: rem(20) rem(32);
 
     color: $secondary;
@@ -117,12 +83,57 @@ $card-block-size: 440;
     outline-offset: -2px;
   }
 
+  &__type-head {
+    display: flex;
+    gap: rem(16);
+    align-items: flex-start;
+    justify-content: space-between;
+
+    inline-size: 100%;
+  }
+
   &__type-title {
     @include h4;
   }
 
+  // Отметка выбора, как у чекбокса в фильтре на главной: акцентный квадрат вырастает из центра
+  &__type-mark {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem(18);
+    block-size: rem(18);
+    margin-block-start: rem(5);
+    border: 1px solid currentcolor;
+
+    &::before {
+      content: '';
+
+      scale: 0;
+
+      inline-size: rem(10);
+      block-size: rem(10);
+
+      background-color: $accent;
+
+      transition: scale $medium $ease-out;
+    }
+  }
+
+  &__type-input:checked + &__type-body &__type-mark::before {
+    scale: 1;
+  }
+
+  // Чертёж занимает всю оставшуюся высоту плашки, ширина следует из пропорций
   &__type-image {
-    block-size: rem(104);
+    flex: 1 0 0;
+
+    max-inline-size: 100%;
+    min-block-size: 0;
+    max-block-size: rem(160);
+
     fill: currentcolor;
 
     &--ppc {
@@ -134,29 +145,63 @@ $card-block-size: 440;
     }
   }
 
+  // Заголовок занимает верхнюю половину колонки
+  &__intro {
+    grid-column: 1;
+    grid-row: 1;
+
+    min-inline-size: 0;
+    min-block-size: 0;
+    padding: rem(32);
+  }
+
+  &__title {
+    @include h1;
+
+    margin: 0;
+    color: $primary;
+
+    @media (max-width: $breakpoint-xl) {
+      @include h2;
+    }
+  }
+
   &__main {
     display: flex;
     grid-column: 2 / -1;
+    grid-row: 1 / -1;
     flex-direction: column;
 
+    // Широкое содержимое фильтра не должно растягивать колонки общей сетки 4 × 1fr
+    min-inline-size: 0;
     min-block-size: 0;
-    border-inline-start: 1px solid $light-grey;
   }
 
+  // Фильтр — тёмная полоса над карточками, как фильтр на главном экране:
+  // на светлой странице она первой собирает взгляд
   &__filter {
+    position: relative;
+    z-index: 1;
+
     display: flex;
     flex-wrap: wrap;
-    gap: rem(16) rem(24);
+    gap: rem(14) rem(20);
+    align-items: flex-end;
 
-    padding: rem(24) rem(32);
+    padding: rem(20) rem(32) rem(24);
+    border-inline-start: 1px solid $dark-grey;
 
-    background-color: $bg-grey;
+    color: $secondary;
+
+    background-color: $primary;
+
+    // Тень, как у шапки: карточки уезжают под фильтр
+    box-shadow: $shadow-md;
   }
 
   &__group {
     display: flex;
     flex-direction: column;
-    gap: rem(4);
 
     min-inline-size: 0;
     margin: 0;
@@ -170,10 +215,10 @@ $card-block-size: 440;
   }
 
   &__legend {
-    @include body-S;
+    @include caption;
 
-    padding: 0;
-    color: $primary;
+    padding: 0 0 rem(6);
+    color: $light-grey;
   }
 
   &__options,
@@ -181,15 +226,20 @@ $card-block-size: 440;
     display: flex;
     gap: rem(2);
 
-    block-size: rem(40);
+    block-size: rem($control-size);
     padding: rem(2);
-    border: 1px solid $primary;
+    border: 1px solid $secondary;
   }
 
   &__option {
     cursor: pointer;
     position: relative;
     display: flex;
+
+    // Значения, которого нет у техники выбранного типа, в группе нет вовсе
+    &[hidden] {
+      display: none;
+    }
   }
 
   &__option-input {
@@ -203,10 +253,9 @@ $card-block-size: 440;
     opacity: 0;
   }
 
-  // Уголки, как у пунктов меню: в покое нулевой длины, при наведении вырастают из углов
+  // Значение под курсором подсвечивается серым фоном, как пункт выпадающего меню
   &__option-label {
     @include body-S;
-    @include corners($primary, 0);
 
     display: flex;
     align-items: center;
@@ -215,22 +264,33 @@ $card-block-size: 440;
     min-inline-size: rem(44);
     padding-inline: rem(14);
 
-    color: $primary;
     white-space: nowrap;
 
     transition:
       color $fast $ease-out,
-      background-color $fast $ease-out,
-      background-size $medium $ease-out;
+      background-color $fast $ease-out;
   }
 
   &__option:hover &__option-label {
-    @include corners-size(rem($corner-length));
+    background-color: $option-hover;
   }
 
-  &__option-input:checked + &__option-label {
-    color: $secondary;
-    background-color: $primary;
+  // Выбранное значение остаётся светлым и под курсором
+  &__option-input:checked + &__option-label,
+  &__option:hover &__option-input:checked + &__option-label {
+    color: $primary;
+    background-color: $secondary;
+  }
+
+  // Значение, несовместимое с уже выбранным: погашено и не нажимается
+  &__option-input:disabled {
+    cursor: not-allowed;
+  }
+
+  &__option-input:disabled + &__option-label,
+  &__option:hover &__option-input:disabled + &__option-label {
+    color: $dark-grey;
+    background-color: transparent;
   }
 
   &__option-input:focus-visible + &__option-label {
@@ -244,7 +304,6 @@ $card-block-size: 440;
     gap: rem(8);
     align-items: center;
     padding-inline: rem(12);
-    color: $primary;
   }
 
   &__volume-field {
@@ -261,37 +320,118 @@ $card-block-size: 440;
     inline-size: rem(44);
     block-size: rem(28);
     padding: rem(4);
-    border: 1px solid $primary;
+    border: 1px solid $secondary;
+    border-radius: 0;
 
     font: inherit;
-    color: $primary;
+    color: $secondary;
 
-    background-color: $bg;
+    background-color: transparent;
     outline: none;
 
     transition: border-color $fast $ease-out;
+
+    // Подсказка показывает крайние объёмы техники, доступной при текущем выборе
+    &::placeholder {
+      color: $dark-grey;
+      opacity: 1;
+    }
 
     &:focus {
       border-color: $accent;
     }
   }
 
-  // Сетка карточек прокручивается внутри своей области: фильтр и тип техники остаются на месте
+  // Итог подбора и сброс стоят в ряду с параметрами, у правого края полосы
+  &__summary {
+    display: flex;
+    gap: rem(16);
+    align-items: center;
+
+    block-size: rem($control-size);
+    margin-inline-start: auto;
+  }
+
+  &__count {
+    @include body-M;
+
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  &__reset {
+    @include button-S;
+
+    cursor: pointer;
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $accent;
+
+    // Сбрасывать нечего — кнопка гаснет
+    &:disabled {
+      pointer-events: none;
+      opacity: 0.35;
+    }
+  }
+
+  // Полоса прокрутки списка: акцентная часть растёт слева по мере прокрутки карточек (catalog.ts).
+  // Заменяет скрытую полосу прокрутки самой области
+  &__progress {
+    position: relative;
+    z-index: 2;
+
+    overflow: hidden;
+    flex-shrink: 0;
+
+    block-size: rem(4);
+
+    background-color: $light-grey;
+
+    // Полоса стоит под фильтром и продолжает его тень на карточки
+    box-shadow: $shadow-md;
+
+    // Список помещается целиком — показывать нечего
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__progress-bar {
+    transform-origin: left center;
+    scale: 0 1;
+
+    display: block;
+
+    block-size: 100%;
+
+    background-color: $accent;
+  }
+
+  // Сетка карточек прокручивается внутри своей области: тип техники и фильтр остаются на месте
   &__results {
     scrollbar-color: $primary transparent;
     scrollbar-width: thin;
 
     overflow-y: auto;
+    overscroll-behavior: contain;
     flex: 1 0 0;
 
     min-block-size: 0;
+    border-inline-start: 1px solid $light-grey;
+
+    // При постраничной прокрутке положение показывает индикатор секций
+    .has-fullpage & {
+      scrollbar-width: none;
+    }
   }
 
   // Линии между карточками рисуются контуром самих карточек, а не фоном списка:
-  // пустые ячейки в неполном ряду остаются чистыми
+  // пустые ячейки в неполном ряду остаются чистыми.
+  // Высота ряда следует из фото: кадр 4:3 показывается целиком, без узкой обрезки
   &__list {
+    --product-card-media-ratio: 4 / 3;
+
     display: grid;
-    grid-auto-rows: rem($card-block-size);
     grid-template-columns: repeat(3, 1fr);
     gap: 1px;
   }
@@ -311,5 +451,11 @@ $card-block-size: 440;
     margin: 0;
     padding: rem(32);
     color: $primary;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__type-mark::before {
+      transition: none;
+    }
   }
 }

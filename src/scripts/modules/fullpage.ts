@@ -3,6 +3,10 @@ import { Observer } from 'gsap/Observer';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
 const SECTION_SELECTOR = '[data-fullpage-section]';
+// Область с собственной прокруткой внутри секции. Значение main — основная: она прокручивается,
+// где бы ни стоял курсор, остальные — только под курсором
+const SCROLLER_SELECTOR = '[data-fullpage-scroller]';
+const MAIN_SCROLLER_SELECTOR = '[data-fullpage-scroller="main"]';
 const HEADER_SELECTOR = '[data-header]';
 const FORM_FIELDS_SELECTOR = 'input, textarea, select, [contenteditable="true"]';
 const DESKTOP_QUERY = '(min-width: 1200px)';
@@ -10,6 +14,11 @@ const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 const DURATION = 0.7;
 // Кривая без разгона: страница трогается сразу после жеста и плавно тормозит у цели
 const EASE = 'power3.out';
+const INNER_DURATION = 0.6;
+// Пауза между событиями колеса, после которой жест считается новым, мс
+const GESTURE_GAP = 180;
+const KEY_STEP = 160;
+const PAGE_KEY_SHARE = 0.9;
 const SCROLLING_CLASS = 'is-scrolling';
 const ACTIVE_CLASS = 'has-fullpage';
 const INDICATOR_CLASS = 'page-indicator';
@@ -56,6 +65,7 @@ export const hasFullpageSections = (): boolean => getSections().length > 1;
 
 /**
  * Постраничная прокрутка: колесо, свайп и клавиши листают секции целиком.
+ * Секция с внутренней областью прокрутки сначала плавно доматывается до края и только потом листается.
  * Работает только на десктопе, на остальных ширинах страница скроллится как обычно.
  */
 export const initFullpage = (): void => {
@@ -73,6 +83,14 @@ export const initFullpage = (): void => {
   let currentIndex = 0;
   let isAnimating = false;
   let indicator: HTMLElement | undefined;
+  let lastInputTime = 0;
+  // Жест начался, когда внутренняя область уже стояла у края: только такой жест листает секцию.
+  // Иначе инерция тачпада, домотав карточки до конца, тут же уводила бы на следующий экран
+  let isGestureAtEdge = true;
+  // Остаток жеста после перехода между секциями не должен прокручивать внутреннюю область
+  let isGestureSpent = false;
+  // Куда едет каждая область: новые шаги прибавляются к цели, а не к текущему положению
+  const innerTargets = new Map<HTMLElement, number>();
 
   const updateIndicator = (): void => {
     const activeIndex = Math.min(currentIndex, sections.length - 1);
@@ -124,6 +142,7 @@ export const initFullpage = (): void => {
 
     currentIndex = nextIndex;
     isAnimating = true;
+    isGestureSpent = true;
     updateIndicator();
     // Пока страница едет, секции не реагируют на курсор: иначе под неподвижной мышью
     // срабатывают ховеры (аккордеон, заливки карточек) и перерисовка мешает прокрутке
@@ -141,6 +160,95 @@ export const initFullpage = (): void => {
     });
   };
 
+  const canScroll = (scroller: HTMLElement, direction: number): boolean => {
+    const position = innerTargets.get(scroller) ?? scroller.scrollTop;
+    const maxScroll = scroller.scrollHeight - scroller.clientHeight;
+
+    return direction > 0 ? position < maxScroll - 1 : position > 1;
+  };
+
+  // Область, которую ещё можно прокрутить в эту сторону: сначала та, что под курсором, затем основная
+  const findScroller = (target: EventTarget | null | undefined, direction: number) => {
+    const section = sections[Math.min(currentIndex, sections.length - 1)];
+    const hovered =
+      target instanceof Element ? target.closest<HTMLElement>(SCROLLER_SELECTOR) : undefined;
+    const candidates = [
+      hovered && section.contains(hovered) ? hovered : undefined,
+      section.querySelector<HTMLElement>(MAIN_SCROLLER_SELECTOR) ?? undefined,
+    ];
+
+    return candidates.find(
+      (scroller): scroller is HTMLElement => !!scroller && canScroll(scroller, direction),
+    );
+  };
+
+  const scrollInner = (scroller: HTMLElement, distance: number): void => {
+    const position = innerTargets.get(scroller) ?? scroller.scrollTop;
+    const maxScroll = scroller.scrollHeight - scroller.clientHeight;
+    const target = gsap.utils.clamp(0, maxScroll, position + distance);
+
+    if (reducedMotion.matches) {
+      gsap.killTweensOf(scroller);
+      scroller.scrollTop = target;
+
+      return;
+    }
+
+    // Цель забывается, когда область доехала или её остановили: дальше отсчёт идёт от фактического положения
+    const forgetTarget = (): void => {
+      if (innerTargets.get(scroller) === target) {
+        innerTargets.delete(scroller);
+      }
+    };
+
+    gsap.to(scroller, {
+      scrollTo: { y: target, autoKill: false },
+      duration: INNER_DURATION,
+      ease: EASE,
+      overwrite: true,
+      onComplete: forgetTarget,
+      onInterrupt: forgetTarget,
+    });
+    innerTargets.set(scroller, target);
+  };
+
+  // Шаг прокрутки: сначала внутренняя область секции, и только у её края — переход на соседнюю секцию
+  const step = (
+    direction: 1 | -1,
+    distance: number,
+    target?: EventTarget | null,
+    isGesture = true,
+  ): void => {
+    if (isGesture) {
+      const now = performance.now();
+
+      if (now - lastInputTime > GESTURE_GAP) {
+        isGestureSpent = false;
+        isGestureAtEdge = !findScroller(target, direction);
+      }
+
+      lastInputTime = now;
+    }
+
+    if (isAnimating) {
+      return;
+    }
+
+    const scroller = findScroller(target, direction);
+
+    if (scroller) {
+      if (!isGesture || !isGestureSpent) {
+        scrollInner(scroller, direction * distance);
+      }
+
+      return;
+    }
+
+    if (!isGesture || isGestureAtEdge) {
+      goTo(currentIndex + direction);
+    }
+  };
+
   const handleKeydown = (event: KeyboardEvent): void => {
     const target = event.target instanceof Element ? event.target : undefined;
 
@@ -148,22 +256,23 @@ export const initFullpage = (): void => {
       return;
     }
 
-    const targetIndexByKey: Record<string, number> = {
-      ArrowDown: currentIndex + 1,
-      PageDown: currentIndex + 1,
-      ArrowUp: currentIndex - 1,
-      PageUp: currentIndex - 1,
-      Home: 0,
-      End: getStops().length - 1,
+    const pageDistance = innerHeight * PAGE_KEY_SHARE;
+    const actionByKey: Record<string, () => void> = {
+      ArrowDown: () => step(1, KEY_STEP, undefined, false),
+      PageDown: () => step(1, pageDistance, undefined, false),
+      ArrowUp: () => step(-1, KEY_STEP, undefined, false),
+      PageUp: () => step(-1, pageDistance, undefined, false),
+      Home: () => goTo(0),
+      End: () => goTo(getStops().length - 1),
     };
-    const targetIndex = targetIndexByKey[event.key];
+    const action = actionByKey[event.key];
 
-    if (targetIndex === undefined) {
+    if (!action) {
       return;
     }
 
     event.preventDefault();
-    goTo(targetIndex);
+    action();
   };
 
   // После изменения размеров окна высота секций меняется — возвращаемся ровно на текущую
@@ -182,8 +291,8 @@ export const initFullpage = (): void => {
       wheelSpeed: -1,
       tolerance: 10,
       preventDefault: true,
-      onUp: () => goTo(currentIndex + 1),
-      onDown: () => goTo(currentIndex - 1),
+      onUp: (self) => step(1, Math.abs(self.deltaY), self.event.target),
+      onDown: (self) => step(-1, Math.abs(self.deltaY), self.event.target),
     });
 
     // Индикатор заменяет полосу прокрутки: при постраничном листании она ничего не сообщает

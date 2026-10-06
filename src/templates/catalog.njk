@@ -1,62 +1,62 @@
 {% import "catalog-data.njk" as catalog %}
-{# Каталог: слева заголовок и выбор типа техники, справа фильтр и прокручиваемая сетка карточек. #}
+{# Каталог: слева на сетке из двух равных половин заголовок и тип техники, #}
+{# справа сверху фильтр, под ним прокручиваемая сетка карточек. #}
 {# Фильтрация и чтение параметров из адреса — в scripts/modules/catalog.ts #}
-<section class="catalog">
-  <aside class="catalog__aside">
-    <div class="catalog__intro">
-      <h1 class="catalog__title">Каталог</h1>
-      <p class="catalog__count" aria-live="polite" data-catalog-count>
-        Найдено: {{ catalog.items | length }}
-      </p>
-      <button class="catalog__reset" type="reset" form="catalog-filter" data-catalog-reset>
-        Сбросить фильтры
-      </button>
-    </div>
-    <div class="catalog__types" role="radiogroup" aria-label="Тип техники">
-      <label class="catalog__type">
-        <input
-          class="catalog__type-input"
-          type="radio"
-          name="type"
-          value="semitrailer"
-          form="catalog-filter"
-        />
-        <span class="catalog__type-body">
+<section class="catalog" data-fullpage-section data-fullpage-label="Каталог">
+  <div class="catalog__intro">
+    <h1 class="catalog__title">Каталог</h1>
+  </div>
+  <div class="catalog__types" role="radiogroup" aria-label="Тип техники">
+    <label class="catalog__type">
+      <input
+        class="catalog__type-input"
+        type="radio"
+        name="type"
+        value="semitrailer"
+        form="catalog-filter"
+      />
+      <span class="catalog__type-body">
+        <span class="catalog__type-head">
           <span class="catalog__type-title">Полуприцепы-<br />цистерны</span>
-          <svg class="catalog__type-image catalog__type-image--ppc" aria-hidden="true">
-            <use href="#icon-ppc"></use>
-          </svg>
+          <span class="catalog__type-mark" aria-hidden="true"></span>
         </span>
-      </label>
-      <label class="catalog__type">
-        <input
-          class="catalog__type-input"
-          type="radio"
-          name="type"
-          value="chassis"
-          form="catalog-filter"
-        />
-        <span class="catalog__type-body">
+        <svg class="catalog__type-image catalog__type-image--ppc" aria-hidden="true">
+          <use href="#icon-ppc"></use>
+        </svg>
+      </span>
+    </label>
+    <label class="catalog__type">
+      <input
+        class="catalog__type-input"
+        type="radio"
+        name="type"
+        value="chassis"
+        form="catalog-filter"
+      />
+      <span class="catalog__type-body">
+        <span class="catalog__type-head">
           <span class="catalog__type-title">Цистерны<br />на шасси</span>
-          <svg class="catalog__type-image catalog__type-image--shassi" aria-hidden="true">
-            <use href="#icon-shassi"></use>
-          </svg>
+          <span class="catalog__type-mark" aria-hidden="true"></span>
         </span>
-      </label>
-    </div>
-  </aside>
+        <svg class="catalog__type-image catalog__type-image--shassi" aria-hidden="true">
+          <use href="#icon-shassi"></use>
+        </svg>
+      </span>
+    </label>
+  </div>
   <div class="catalog__main">
     <form class="catalog__filter" id="catalog-filter" action="/catalog.html" data-catalog-filter>
       {% for group in catalog.groups %}
         <fieldset
           class="catalog__group"
+          data-catalog-group
           {% if group.types %}data-catalog-types="{{ group.types }}"{% endif %}
           {{ "hidden disabled" if group.types and group.types != "none" }}
         >
           <legend class="catalog__legend">{{ group.label }}</legend>
           <div class="catalog__options">
             {% for option in group.options %}
-              <label class="catalog__option">
+              <label class="catalog__option" data-catalog-option>
                 <input
                   class="catalog__option-input"
                   type="checkbox"
@@ -68,7 +68,7 @@
             {% endfor %}
           </div>
         </fieldset>
-        {# Объём стоит сразу после наличия, как в эскизе #}
+        {# Объём стоит сразу после наличия, как в фильтре bik55.ru #}
         {% if group.name == "stock" %}
           <fieldset class="catalog__group">
             <legend class="catalog__legend">Объём цистерны</legend>
@@ -80,6 +80,8 @@
                   type="text"
                   name="volume-from"
                   inputmode="numeric"
+                  maxlength="3"
+                  autocomplete="off"
                 />
               </label>
               <label class="catalog__volume-field">
@@ -89,6 +91,8 @@
                   type="text"
                   name="volume-to"
                   inputmode="numeric"
+                  maxlength="3"
+                  autocomplete="off"
                 />
                 м³
               </label>
@@ -96,24 +100,39 @@
           </fieldset>
         {% endif %}
       {% endfor %}
+      {# Итог подбора и сброс стоят в одном ряду с параметрами #}
+      <div class="catalog__summary">
+        <p class="catalog__count" aria-live="polite">
+          Найдено:
+          <span data-catalog-count>{{ catalog.items | length }}</span>
+        </p>
+        <button class="catalog__reset" type="reset" disabled data-catalog-reset>
+          Сбросить фильтры
+        </button>
+      </div>
     </form>
-    <div class="catalog__results" data-catalog-results>
+    {# Полоса под фильтром показывает, какая часть списка карточек уже прокручена #}
+    <div class="catalog__progress" aria-hidden="true" hidden data-catalog-progress>
+      <span class="catalog__progress-bar" data-catalog-progress-bar></span>
+    </div>
+    <div class="catalog__results" data-catalog-results data-fullpage-scroller="main">
       <ul class="catalog__list">
         {% for item in catalog.items %}
-          {% set badge = "В наличии" if item.stock == "in" else "Под заказ" %}
           {% if item.type == "chassis" %}
             {% set baseSpec = ["Шасси", item.chassisLabel] %}
           {% else %}
-            {% set baseSpec = ["Количество осей", item.axles] %}
+            {% set baseSpec = ["Осей", item.axles] %}
           {% endif %}
+          {% set shapeLabel = "Чемодан" if item.shape == "case" else "Круглое" %}
           {%
             set product = {
               model: item.model,
               type: item.typeLabel,
               image: item.image,
               focus: item.focus,
-              badge: badge,
-              specs: [["Объём", item.volume ~ " м³"], ["Количество секций", item.sections], baseSpec]
+              badge: "В наличии" if item.stock == "in" else "Под заказ",
+              badgeMuted: item.stock != "in",
+              specs: [["Объём", item.volume ~ " м³"], ["Секций", item.sections], baseSpec, ["Сечение", shapeLabel]]
             }
           %}
           <li
@@ -129,6 +148,9 @@
             data-ssu="{{ item.ssu }}"
             data-axle="{{ item.axle }}"
             data-construction="{{ item.construction }}"
+            data-tyres="{{ item.tyres }}"
+            data-pump="{{ item.pump }}"
+            data-drive="{{ item.drive }}"
             data-chassis="{{ item.chassis }}"
           >
             {% include "product-card.njk" %}

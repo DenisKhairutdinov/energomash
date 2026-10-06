@@ -3,35 +3,39 @@
 {# Ключи характеристик совпадают с именами полей фильтра и параметрами адреса страницы #}
 {%
   set items = [
-    { model: "ППЦ-28/3", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для ГСМ", purpose: "fuel", volume: 28, sections: 3, shape: "round", ssu: "1350", suspension: "air", axle: "bpw", axles: 3, construction: "frame", stock: "in", image: "/src/assets/images/shipment-1.jpg", focus: "60%" },
-    { model: "ППЦ-35/3", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для ГСМ", purpose: "fuel", volume: 35, sections: 4, shape: "case", ssu: "1350", suspension: "air", axle: "bpw", axles: 3, construction: "frameless", stock: "order", image: "/src/assets/images/shipment-2.jpg", focus: "40%" },
-    { model: "ППЦ-24/2", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для ГСМ", purpose: "fuel", volume: 24, sections: 2, shape: "round", ssu: "1150", suspension: "spring", axle: "plt", axles: 2, construction: "frame", stock: "in", image: "/src/assets/images/tech-semitrailer.jpg", focus: "50%" },
-    { model: "ППЦН-30", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для нефти", purpose: "oil", volume: 30, sections: 1, shape: "round", ssu: "1450", suspension: "air", axle: "plt", axles: 3, construction: "frame", stock: "in", image: "/src/assets/images/shipment-2.jpg", focus: "70%" },
-    { model: "ППЦН-32ТК", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для нефти", purpose: "oil", volume: 32, sections: 1, shape: "round", ssu: "1450", suspension: "spring", axle: "plt", axles: 3, construction: "frame", stock: "order", image: "/src/assets/images/shipment-1.jpg", focus: "85%" },
-    { model: "ППЦТВ-26", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для технической воды", purpose: "tech-water", volume: 26, sections: 1, shape: "round", ssu: "1350", suspension: "spring", axle: "bpw", axles: 3, construction: "frame", stock: "in", image: "/src/assets/images/tech-semitrailer.jpg", focus: "30%" },
-    { model: "ППЦВ-24", type: "semitrailer", typeLabel: "Полуприцеп-цистерна вакуумная", purpose: "vacuum", volume: 24, sections: 1, shape: "round", ssu: "1350", suspension: "air", axle: "bpw", axles: 3, construction: "frame", stock: "order", image: "/src/assets/images/shipment-1.jpg", focus: "40%" },
-    { model: "АТЗ-9/1", type: "chassis", typeLabel: "Автотопливозаправщик", purpose: "refueler", volume: 9, sections: 1, shape: "case", chassis: "kamaz-43118", chassisLabel: "КАМАЗ-43118", stock: "in", image: "/src/assets/images/shipment-2.jpg", focus: "55%" },
-    { model: "АЦ-17/3", type: "chassis", typeLabel: "Автоцистерна для ГСМ", purpose: "fuel", volume: 17, sections: 3, shape: "case", chassis: "kamaz-65115", chassisLabel: "КАМАЗ-65115", stock: "in", image: "/src/assets/images/tech-semitrailer.jpg", focus: "45%" },
-    { model: "АЦН-10", type: "chassis", typeLabel: "Автоцистерна для нефти", purpose: "oil", volume: 10, sections: 1, shape: "round", chassis: "ural-5557", chassisLabel: "УРАЛ-5557", stock: "order", image: "/src/assets/images/shipment-1.jpg", focus: "70%" },
-    { model: "АЦВ-10", type: "chassis", typeLabel: "Автоцистерна для технической воды", purpose: "tech-water", volume: 10, sections: 1, shape: "round", chassis: "kamaz-43118", chassisLabel: "КАМАЗ-43118", stock: "in", image: "/src/assets/images/shipment-2.jpg", focus: "30%" },
-    { model: "АЦПТ-12", type: "chassis", typeLabel: "Автоцистерна для питьевой воды", purpose: "drinking-water", volume: 12, sections: 1, shape: "round", chassis: "kamaz-65115", chassisLabel: "КАМАЗ-65115", stock: "order", image: "/src/assets/images/tech-semitrailer.jpg", focus: "60%" },
-    { model: "АКН-10", type: "chassis", typeLabel: "Автоцистерна вакуумная для сбора нефти", purpose: "oil-gathering", volume: 10, sections: 1, shape: "round", chassis: "kamaz-43118", chassisLabel: "КАМАЗ-43118", stock: "in", image: "/src/assets/images/shipment-1.jpg", focus: "50%" },
-    { model: "МВ-10", type: "chassis", typeLabel: "Машина вакуумная коммунальная", purpose: "municipal", volume: 10, sections: 1, shape: "round", chassis: "kamaz-65115", chassisLabel: "КАМАЗ-65115", stock: "order", image: "/src/assets/images/shipment-2.jpg", focus: "80%" }
+    { model: "ППЦ-28/3", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для ГСМ", purpose: "fuel", volume: 28, sections: 3, shape: "round", ssu: "1350", suspension: "air", axle: "bpw", axles: 3, tyres: "385", construction: "frame", stock: "in", image: "/src/assets/images/shipment-1.jpg", focus: "60%" },
+    { model: "ППЦ-35/3", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для ГСМ", purpose: "fuel", volume: 35, sections: 4, shape: "case", ssu: "1350", suspension: "air", axle: "bpw", axles: 3, tyres: "425", construction: "frameless", stock: "order", image: "/src/assets/images/shipment-2.jpg", focus: "40%" },
+    { model: "ППЦ-24/2", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для ГСМ", purpose: "fuel", volume: 24, sections: 2, shape: "round", ssu: "1150", suspension: "spring", axle: "plt", axles: 2, tyres: "385", construction: "frame", stock: "in", image: "/src/assets/images/tech-semitrailer.jpg", focus: "50%" },
+    { model: "ППЦН-30", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для нефти", purpose: "oil", volume: 30, sections: 1, shape: "round", ssu: "1450", suspension: "air", axle: "plt", axles: 3, tyres: "425", construction: "frame", stock: "in", image: "/src/assets/images/shipment-2.jpg", focus: "70%" },
+    { model: "ППЦН-32ТК", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для нефти", purpose: "oil", volume: 32, sections: 1, shape: "round", ssu: "1450", suspension: "spring", axle: "plt", axles: 3, tyres: "425", construction: "frame", stock: "order", image: "/src/assets/images/shipment-1.jpg", focus: "85%" },
+    { model: "ППЦТВ-26", type: "semitrailer", typeLabel: "Полуприцеп-цистерна для технической воды", purpose: "tech-water", volume: 26, sections: 1, shape: "round", ssu: "1350", suspension: "spring", axle: "bpw", axles: 3, tyres: "385", construction: "frame", stock: "in", image: "/src/assets/images/tech-semitrailer.jpg", focus: "30%" },
+    { model: "ППЦВ-24", type: "semitrailer", typeLabel: "Полуприцеп-цистерна вакуумная", purpose: "vacuum", volume: 24, sections: 1, shape: "round", ssu: "1350", suspension: "air", axle: "bpw", axles: 3, tyres: "385", construction: "frame", stock: "order", image: "/src/assets/images/shipment-1.jpg", focus: "40%" },
+    { model: "АТЗ-9/1", type: "chassis", typeLabel: "Автотопливозаправщик", purpose: "refueler", volume: 9, sections: 1, shape: "case", pump: "svn-80", drive: "hydro", chassis: "kamaz-43118", chassisLabel: "КАМАЗ-43118", stock: "in", image: "/src/assets/images/shipment-2.jpg", focus: "55%" },
+    { model: "АЦ-17/3", type: "chassis", typeLabel: "Автоцистерна для ГСМ", purpose: "fuel", volume: 17, sections: 3, shape: "case", pump: "svn-80", drive: "cardan", chassis: "kamaz-65115", chassisLabel: "КАМАЗ-65115", stock: "in", image: "/src/assets/images/tech-semitrailer.jpg", focus: "45%" },
+    { model: "АЦН-10", type: "chassis", typeLabel: "Автоцистерна для нефти", purpose: "oil", volume: 10, sections: 1, shape: "round", pump: "scl-01", drive: "cardan", chassis: "ural-5557", chassisLabel: "УРАЛ-5557", stock: "order", image: "/src/assets/images/shipment-1.jpg", focus: "70%" },
+    { model: "АЦВ-10", type: "chassis", typeLabel: "Автоцистерна для технической воды", purpose: "tech-water", volume: 10, sections: 1, shape: "round", pump: "svn-80", drive: "hydro", chassis: "kamaz-43118", chassisLabel: "КАМАЗ-43118", stock: "in", image: "/src/assets/images/shipment-2.jpg", focus: "30%" },
+    { model: "АЦПТ-12", type: "chassis", typeLabel: "Автоцистерна для питьевой воды", purpose: "drinking-water", volume: 12, sections: 1, shape: "round", pump: "svn-80", drive: "cardan", chassis: "kamaz-65115", chassisLabel: "КАМАЗ-65115", stock: "order", image: "/src/assets/images/tech-semitrailer.jpg", focus: "60%" },
+    { model: "АКН-10", type: "chassis", typeLabel: "Автоцистерна вакуумная для сбора нефти", purpose: "oil-gathering", volume: 10, sections: 1, shape: "round", pump: "ko-505", drive: "cardan", chassis: "kamaz-43118", chassisLabel: "КАМАЗ-43118", stock: "in", image: "/src/assets/images/shipment-1.jpg", focus: "50%" },
+    { model: "МВ-10", type: "chassis", typeLabel: "Машина вакуумная коммунальная", purpose: "municipal", volume: 10, sections: 1, shape: "round", pump: "ko-505", drive: "hydro", chassis: "kamaz-65115", chassisLabel: "КАМАЗ-65115", stock: "order", image: "/src/assets/images/shipment-2.jpg", focus: "80%" }
   ]
 %}
-{# Группы фильтра. types — при каком типе техники группа показывается: пусто — всегда, none — пока тип не выбран #}
+{# Группы фильтра: состав и порядок — как в фильтре категорий на bik55.ru, назначение заменяет выбор категории. #}
+{# types — при каком типе техники группа показывается: пусто — всегда, none — пока тип не выбран #}
 {%
   set groups = [
     { name: "purpose", label: "Назначение", types: "none", options: [["fuel", "ГСМ"], ["refueler", "АТЗ"], ["oil", "Нефть"], ["tech-water", "Тех. вода"], ["vacuum", "Вакуумные"], ["drinking-water", "Питьевая вода"], ["oil-gathering", "Сбор нефти"], ["municipal", "Коммунальные"]] },
     { name: "purpose", label: "Назначение", types: "semitrailer", options: [["fuel", "ГСМ"], ["oil", "Нефть"], ["tech-water", "Тех. вода"], ["vacuum", "Вакуумные"]] },
     { name: "purpose", label: "Назначение", types: "chassis", options: [["fuel", "ГСМ"], ["refueler", "АТЗ"], ["oil", "Нефть"], ["tech-water", "Тех. вода"], ["drinking-water", "Питьевая вода"], ["oil-gathering", "Сбор нефти"], ["municipal", "Коммунальные"]] },
-    { name: "stock", label: "Наличие", types: "", options: [["in", "В наличии"], ["order", "Под заказ"]] },
+    { name: "stock", label: "Наличие", types: "", options: [["in", "Только в наличии"]] },
     { name: "sections", label: "Количество секций", types: "", options: [["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"]] },
-    { name: "shape", label: "Сечение", types: "", options: [["case", "Чемодан"], ["round", "Круг"]] },
+    { name: "shape", label: "Тип сечения цистерны", types: "", options: [["case", "Чемодан"], ["round", "Круглое"]] },
+    { name: "construction", label: "Особенность конструкции", types: "semitrailer", options: [["frame", "Рамный"], ["frameless", "Безрамный"]] },
     { name: "suspension", label: "Подвеска", types: "semitrailer", options: [["air", "Пневматическая"], ["spring", "Рессорная"]] },
-    { name: "ssu", label: "ССУ", types: "semitrailer", options: [["1150", "1 150 мм"], ["1350", "1 350 мм"], ["1450", "1 450 мм"]] },
+    { name: "ssu", label: "Высота ССУ", types: "semitrailer", options: [["1150", "1150"], ["1350", "1350"], ["1450", "1450"]] },
     { name: "axle", label: "Оси", types: "semitrailer", options: [["bpw", "BPW"], ["plt", "PLT"]] },
-    { name: "construction", label: "Конструкция", types: "semitrailer", options: [["frame", "Рамная"], ["frameless", "Безрамная"]] },
-    { name: "chassis", label: "Шасси", types: "chassis", options: [["kamaz-43118", "КАМАЗ-43118"], ["kamaz-65115", "КАМАЗ-65115"], ["ural-5557", "УРАЛ-5557"]] }
+    { name: "tyres", label: "Шины", types: "semitrailer", options: [["385", "385/65R22,5"], ["425", "425/85R21"]] },
+    { name: "pump", label: "Насос", types: "chassis", options: [["svn-80", "СВН-80"], ["scl-01", "СЦЛ-01"], ["ko-505", "КО-505"]] },
+    { name: "drive", label: "Привод", types: "chassis", options: [["hydro", "Гидро"], ["cardan", "Карданный"]] },
+    { name: "chassis", label: "На шасси", types: "chassis", options: [["kamaz-43118", "КАМАЗ-43118"], ["kamaz-65115", "КАМАЗ-65115"], ["ural-5557", "УРАЛ-5557"]] }
   ]
 %}

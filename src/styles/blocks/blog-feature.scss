@@ -1,0 +1,256 @@
+$more-size: 44;
+
+// Блог: слева крупно — самая свежая публикация или та, чья строка в списке справа под курсором (blog.ts)
+.blog-feature {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  // Линия между большим экраном и списком: зазор, сквозь который виден фон секции
+  gap: 1px;
+
+  min-block-size: rem(901);
+
+  background-color: $light-grey;
+
+  @include section-full {
+    min-block-size: 0;
+  }
+
+  // Блок с заголовком занимает первую колонку на всю высоту секции
+  &__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    // Длинное слово в заголовке не должно растягивать колонку общей сетки 4 × 1fr
+    min-inline-size: 0;
+    padding: rem(32);
+
+    background-color: $bg;
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+    hyphens: auto;
+    color: $primary;
+  }
+
+  &__button {
+    @include button-M;
+
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $primary;
+  }
+
+  // Большой экран занимает две колонки; публикации лежат в нём стопкой
+  &__stage {
+    overflow: hidden;
+    display: grid;
+    grid-column: 2 / span 2;
+
+    min-inline-size: 0;
+    min-block-size: 0;
+
+    background-color: $primary;
+  }
+
+  &__slide {
+    position: relative;
+
+    overflow: hidden;
+    display: flex;
+    grid-area: 1 / 1;
+    flex-direction: column;
+    gap: rem(16);
+    justify-content: space-between;
+
+    min-block-size: 0;
+    padding: rem(32);
+
+    color: $secondary;
+
+    // Затемнение только под текстом: снизу под заголовком и сверху под рубрикой и датой,
+    // середина фотографии остаётся чистой
+    &::before {
+      content: '';
+
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+
+      background-image:
+        linear-gradient(to top, $primary80, transparent 55%),
+        linear-gradient(to bottom, $primary60, transparent 30%);
+    }
+
+    // Видна только выбранная публикация; на время смены blog.ts показывает и следующую
+    &:not(.is-active) {
+      visibility: hidden;
+    }
+  }
+
+  &__image {
+    position: absolute;
+    inset: 0;
+
+    inline-size: 100%;
+    block-size: 100%;
+
+    object-fit: cover;
+    object-position: center bottom;
+  }
+
+  // Рубрика слева, дата справа
+  &__meta {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    gap: rem(16);
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  &__rubric {
+    @include caption;
+
+    overflow: hidden;
+
+    padding: rem(4) rem(8);
+    border: 1px solid currentcolor;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Число и месяц выровнены по правому краю
+  &__date {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    align-items: flex-end;
+
+    text-align: end;
+  }
+
+  // Число крупно, как в исходных карточках блога
+  &__day {
+    font-family: Manrope-bold, sans-serif;
+    font-size: rem(40);
+    line-height: rem(40);
+    color: $accent;
+    letter-spacing: -0.03em;
+  }
+
+  &__month {
+    @include caption;
+  }
+
+  &__text {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    gap: rem(16);
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  &__name {
+    @include lead-bold;
+
+    transition: color $medium $ease-out;
+  }
+
+  &__slide &__name {
+    @include h2;
+
+    max-inline-size: rem(640);
+  }
+
+  &__slide:hover &__name,
+  &__link:hover &__name {
+    color: $accent;
+  }
+
+  // Квадратная кнопка-стрелка, как в карточках каталога: при наведении заливается акцентным
+  &__more {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem($more-size);
+    block-size: rem($more-size);
+    border: 1px solid currentcolor;
+
+    transition:
+      color $medium $ease-out,
+      border-color $medium $ease-out,
+      background-color $medium $ease-out;
+  }
+
+  &__more-icon {
+    inline-size: rem(24);
+    block-size: rem(24);
+
+    stroke: currentcolor;
+    stroke-width: 2;
+
+    transition: translate $medium $ease-out;
+  }
+
+  &__slide:hover &__more,
+  &__link:hover &__more {
+    border-color: $accent;
+    color: $secondary;
+    background-color: $accent;
+  }
+
+  &__slide:hover &__more-icon,
+  &__link:hover &__more-icon {
+    translate: rem(2) 0;
+  }
+
+  // Список публикаций делит колонку поровну; линии между строками — зазор
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  &__item {
+    flex: 1 0 0;
+    min-block-size: 0;
+  }
+
+  // Строка списка: рубрика и дата сверху, заголовок и стрелка снизу.
+  // Строка, чья публикация открыта слева, остаётся серой
+  &__link {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+    justify-content: space-between;
+
+    block-size: 100%;
+    padding: rem(24) rem(32);
+
+    color: $primary;
+
+    background-color: $bg;
+
+    transition: background-color $medium $ease-out;
+  }
+
+  &__link:hover,
+  &__item.is-active &__link {
+    background-color: $bg-grey;
+  }
+}

@@ -1,0 +1,90 @@
+{# Заявка: слева — к кому и зачем обращаться, рядом — прямые контакты для тех, кому проще позвонить, #}
+{# справа — форма на две колонки. Заменяет прежний блок cta.njk (файл оставлен для сравнения) #}
+<section class="request" data-reveal-group>
+  <div class="request__intro" data-reveal>
+    <h2 class="request__title">Готовы обсудить вашу задачу?</h2>
+    <p class="request__description">
+      Расскажите, какая техника вам необходима – рассчитаем стоимость, подберём подходящую модель и
+      комплектацию, ответим на вопросы по срокам производства и поставки.
+    </p>
+  </div>
+  <div class="request__direct" data-reveal>
+    <span class="request__label">Или свяжитесь напрямую</span>
+    <a class="request__phone" href="tel:88001012200">8 (800) 101-22-00</a>
+    <a class="request__mail" href="mailto:1@bik55.ru">1@bik55.ru</a>
+    <ul class="request__links">
+      <li>
+        <a
+          class="request__link"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Написать в MAX"
+        >
+          <svg class="request__link-icon" aria-hidden="true">
+            <use href="#icon-max"></use>
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a
+          class="request__link"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Написать во ВКонтакте"
+        >
+          <svg class="request__link-icon" aria-hidden="true">
+            <use href="#icon-vk"></use>
+          </svg>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <form class="request__form" action="#" method="post" data-reveal>
+    <input
+      class="request__field"
+      type="text"
+      name="name"
+      placeholder="Ваше имя"
+      aria-label="Ваше имя"
+      autocomplete="name"
+    />
+    <input
+      class="request__field"
+      type="tel"
+      name="phone"
+      placeholder="Телефон"
+      aria-label="Телефон"
+      autocomplete="tel"
+    />
+    <input
+      class="request__field"
+      type="email"
+      name="email"
+      placeholder="Email"
+      aria-label="Email"
+      autocomplete="email"
+    />
+    <input
+      class="request__field"
+      type="text"
+      name="model"
+      placeholder="Модель или тип техники"
+      aria-label="Модель или тип техники"
+    />
+    <textarea
+      class="request__field request__field--comment"
+      name="comment"
+      placeholder="Комментарий"
+      aria-label="Комментарий"
+    ></textarea>
+    <div class="request__footer">
+      <p class="request__note">
+        Нажимая кнопку, вы соглашаетесь с
+        <a class="request__note-link" href="#">политикой обработки персональных данных</a>
+      </p>
+      <button class="request__submit" type="submit">Отправить заявку</button>
+    </div>
+  </form>
+</section>

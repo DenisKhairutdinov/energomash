@@ -1,0 +1,90 @@
+{# Блог: слева крупно — самая свежая публикация, справа список остальных. Строка под курсором открывает #}
+{# свою публикацию на большом экране, а когда курсор уходит со списка, возвращается свежая (scripts/modules/blog.ts). #}
+{# Данные-заглушки (включая фото), позже придут из БД #}
+{%
+  set posts = [
+    { day: "01", month: "августа", datetime: "2026-08-01", rubric: "Новости и акции", image: "/src/assets/images/blog-placeholder.jpg" },
+    { day: "24", month: "июля", datetime: "2026-07-24", rubric: "Инженерные решения", image: "/src/assets/images/tech-semitrailer.jpg" },
+    { day: "15", month: "июля", datetime: "2026-07-15", rubric: "Гид по подбору", image: "/src/assets/images/shipment-1.jpg" },
+    { day: "03", month: "июля", datetime: "2026-07-03", rubric: "Опыт эксплуатации", image: "/src/assets/images/shipment-2.jpg" },
+    { day: "20", month: "июня", datetime: "2026-06-20", rubric: "Заводской ритм", image: "/src/assets/images/blog-placeholder.jpg" }
+  ]
+%}
+<section
+  class="blog-feature"
+  data-fullpage-section
+  data-fullpage-label="Блог"
+  data-reveal-group
+  data-blog
+>
+  <div class="blog-feature__head">
+    <h2 class="blog-feature__title" data-reveal>Блог</h2>
+    <a class="blog-feature__button" href="/blog.html" data-reveal>Смотреть все</a>
+  </div>
+  {# Большой экран: публикации лежат стопкой, видна помеченная is-active #}
+  <div class="blog-feature__stage" data-reveal>
+    {% for post in posts %}
+      <a
+        class="blog-feature__slide {{ 'is-active' if loop.first }}"
+        href="{{ post.url or '/blog-single.html' }}"
+        data-blog-slide
+        {{ 'tabindex="-1" aria-hidden="true"' | safe if not loop.first }}
+      >
+        <img
+          class="blog-feature__image"
+          src="{{ post.image }}"
+          width="1024"
+          height="768"
+          alt=""
+          loading="lazy"
+          data-blog-image
+        />
+        <span class="blog-feature__meta">
+          <span class="blog-feature__rubric" data-blog-text>{{ post.rubric }}</span>
+          <time class="blog-feature__date" datetime="{{ post.datetime }}" data-blog-text>
+            <span class="blog-feature__day">{{ post.day }}</span>
+            <span class="blog-feature__month">{{ post.month }}</span>
+          </time>
+        </span>
+        <span class="blog-feature__text">
+          <span class="blog-feature__name" data-blog-text>
+            {{ post.title or "Заголовок новости в несколько строк" }}
+          </span>
+          <span class="blog-feature__more" aria-hidden="true" data-blog-text>
+            <svg class="blog-feature__more-icon">
+              <use href="#icon-expand-right"></use>
+            </svg>
+          </span>
+        </span>
+      </a>
+    {% endfor %}
+  </div>
+  {# В списке — все публикации, кроме самой свежей: она стоит крупно, пока курсор не на списке #}
+  <ul class="blog-feature__list" data-blog-list>
+    {% for post in posts %}
+      {% if not loop.first %}
+        <li class="blog-feature__item" data-blog-item="{{ loop.index0 }}" data-reveal>
+          <a class="blog-feature__link" href="{{ post.url or '/blog-single.html' }}">
+            <span class="blog-feature__meta">
+              <span class="blog-feature__rubric">{{ post.rubric }}</span>
+              <time class="blog-feature__date" datetime="{{ post.datetime }}">
+                <span class="blog-feature__day">{{ post.day }}</span>
+                <span class="blog-feature__month">{{ post.month }}</span>
+              </time>
+            </span>
+            <span class="blog-feature__text">
+              <span class="blog-feature__name">
+                {{ post.title or "Заголовок новости в несколько строк" }}
+              </span>
+              <span class="blog-feature__more" aria-hidden="true">
+                <svg class="blog-feature__more-icon">
+                  <use href="#icon-expand-right"></use>
+                </svg>
+              </span>
+            </span>
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</section>

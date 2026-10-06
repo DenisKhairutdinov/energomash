@@ -1,5 +1,8 @@
 $corner-length: 6;
 
+// Подсветка значения под курсором — тот же цвет, что у пунктов выпадающего меню
+$option-hover: #f5f5f31f;
+
 .hero {
   @include section-full;
 
@@ -281,10 +284,9 @@ $corner-length: 6;
     opacity: 0;
   }
 
-  // Уголки, как у пунктов меню: в покое нулевой длины, при наведении вырастают из углов
+  // Значение под курсором подсвечивается серым фоном, как пункт выпадающего меню
   &__option-label {
     @include body-S;
-    @include corners($secondary, 0);
 
     display: flex;
     flex-grow: 1;
@@ -297,15 +299,16 @@ $corner-length: 6;
 
     transition:
       color $fast $ease-out,
-      background-color $fast $ease-out,
-      background-size $medium $ease-out;
+      background-color $fast $ease-out;
   }
 
   &__option:hover &__option-label {
-    @include corners-size(rem($corner-length));
+    background-color: $option-hover;
   }
 
-  &__option-input:checked + &__option-label {
+  // Выбранное значение остаётся светлым и под курсором
+  &__option-input:checked + &__option-label,
+  &__option:hover &__option-input:checked + &__option-label {
     color: $primary;
     background-color: $secondary;
   }
@@ -434,7 +437,7 @@ $corner-length: 6;
   }
 
   &__submit {
-    @include button-S;
+    @include button-M;
 
     cursor: pointer;
     color: $secondary;

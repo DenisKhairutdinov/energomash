@@ -1,0 +1,271 @@
+$zoom-duration: 700ms;
+$zoom-ease: cubic-bezier(0.16, 1, 0.3, 1);
+$more-size: 44;
+
+// Отгрузки: одна плитка крупно на две колонки, две — столбиком сбоку.
+// Плитка под курсором раскрывается до размера крупной (shipments.ts переставляет data-place)
+.shipments-bento {
+  display: grid;
+  grid-auto-rows: rem(451);
+  grid-template-columns: repeat(4, 1fr);
+
+  // Линии между плитками: зазор, сквозь который виден фон секции
+  gap: 1px;
+
+  background-color: $dark-grey;
+
+  @include section-full {
+    grid-auto-rows: auto;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  // Блок с заголовком занимает первую колонку на всю высоту секции
+  &__head {
+    display: flex;
+    grid-row: 1 / span 2;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    // Длинное слово в заголовке не должно растягивать колонку общей сетки 4 × 1fr
+    min-inline-size: 0;
+    padding: rem(32);
+
+    background-color: $bg;
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+    hyphens: auto;
+    color: $primary;
+  }
+
+  &__button {
+    @include button-M;
+
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $primary;
+  }
+
+  // Место плитки в сетке задаёт data-place: крупная занимает две колонки на всю высоту
+  // и прижата к левому или правому краю, две остальные стоят столбиком с другой стороны
+  &__item {
+    min-inline-size: 0;
+    min-block-size: 0;
+
+    &[data-place='big-left'] {
+      z-index: 1;
+      grid-column: 2 / span 2;
+      grid-row: 1 / span 2;
+    }
+
+    &[data-place='big-right'] {
+      z-index: 1;
+      grid-column: 3 / span 2;
+      grid-row: 1 / span 2;
+    }
+
+    &[data-place='top-left'] {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    &[data-place='bottom-left'] {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    &[data-place='top-right'] {
+      grid-column: 4;
+      grid-row: 1;
+    }
+
+    &[data-place='bottom-right'] {
+      grid-column: 4;
+      grid-row: 2;
+    }
+  }
+
+  &__link {
+    position: relative;
+
+    overflow: hidden;
+    display: block;
+
+    block-size: 100%;
+
+    color: $secondary;
+  }
+
+  &__image {
+    position: absolute;
+    inset: 0;
+
+    inline-size: 100%;
+    block-size: 100%;
+
+    object-fit: cover;
+    object-position: var(--focus, 50%) center;
+
+    transition: scale $zoom-duration $zoom-ease;
+  }
+
+  // При наведении фото чуть приближается внутри своей рамки, как в карточках каталога
+  &__link:hover &__image {
+    scale: 1.04;
+  }
+
+  // Когда и куда ушла техника — то, что отличает отгрузку от карточки каталога
+  &__shipped {
+    @include caption;
+
+    position: absolute;
+    inset-block-start: rem(24);
+    inset-inline-start: rem(32);
+
+    padding: rem(6) rem(10);
+
+    white-space: nowrap;
+
+    background-color: $primary;
+  }
+
+  // Квадратная кнопка-стрелка стоит справа от названия модели, по его нижней линии —
+  // как в панели наличия и в блоге. При наведении заливается акцентным
+  &__more {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem($more-size);
+    block-size: rem($more-size);
+    border: 1px solid $secondary;
+
+    transition:
+      border-color $medium $ease-out,
+      background-color $medium $ease-out;
+  }
+
+  &__more-icon {
+    inline-size: rem(24);
+    block-size: rem(24);
+
+    stroke: currentcolor;
+    stroke-width: 2;
+
+    transition: translate $medium $ease-out;
+  }
+
+  &__link:hover &__more {
+    border-color: $accent;
+    background-color: $accent;
+  }
+
+  &__link:hover &__more-icon {
+    translate: rem(2) 0;
+  }
+
+  // Подпись лежит на затемнении, которое сходит на нет к середине фото
+  &__info {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: rem(96) rem(32) rem(28);
+
+    background-image: linear-gradient(to top, $primary80, transparent);
+  }
+
+  &__title-row {
+    display: flex;
+    gap: rem(16);
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+    min-inline-size: 0;
+  }
+
+  &__type {
+    @include caption;
+  }
+
+  &__model {
+    @include h4;
+  }
+
+  &__item[data-place^='big'] &__model {
+    @include h2;
+  }
+
+  // Характеристики есть у каждой плитки, но раскрыты только у крупной: высота растёт от нуля
+  &__details {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows $zoom-duration $zoom-ease,
+      opacity $medium $ease-out;
+  }
+
+  &__item[data-place^='big'] &__details {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  // Характеристики стоят в ряд равными колонками: подпись сверху, значение под ней
+  &__specs {
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, rem(160)));
+    gap: rem(16);
+
+    min-block-size: 0;
+  }
+
+  &__spec {
+    display: flex;
+    flex-direction: column;
+    gap: rem(2);
+
+    min-inline-size: 0;
+
+    // Отступ от названия модели — внутри раскрывающегося блока, чтобы у свёрнутого его не было
+    margin-block-start: rem(20);
+
+    & + & {
+      padding-inline-start: rem(16);
+      border-inline-start: 1px solid $dark-grey;
+    }
+  }
+
+  &__spec-label {
+    @include caption;
+
+    color: $light-grey;
+  }
+
+  &__spec-value {
+    @include lead-bold;
+
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__image,
+    &__details {
+      transition: none;
+    }
+  }
+}

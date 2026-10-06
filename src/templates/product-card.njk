@@ -1,7 +1,8 @@
-{# Карточка техники. Ждёт переменную product; без неё показывает заглушку #}
+{# Карточка техники. Ждёт переменную product; без неё показывает заглушку. #}
+{# Ссылка на модель стоит на названии и растянута на всю карточку; кнопка стоимости лежит поверх неё #}
 {% set item = product or {} %}
 <article class="product-card" data-reveal>
-  <a class="product-card__link" href="{{ item.url or '/product.html' }}">
+  <div class="product-card__inner">
     <span class="product-card__media">
       <img
         class="product-card__image"
@@ -13,26 +14,38 @@
         style="--focus: {{ item.focus or '50%' }}"
       />
       {% if item.badge %}
-        <span class="product-card__badge">{{ item.badge }}</span>
+        <span class="product-card__badge {{ 'product-card__badge--muted' if item.badgeMuted }}"
+          >{{ item.badge }}</span
+        >
       {% endif %}
     </span>
     <span class="product-card__body">
-      <span class="product-card__type">{{ item.type or "Полуприцеп-цистерна" }}</span>
-      <span class="product-card__model">{{ item.model or "Модель" }}</span>
+      <span class="product-card__head">
+        <span class="product-card__heading">
+          <span class="product-card__type">{{ item.type or "Полуприцеп-цистерна" }}</span>
+          <a class="product-card__link" href="{{ item.url or '/product.html' }}">
+            <span class="product-card__model">{{ item.model or "Модель" }}</span>
+          </a>
+        </span>
+      </span>
       <span class="product-card__specs">
         {% for spec in item.specs or [] %}
           <span class="product-card__spec">
-            <span>{{ spec[0] }}</span>
-            <span>{{ spec[1] }}</span>
+            <span class="product-card__spec-label">{{ spec[0] }}</span>
+            <span class="product-card__spec-value">{{ spec[1] }}</span>
           </span>
         {% endfor %}
       </span>
+      {# Действия собраны в один ряд: запрос стоимости и стрелка перехода к модели. #}
+      {# Кнопка пока без действия: форму запроса подключим позже #}
+      <span class="product-card__actions">
+        <button class="product-card__price" type="button">Узнать стоимость</button>
+        <span class="product-card__more" aria-hidden="true">
+          <svg class="product-card__more-icon">
+            <use href="#icon-expand-right"></use>
+          </svg>
+        </span>
+      </span>
     </span>
-    <span class="product-card__more">
-      Подробнее
-      <svg class="product-card__more-icon" aria-hidden="true">
-        <use href="#icon-expand-right"></use>
-      </svg>
-    </span>
-  </a>
+  </div>
 </article>

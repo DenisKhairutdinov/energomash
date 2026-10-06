@@ -1,29 +1,61 @@
 $zoom-duration: 700ms;
 $zoom-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-// Карточка техники: фото, тип, модель, ключевые характеристики и полоса «Подробнее»
+// Стрелка — той же высоты, что кнопка из миксина button-S рядом с ней
+$more-size: 36;
+
+// Ширина карточки, с которой четыре характеристики помещаются в одну строку
+$wide-size: 528;
+
+// Карточка техники: крупное фото, под ним тип, модель и ключевые характеристики в одну строку
 .product-card {
   // Карточка заполняет ячейку целиком, даже когда лежит внутри обёртки, а не прямо в сетке
+  // Опора для растянутой ссылки на модель: без неё ссылка накрыла бы всю страницу
+  position: relative;
   block-size: 100%;
   min-block-size: 0;
   background-color: $bg;
 
-  // Под кнопкой остаётся полоса фона высотой 32px, как в карточках статей
-  &__link {
+  // Контейнер для запроса по ширине карточки (раскладка характеристик)
+  &__inner {
+    container-type: inline-size;
     display: flex;
     flex-direction: column;
 
     block-size: 100%;
-    padding-block-end: rem(32);
 
     color: $primary;
   }
 
-  // Фото занимает всю высоту, оставшуюся от текста
+  // Ссылка на модель стоит на названии, но растянута на всю карточку: кликается любая её часть
+  &__link {
+    color: inherit;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+
+    &:focus-visible::after {
+      outline: 2px solid $accent;
+      outline-offset: -2px;
+    }
+  }
+
+  // Фото занимает всю высоту, оставшуюся от текста. Там, где высота карточки не задана,
+  // пропорции кадра приходят снаружи через --product-card-media-ratio
   &__media {
     position: relative;
+
     overflow: hidden;
-    flex: 1 0 0;
+    flex: 1 0 auto;
+
+    aspect-ratio: var(--product-card-media-ratio, auto);
     min-block-size: 0;
   }
 
@@ -41,7 +73,7 @@ $zoom-ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   // При наведении фото чуть приближается внутри своей рамки
-  &__link:hover &__image {
+  &:hover &__image {
     scale: 1.04;
   }
 
@@ -50,20 +82,58 @@ $zoom-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
     position: absolute;
     inset-block-start: rem(16);
-    inset-inline-start: rem(32);
+    inset-inline-start: rem(24);
 
-    padding: rem(4) rem(8);
+    padding: rem(6) rem(10);
 
     color: $secondary;
     white-space: nowrap;
 
-    background-color: $primary;
+    background-color: $accent;
+
+    // Техника под заказ не спорит с той, что есть на складе
+    &--muted {
+      background-color: $primary80;
+    }
   }
 
+  // Линия над текстом нарисована фоном: серая в покое, при наведении заливается акцентным
+  // слева направо, как у плиток отгрузок на главной
   &__body {
     display: flex;
     flex-direction: column;
-    padding: rem(20) rem(32);
+    gap: rem(16);
+
+    padding: rem(20) rem(24);
+
+    background-image: linear-gradient($accent, $accent), linear-gradient($light-grey, $light-grey);
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size:
+      0 rem(3),
+      100% rem(3);
+
+    transition: background-size $slow $ease-out;
+  }
+
+  &:hover &__body {
+    background-size:
+      100% rem(3),
+      100% rem(3);
+  }
+
+  &__head {
+    display: flex;
+    gap: rem(16);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: rem(2);
+    min-inline-size: 0;
   }
 
   &__type {
@@ -78,57 +148,36 @@ $zoom-ease: cubic-bezier(0.16, 1, 0.3, 1);
   &__model {
     @include h4;
 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     transition: color $medium $ease-out;
   }
 
-  &__link:hover &__model {
+  &:hover &__model {
     color: $accent;
   }
 
-  &__specs {
-    @include body-S;
-
-    display: flex;
-    flex-direction: column;
-    gap: rem(4);
-    margin-block-start: rem(12);
-  }
-
-  &__spec {
-    display: flex;
-    gap: rem(16);
-    justify-content: space-between;
-
-    border-block-end: 1px solid $light-grey;
-
-    white-space: nowrap;
-  }
-
+  // Квадратная кнопка-стрелка: при наведении на карточку заливается акцентным
   &__more {
-    @include body-S;
-
     display: flex;
+    flex-shrink: 0;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 
-    block-size: rem(36);
-    padding-inline: rem(32);
+    inline-size: rem($more-size);
+    block-size: rem($more-size);
+    border: 1px solid $primary;
 
-    color: $secondary;
+    color: $primary;
 
-    // Акцентная заливка лежит поверх серого фона и при наведении растёт слева направо
-    background-color: $dark-grey;
-    background-image: linear-gradient($accent, $accent);
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 0 100%;
-
-    transition: background-size $slow $ease-out;
+    transition:
+      color $medium $ease-out,
+      border-color $medium $ease-out,
+      background-color $medium $ease-out;
   }
 
   &__more-icon {
-    flex-shrink: 0;
-
     inline-size: rem(24);
     block-size: rem(24);
 
@@ -138,12 +187,85 @@ $zoom-ease: cubic-bezier(0.16, 1, 0.3, 1);
     transition: translate $medium $ease-out;
   }
 
-  &__link:hover &__more {
-    background-size: 100% 100%;
+  &:hover &__more {
+    border-color: $accent;
+    color: $secondary;
+    background-color: $accent;
   }
 
-  &__link:hover &__more-icon {
-    translate: rem(4) 0;
+  &:hover &__more-icon {
+    translate: rem(2) 0;
+  }
+
+  // Характеристики: подпись сверху, значение под ней. В узкой карточке — по две в ряд,
+  // в широкой все встают в одну строку (ширину карточки отслеживает контейнерный запрос у __inner)
+  &__specs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: rem(12) rem(16);
+  }
+
+  &__spec {
+    display: flex;
+    flex-direction: column;
+    gap: rem(2);
+    min-inline-size: 0;
+
+    &:nth-child(even) {
+      padding-inline-start: rem(16);
+      border-inline-start: 1px solid $light-grey;
+    }
+  }
+
+  @container (min-width: #{rem($wide-size)}) {
+    &__specs {
+      grid-auto-columns: minmax(0, 1fr);
+      grid-auto-flow: column;
+      grid-template-columns: none;
+    }
+
+    &__spec:not(:first-child) {
+      padding-inline-start: rem(16);
+      border-inline-start: 1px solid $light-grey;
+    }
+  }
+
+  &__spec-label {
+    @include caption;
+
+    overflow: hidden;
+    color: $dark-grey;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__spec-value {
+    @include body-M;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Действия карточки стоят одним рядом под характеристиками
+  &__actions {
+    display: flex;
+    gap: rem(8);
+    align-items: center;
+  }
+
+  // Запрос стоимости: обычная кнопка из миксина, лежит поверх растянутой ссылки на модель
+  &__price {
+    @include button-S;
+
+    cursor: pointer;
+
+    z-index: 1;
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: $primary;
   }
 
   @media (prefers-reduced-motion: reduce) {

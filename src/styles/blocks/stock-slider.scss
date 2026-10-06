@@ -1,13 +1,12 @@
 // Техника в наличии: слайдер — одна модель крупно
+$reveal-duration: 700ms;
+$reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
 .stock-slider {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   min-block-size: rem(901);
   background-color: $bg;
-
-  @include section-full {
-    min-block-size: 0;
-  }
 
   &__head {
     display: flex;
@@ -34,26 +33,57 @@
     align-items: flex-start;
   }
 
-  // Номер текущей модели крупно, как число в карточке блога
-  &__counter {
+  // Сколько моделей в наличии всего — крупно: в слайдере только подборка из них
+  &__count {
     display: flex;
     gap: rem(8);
     align-items: baseline;
     margin: 0;
   }
 
-  &__current {
-    font-family: Manrope-bold, sans-serif;
-    font-size: rem(40);
-    line-height: rem(40);
+  &__count-value {
+    @include h2;
+
     color: $accent;
-    letter-spacing: -0.03em;
   }
 
-  &__total {
+  &__count-label {
     @include body-M;
 
+    color: $primary;
+  }
+
+  // Подпись подборки и её полоса прогресса
+  &__selection {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+  }
+
+  &__selection-label {
+    @include caption;
+
     color: $dark-grey;
+  }
+
+  // Полоса прогресса: акцентная часть растёт слева по мере перелистывания (slider.ts)
+  &__progress {
+    overflow: hidden;
+    inline-size: rem(160);
+    block-size: rem(2);
+    background-color: $bg;
+  }
+
+  &__progress-bar {
+    transform-origin: left center;
+
+    display: block;
+
+    block-size: 100%;
+
+    background-color: $accent;
+
+    transition: scale $slow $ease-out;
   }
 
   &__nav {
@@ -61,8 +91,7 @@
     gap: rem(8);
   }
 
-  // Ячейки стрелок — как ячейки мессенджеров в шапке: тонкие линии по бокам, заливка при наведении.
-  // Блок здесь серый, поэтому линии и заливка светлые
+  // Квадратные стрелки с рамкой, как кнопка-стрелка в карточках каталога: при наведении заливаются
   &__arrow {
     cursor: pointer;
 
@@ -70,20 +99,22 @@
     align-items: center;
     justify-content: center;
 
-    inline-size: rem(48);
+    inline-size: rem(44);
     block-size: rem(44);
     padding: 0;
-    border: 0;
-    border-inline: 1px solid $bg;
+    border: 1px solid $primary;
 
     color: $primary;
 
     background-color: transparent;
 
-    transition: background-color $fast $ease-out;
+    transition:
+      color $fast $ease-out,
+      background-color $fast $ease-out;
 
     &:hover {
-      background-color: $bg;
+      color: $secondary;
+      background-color: $primary;
     }
 
     &:focus-visible {
@@ -111,7 +142,7 @@
     background-color: $primary;
   }
 
-  // Окно слайдера занимает три колонки; слайды едут внутри него
+  // Окно слайдера занимает три колонки; слайды лежат в нём стопкой, один поверх другого
   &__viewport {
     overflow: hidden;
     grid-column: 2 / -1;
@@ -119,106 +150,196 @@
   }
 
   &__track {
-    display: flex;
+    display: grid;
     block-size: 100%;
   }
 
-  // Слайд: фото на две трети, тёмная панель с характеристиками на треть
+  // Слайд: фото на всю ширину, поверх его правой трети внизу — полупрозрачная панель с названием модели.
+  // При наведении на слайд панель раскрывается и показывает характеристики
   &__slide {
     display: grid;
+    grid-area: 1 / 1;
     grid-template-columns: 2fr 1fr;
-    flex: 0 0 100%;
+
     min-inline-size: 0;
+    min-block-size: 0;
+
+    // Виден только текущий слайд; на время смены slider.ts показывает и следующий
+    &:not(.is-active) {
+      visibility: hidden;
+    }
+  }
+
+  &__media {
+    position: relative;
+
+    overflow: hidden;
+    grid-column: 1 / -1;
+    grid-row: 1;
+
+    min-block-size: 0;
+
+    // Текст лежит прямо на фото, как в плитках отгрузок: под ним затемнение, которое сходит на нет кверху.
+    // Когда панель раскрыта, затемнение поднимается выше — под характеристики
+    &::after {
+      content: '';
+
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline: 0;
+
+      block-size: 45%;
+
+      background-image: linear-gradient(to top, $primary80, transparent);
+
+      transition: block-size $reveal-duration $reveal-ease;
+    }
+  }
+
+  &__slide:hover &__media::after,
+  &__slide:focus-within &__media::after {
+    block-size: 80%;
   }
 
   &__image {
     inline-size: 100%;
     block-size: 100%;
-    min-block-size: 0;
     object-fit: cover;
   }
 
-  &__panel {
+  // Плашка наличия — как в карточках каталога
+  &__badge {
+    @include caption;
+
+    position: absolute;
+    inset-block-start: rem(24);
+    inset-inline-start: rem(32);
+
+    padding: rem(6) rem(10);
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: $accent;
+  }
+
+  // Правая колонка слайда поверх фото, прижата к низу: панель модели,
+  // а на последнем слайде над ней ещё и переход к остальной технике
+  &__aside {
+    position: relative;
+
     display: flex;
+    grid-column: 2;
+    grid-row: 1;
     flex-direction: column;
-    gap: rem(32);
+    align-self: end;
+
+    min-inline-size: 0;
+  }
+
+  // Переход к остальной технике в наличии: полупрозрачная акцентная плашка над панелью модели
+  &__rest {
+    display: flex;
+    gap: rem(16);
+    align-items: flex-end;
     justify-content: space-between;
 
     padding: rem(32);
 
     color: $secondary;
 
-    background-color: $primary;
+    background-color: $accent80;
   }
 
-  &__panel-head {
+  &__rest-text {
     display: flex;
     flex-direction: column;
     gap: rem(8);
+    min-inline-size: 0;
+  }
+
+  &__rest-label {
+    @include caption;
+  }
+
+  &__rest-title {
+    @include h3;
+  }
+
+  // На акцентном фоне кнопка-стрелка при наведении заливается светлым, а не акцентным
+  &__rest &__more {
+    transition:
+      color $medium $ease-out,
+      border-color $medium $ease-out,
+      background-color $medium $ease-out;
+  }
+
+  &__rest:hover &__more {
+    border-color: $secondary;
+    color: $accent;
+    background-color: $secondary;
+  }
+
+  // Панель без собственного фона: текст лежит на затемнении фотографии.
+  // Она же — ссылка на модель целиком, как карточки каталога и плитки отгрузок
+  &__panel {
+    display: flex;
+    flex-direction: column;
+
+    min-inline-size: 0;
+    padding: rem(32);
+
+    color: $secondary;
+  }
+
+  // Стрелка стоит справа от названия модели, по его нижней линии — как в отгрузках и в блоге
+  &__panel-head {
+    display: flex;
+    gap: rem(16);
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+    min-inline-size: 0;
   }
 
   &__type {
     @include caption;
 
-    color: $dark-grey;
+    color: $light-grey;
   }
 
   &__model {
     @include h2;
 
-    margin: 0;
+    transition: color $medium $ease-out;
   }
 
-  &__specs {
-    @include body-S;
-
-    display: flex;
-    flex-direction: column;
-    gap: rem(8);
-    margin-block-start: auto;
+  &__panel:hover &__model {
+    color: $accent;
   }
 
-  &__spec {
-    display: flex;
-    gap: rem(16);
-    justify-content: space-between;
-
-    padding-block-end: rem(4);
-    border-block-end: 1px solid $dark-grey;
-
-    white-space: nowrap;
-  }
-
-  // Полоса «Подробнее» — как в карточках: серая, при наведении заливается акцентным
+  // Квадратная кнопка-стрелка, как в карточках каталога: при наведении заливается акцентным
   &__more {
-    @include body-S;
-
     display: flex;
+    flex-shrink: 0;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 
-    block-size: rem(36);
-    margin-inline: rem(-32);
-    padding-inline: rem(32);
+    inline-size: rem(44);
+    block-size: rem(44);
+    border: 1px solid $secondary;
 
-    color: $secondary;
-
-    background-color: $dark-grey;
-    background-image: linear-gradient($accent, $accent);
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 0 100%;
-
-    transition: background-size $slow $ease-out;
-
-    &:hover {
-      background-size: 100% 100%;
-    }
+    transition:
+      border-color $medium $ease-out,
+      background-color $medium $ease-out;
   }
 
   &__more-icon {
-    flex-shrink: 0;
-
     inline-size: rem(24);
     block-size: rem(24);
 
@@ -228,7 +349,96 @@
     transition: translate $medium $ease-out;
   }
 
-  &__more:hover &__more-icon {
-    translate: rem(4) 0;
+  &__panel:hover &__more {
+    border-color: $accent;
+    background-color: $accent;
+  }
+
+  &__panel:hover &__more-icon,
+  &__rest:hover &__more-icon {
+    translate: rem(2) 0;
+  }
+
+  // Характеристики свёрнуты, пока курсор не на слайде: высота растёт от нуля, как в плитках отгрузок
+  &__details {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows $reveal-duration $reveal-ease,
+      opacity $medium $ease-out;
+  }
+
+  &__slide:hover &__details,
+  &__slide:focus-within &__details {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  // Характеристики — как в плитках отгрузок: подпись сверху, значение под ней,
+  // колонки разделены вертикальной линией. Здесь колонок две, потому что панель узкая
+  &__specs {
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: rem(28) rem(16);
+
+    min-block-size: 0;
+
+    // Отступ от названия модели — внутри раскрывающегося блока, чтобы у свёрнутого его не было
+    &::before {
+      content: '';
+      grid-column: 1 / -1;
+      block-size: rem(4);
+    }
+  }
+
+  &__spec {
+    display: flex;
+    flex-direction: column;
+    gap: rem(2);
+    min-inline-size: 0;
+
+    &:nth-child(even) {
+      padding-inline-start: rem(16);
+      border-inline-start: 1px solid $dark-grey;
+    }
+  }
+
+  &__spec-label {
+    @include caption;
+
+    color: $light-grey;
+  }
+
+  // Длинное значение (модель шасси) в узкой панели переносится, а не вылезает за колонку
+  &__spec-value {
+    @include lead-bold;
+
+    overflow-wrap: anywhere;
+  }
+
+  // Без курсора (тач-экраны) раскрыть панель нечем — характеристики видны сразу
+  @media (hover: none) {
+    &__details {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    &__media::after {
+      block-size: 80%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__progress-bar,
+    &__details,
+    &__media::after {
+      transition: none;
+    }
+  }
+
+  @include section-full {
+    min-block-size: 0;
   }
 }

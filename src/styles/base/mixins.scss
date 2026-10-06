@@ -19,7 +19,7 @@
 }
 
 @mixin h3 {
-  font-family: Manrope-bold, sans-serif;
+  font-family: Manrope-medium, sans-serif;
   font-size: rem(32);
   line-height: rem(36);
   text-transform: uppercase;
@@ -27,7 +27,7 @@
 }
 
 @mixin h4 {
-  font-family: Manrope-bold, sans-serif;
+  font-family: Manrope-medium, sans-serif;
   font-size: rem(24);
   line-height: rem(28);
   text-transform: uppercase;

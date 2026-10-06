@@ -1,0 +1,97 @@
+{# Отгрузки: одна плитка крупно, две — справа или слева от неё. Плитка под курсором раскрывается #}
+{# до размера крупной и показывает характеристики (scripts/modules/shipments.ts). #}
+{# Данные-заглушки (включая даты и города), позже придут из БД. focus — какая часть кадра видна в плитке, по горизонтали #}
+{%
+  set shipments = [
+    {
+      model: "ППЦН-30/3-PLT-1500",
+      type: "Полуприцеп-цистерна для нефти",
+      image: "/src/assets/images/shipment-1.jpg",
+      focus: "58%",
+      datetime: "2026-08-12",
+      date: "12 августа 2026",
+      city: "Сургут",
+      specs: [["Объём", "30 м³"], ["Осей", "3"], ["Сечение", "круг"], ["Секций", "3"]]
+    },
+    {
+      model: "ППЦН-28/2-BPW-1350",
+      type: "Полуприцеп-цистерна для нефти",
+      image: "/src/assets/images/shipment-2.jpg",
+      focus: "30%",
+      datetime: "2026-07-30",
+      date: "30 июля 2026",
+      city: "Нижневартовск",
+      specs: [["Объём", "28 м³"], ["Осей", "2"], ["Сечение", "круг"], ["Секций", "2"]]
+    },
+    {
+      model: "ППЦ-24/2-PLT-1150",
+      type: "Полуприцеп-цистерна для ГСМ",
+      image: "/src/assets/images/tech-semitrailer.jpg",
+      focus: "50%",
+      datetime: "2026-07-18",
+      date: "18 июля 2026",
+      city: "Уфа",
+      specs: [["Объём", "24 м³"], ["Осей", "2"], ["Сечение", "круг"], ["Секций", "2"]]
+    }
+  ]
+%}
+{# Места плиток в сетке. Без скриптов остаётся эта расстановка: первая крупно, две справа #}
+{% set places = ["big-left", "top-right", "bottom-right"] %}
+<section
+  class="shipments-bento"
+  data-shipments
+  data-fullpage-section
+  data-fullpage-label="Отгрузки"
+  data-reveal-group
+>
+  <div class="shipments-bento__head">
+    <h2 class="shipments-bento__title" data-reveal>Недавно отгруженная техника</h2>
+    <a class="shipments-bento__button" href="/shipments.html" data-reveal>Смотреть всю технику</a>
+  </div>
+  {% for item in shipments %}
+    <article
+      class="shipments-bento__item"
+      data-shipments-item
+      data-place="{{ places[loop.index0] }}"
+    >
+      <a class="shipments-bento__link" href="/product.html" data-reveal>
+        <img
+          class="shipments-bento__image"
+          src="{{ item.image }}"
+          width="1800"
+          height="1350"
+          alt="{{ item.type }} {{ item.model }}"
+          loading="lazy"
+          style="--focus: {{ item.focus }}"
+        />
+        <span class="shipments-bento__shipped">
+          <time datetime="{{ item.datetime }}">{{ item.date }}</time> · {{ item.city }}
+        </span>
+        <span class="shipments-bento__info">
+          {# Стрелка стоит справа от названия модели, как в панели наличия и в блоге #}
+          <span class="shipments-bento__title-row">
+            <span class="shipments-bento__heading">
+              <span class="shipments-bento__type">{{ item.type }}</span>
+              <span class="shipments-bento__model">{{ item.model }}</span>
+            </span>
+            <span class="shipments-bento__more" aria-hidden="true">
+              <svg class="shipments-bento__more-icon">
+                <use href="#icon-expand-right"></use>
+              </svg>
+            </span>
+          </span>
+          <span class="shipments-bento__details">
+            <span class="shipments-bento__specs">
+              {% for spec in item.specs %}
+                <span class="shipments-bento__spec">
+                  <span class="shipments-bento__spec-label">{{ spec[0] }}</span>
+                  <span class="shipments-bento__spec-value">{{ spec[1] }}</span>
+                </span>
+              {% endfor %}
+            </span>
+          </span>
+        </span>
+      </a>
+    </article>
+  {% endfor %}
+</section>

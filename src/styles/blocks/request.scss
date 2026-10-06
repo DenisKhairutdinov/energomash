@@ -1,0 +1,204 @@
+$field-size: 48;
+
+// Линии на сером фоне: основной тёмный цвет с малой непрозрачностью — чуть темнее самого фона
+$line: #0d0e131f;
+
+// Заявка: вступление, прямые контакты и форма на две колонки — по общей сетке 4 × 1fr.
+// Левая половина серая, правая светлая, как было в прежнем блоке
+.request {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  min-block-size: rem(451);
+
+  color: $primary;
+
+  background-image: linear-gradient(to right, $bg-grey 50%, $bg 50%);
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+    justify-content: space-between;
+
+    min-inline-size: 0;
+    min-block-size: 0;
+    padding: rem(32);
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+    hyphens: auto;
+  }
+
+  &__description {
+    @include body-M;
+
+    margin: 0;
+  }
+
+  // Прямые контакты для тех, кому проще позвонить или написать, чем заполнять форму
+  &__direct {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+    align-items: flex-start;
+
+    min-inline-size: 0;
+    min-block-size: 0;
+    padding: rem(32);
+    border-inline-start: 1px solid $line;
+  }
+
+  &__label {
+    @include caption;
+
+    margin-block-end: rem(8);
+    color: $dark-grey;
+  }
+
+  &__phone {
+    @include h4;
+
+    white-space: nowrap;
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  &__mail {
+    @include lead;
+
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  &__links {
+    display: flex;
+    gap: rem(8);
+    margin-block-start: auto;
+  }
+
+  // Как в шапке: иконка в ячейке с тонкими линиями по бокам, при наведении ячейка заливается.
+  // Блок здесь серый, поэтому линии и заливка чуть темнее фона
+  &__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem(48);
+    block-size: rem(44);
+    border-inline: 1px solid $line;
+
+    transition: background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $line;
+    }
+  }
+
+  &__link-icon {
+    inline-size: rem(22);
+    block-size: rem(22);
+    fill: $primary;
+  }
+
+  // Форма на две колонки: короткие поля парами, комментарий забирает оставшуюся высоту
+  &__form {
+    display: grid;
+    grid-column: 3 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    gap: rem(16);
+
+    min-inline-size: 0;
+    min-block-size: 0;
+    padding: rem(32);
+  }
+
+  &__field {
+    @include body-M;
+
+    inline-size: 100%;
+    block-size: rem($field-size);
+    padding-inline: rem(16);
+    border: 1px solid $primary;
+    border-radius: 0;
+
+    color: $primary;
+
+    background-color: transparent;
+    outline: none;
+
+    transition: border-color $fast $ease-out;
+
+    &::placeholder {
+      color: $dark-grey;
+      opacity: 1;
+    }
+
+    &:focus {
+      border-color: $accent;
+    }
+
+    &--comment {
+      resize: none;
+
+      grid-column: 1 / -1;
+
+      block-size: 100%;
+      min-block-size: rem($field-size);
+      padding-block: rem(12);
+    }
+  }
+
+  &__footer {
+    display: flex;
+    grid-column: 1 / -1;
+    gap: rem(24);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__note {
+    @include caption;
+
+    max-inline-size: rem(320);
+    margin: 0;
+    color: $dark-grey;
+  }
+
+  &__note-link {
+    color: $primary;
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  // Главное действие страницы: крупная акцентная кнопка
+  &__submit {
+    @include button-L;
+
+    cursor: pointer;
+
+    flex-shrink: 0;
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: $accent;
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    min-block-size: 0;
+  }
+}
