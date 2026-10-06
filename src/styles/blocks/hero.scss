@@ -1,0 +1,444 @@
+$corner-length: 6;
+
+.hero {
+  @include section-full;
+
+  isolation: isolate;
+  position: relative;
+
+  // Фон при появлении слегка увеличен и не должен выходить за секцию
+  overflow: clip;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+
+  // Затемнение поверх фотографии
+  &::before {
+    content: '';
+
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+
+    background-image: linear-gradient(to bottom, #0000001a, #0000004d);
+  }
+
+  &__background {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+
+    inline-size: 100%;
+    block-size: 100%;
+
+    object-fit: cover;
+    object-position: center bottom;
+  }
+
+  &__main {
+    display: flex;
+    grid-column: 1 / span 2;
+    grid-row: 1;
+    flex-direction: column;
+    gap: rem(32);
+    justify-content: flex-end;
+
+    padding: rem(32);
+
+    background-color: $bg;
+  }
+
+  &__title {
+    @include h1;
+
+    margin: 0;
+    color: $primary;
+    text-align: end;
+  }
+
+  // Четыре колонки, как у списка УТП ниже: кнопки занимают две правые
+  &__actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: rem(16);
+  }
+
+  &__button {
+    @include button-L;
+
+    cursor: pointer;
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $primary;
+
+    &:first-child {
+      grid-column-start: 3;
+    }
+
+    &--accent {
+      background-color: $accent;
+    }
+  }
+
+  &__utp-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: rem(16);
+  }
+
+  &__utp {
+    @include body-M;
+    @include corners($dark-grey, rem($corner-length));
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    block-size: rem(40);
+    padding-inline: rem(12);
+
+    color: $primary;
+    text-align: center;
+
+    transition: color $fast $ease-out;
+
+    &:hover {
+      @include corners($accent, rem($corner-length));
+
+      color: $accent;
+    }
+  }
+
+  &__categories {
+    display: flex;
+    grid-column: 3;
+    grid-row: 2;
+    flex-direction: column;
+
+    min-block-size: 0;
+  }
+
+  &__category {
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    gap: rem(20);
+    align-items: flex-start;
+    justify-content: center;
+
+    min-block-size: 0;
+    padding: rem(20) rem(32);
+
+    color: $secondary;
+
+    background-color: $primary80;
+
+    // Чертёж и стрелка красятся через currentcolor, поэтому меняются вместе с текстом
+    transition: color $medium $ease-out;
+
+    & + & {
+      border-block-start: 1px solid $dark-grey;
+    }
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  &__category-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    inline-size: 100%;
+  }
+
+  &__category-title {
+    @include h4;
+  }
+
+  &__category-arrow {
+    flex-shrink: 0;
+
+    inline-size: rem(24);
+    block-size: rem(24);
+
+    stroke: currentcolor;
+    stroke-width: 2;
+
+    transition: translate $medium $ease-out;
+  }
+
+  &__category:hover &__category-arrow {
+    translate: rem(4) 0;
+  }
+
+  // Чертёж занимает всю оставшуюся высоту ячейки, ширина следует из пропорций
+  &__category-image {
+    flex: 1 0 0;
+    min-block-size: 0;
+    fill: currentcolor;
+
+    &--ppc {
+      aspect-ratio: 304 / 100;
+    }
+
+    &--shassi {
+      aspect-ratio: 260 / 100;
+    }
+  }
+
+  &__filter {
+    display: flex;
+    grid-column: 4;
+    grid-row: 2;
+    flex-direction: column;
+    gap: rem(32);
+    align-items: flex-start;
+
+    padding: rem(20) rem(32);
+    border-inline-start: 1px solid $dark-grey;
+
+    color: $secondary;
+
+    background-color: $primary80;
+  }
+
+  &__filter-title {
+    @include h4;
+
+    margin: 0;
+  }
+
+  &__filter-fields {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+    align-items: flex-start;
+
+    inline-size: 100%;
+  }
+
+  &__options,
+  &__volume {
+    min-inline-size: 0;
+    margin: 0;
+    padding: rem(2);
+    border: 1px solid $secondary;
+  }
+
+  &__options {
+    display: flex;
+    gap: rem(2);
+    inline-size: 100%;
+    block-size: rem(46);
+
+    // Скрытая группа назначений не должна занимать место, несмотря на display у видимых
+    &[hidden] {
+      display: none;
+    }
+
+    // Полуприцепы: четыре назначения плиткой 2×2
+    &--semitrailer {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      block-size: rem(88);
+    }
+
+    // Шасси: семь назначений в те же два ряда — четыре коротких сверху, три длинных снизу.
+    // Высота совпадает с группой полуприцепов, поэтому при переключении типа форма не прыгает
+    &--chassis {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      block-size: rem(88);
+    }
+  }
+
+  &__option {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex: 1 0 0;
+  }
+
+  &__options--chassis &__option {
+    grid-column: span 4;
+
+    &:nth-child(-n + 4) {
+      grid-column: span 3;
+    }
+  }
+
+  &__option-input {
+    cursor: pointer;
+
+    position: absolute;
+    inset: 0;
+
+    margin: 0;
+
+    opacity: 0;
+  }
+
+  // Уголки, как у пунктов меню: в покое нулевой длины, при наведении вырастают из углов
+  &__option-label {
+    @include body-S;
+    @include corners($secondary, 0);
+
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+
+    padding: rem(4) rem(8);
+
+    white-space: nowrap;
+
+    transition:
+      color $fast $ease-out,
+      background-color $fast $ease-out,
+      background-size $medium $ease-out;
+  }
+
+  &__option:hover &__option-label {
+    @include corners-size(rem($corner-length));
+  }
+
+  &__option-input:checked + &__option-label {
+    color: $primary;
+    background-color: $secondary;
+  }
+
+  &__option-input:focus-visible + &__option-label {
+    outline: 2px solid $accent;
+    outline-offset: 2px;
+  }
+
+  // Объём и признак наличия стоят в одну строку
+  &__filter-row {
+    display: flex;
+    gap: rem(16);
+    align-items: center;
+    justify-content: space-between;
+
+    inline-size: 100%;
+  }
+
+  &__volume {
+    @include body-S;
+
+    display: flex;
+    gap: rem(8);
+    align-items: center;
+
+    block-size: rem(46);
+    padding: rem(4) rem(14);
+  }
+
+  &__volume-field {
+    display: flex;
+    gap: rem(4);
+    align-items: center;
+
+    block-size: 100%;
+
+    white-space: nowrap;
+  }
+
+  &__volume-input {
+    inline-size: rem(38);
+    block-size: 100%;
+    padding: rem(4);
+    border: 1px solid $secondary;
+
+    font: inherit;
+    color: $secondary;
+    text-align: start;
+
+    background-color: transparent;
+    outline: none;
+
+    transition: border-color $fast $ease-out;
+
+    // Подсказка показывает крайние объёмы модельного ряда выбранного типа
+    &::placeholder {
+      color: $dark-grey;
+      opacity: 1;
+    }
+
+    &:focus {
+      border-color: $accent;
+    }
+  }
+
+  &__check {
+    @include body-S;
+
+    cursor: pointer;
+
+    position: relative;
+
+    display: flex;
+    gap: rem(8);
+    align-items: center;
+
+    white-space: nowrap;
+  }
+
+  &__check-input {
+    cursor: pointer;
+
+    position: absolute;
+    inset: 0;
+
+    margin: 0;
+
+    opacity: 0;
+  }
+
+  // Квадрат с рамкой; отметка — акцентный квадрат внутри, вырастает из центра
+  &__check-box {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem(18);
+    block-size: rem(18);
+    border: 1px solid $secondary;
+
+    transition: border-color $fast $ease-out;
+
+    &::before {
+      content: '';
+
+      scale: 0;
+
+      inline-size: rem(10);
+      block-size: rem(10);
+
+      background-color: $accent;
+
+      transition: scale $medium $ease-out;
+    }
+  }
+
+  &__check-input:checked + &__check-box::before {
+    scale: 1;
+  }
+
+  &__check:hover &__check-box,
+  &__check-input:focus-visible + &__check-box {
+    border-color: $accent;
+  }
+
+  &__submit {
+    @include button-S;
+
+    cursor: pointer;
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $accent;
+  }
+}

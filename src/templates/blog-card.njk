@@ -1,1 +1,32 @@
-<article class="blog-card"></article>
+{# Карточка новости. Ждёт переменную post; без неё показывает заглушку #}
+{% set card = post or {} %}
+<article class="blog-card" data-reveal>
+  <a class="blog-card__link" href="{{ card.url or '/blog-single.html' }}">
+    <img
+      class="blog-card__image"
+      src="/src/assets/images/blog-placeholder.jpg"
+      width="1024"
+      height="768"
+      alt=""
+      loading="lazy"
+    />
+    <span class="blog-card__cover">
+      <span class="blog-card__meta">
+        <span class="blog-card__rubric">{{ card.rubric or "Новости и акции" }}</span>
+        <time class="blog-card__date" datetime="{{ card.datetime or '2026-08-01' }}">
+          <span class="blog-card__day">{{ card.day or "01" }}</span>
+          <span class="blog-card__month">{{ card.month or "августа" }}</span>
+        </time>
+      </span>
+      <span class="blog-card__title">
+        {{ card.title or "Заголовок новости в несколько строк" }}
+      </span>
+    </span>
+    <span class="blog-card__more">
+      Читать
+      <svg class="blog-card__more-icon" aria-hidden="true">
+        <use href="#icon-expand-right"></use>
+      </svg>
+    </span>
+  </a>
+</article>

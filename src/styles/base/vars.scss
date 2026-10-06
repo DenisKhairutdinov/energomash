@@ -10,6 +10,7 @@ $light-grey: #dededc;
 $dark-grey: #7a7a78;
 $primary80: #0d0e13cc;
 $primary60: #0d0e1399;
+$fill-icon: #222;
 
 // Shadow
 $shadow-sm:
@@ -27,6 +28,9 @@ $fast: 150ms;
 $medium: 250ms;
 $slow: 500ms;
 $ease-out: cubic-bezier(0, 0.55, 0.45, 1);
+
+// Layout
+$header-height: 60;
 
 // Breakpoints
 $breakpoint-xl: 1536px;

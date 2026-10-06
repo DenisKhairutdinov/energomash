@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/favicon.svg" />
     <title>{{ pageTitle }}</title>
     <meta name="description" content="" />
     <meta property="og:title" content="" />
@@ -14,14 +14,25 @@
 
     <meta name="theme-color" content="#f8fafcff" />
     <meta name="format-detection" content="telephone=no" />
+    {# Класс js нужен стилям: содержимое прячется до анимации только если скрипты работают #}
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
+    <link rel="stylesheet" href="/src/styles/main.scss" />
   </head>
   <body>
-    <!-- {% include "header.njk" %} -->
-    <div id="smooth-wrapper">
+    {% include "header.njk" %}
+    <div id="smooth-wrapper" data-smooth-wrapper>
       <!-- <div class="animated-background" data-animated-background></div> -->
-      <main class="main" id="smooth-content">{% block content %}{% endblock %}</main>
+      <div id="smooth-content" data-smooth-content>
+        <main class="main">{% block content %}{% endblock %}</main>
+        {# Последний «лист» на каждой странице: форма заявки и футер #}
+        <div class="page-end" data-fullpage-section data-fullpage-label="Заявка и контакты">
+          {% include "cta.njk" %}
+          {% include "footer.njk" %}
+        </div>
+      </div>
     </div>
-    <!-- {% include "footer.njk" %} -->
     <script type="module" src="/src/scripts/main.ts"></script>
   </body>
 </html>

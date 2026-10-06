@@ -5,7 +5,6 @@ import nunjucks from '@vituum/vite-plugin-nunjucks';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import browserslist from 'browserslist';
 import { browserslistToTargets } from 'lightningcss';
-import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 
 const myTargets = [
   'chrome >= 109',
@@ -25,7 +24,6 @@ export default defineConfig({
       },
     }),
     nunjucks({ root: './src/templates' }),
-    cssInjectedByJsPlugin(),
     createSvgIconsPlugin({
       iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
       symbolId: 'icon-[dir]-[name]',

@@ -1,0 +1,142 @@
+.blog-card {
+  min-block-size: 0;
+
+  // Слои: фотография, затемнение, затем текст и кнопка
+  &__link {
+    isolation: isolate;
+    position: relative;
+
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    block-size: 100%;
+    padding-block-end: rem(32);
+
+    color: $secondary;
+
+    // Затемнение поверх фотографии
+    &::before {
+      content: '';
+
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+
+      background-color: $primary60;
+    }
+  }
+
+  &__image {
+    position: absolute;
+    inset: 0;
+
+    inline-size: 100%;
+    block-size: 100%;
+
+    object-fit: cover;
+    object-position: center bottom;
+  }
+
+  &__cover {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: rem(32) rem(32) rem(28);
+  }
+
+  // Рубрика слева, дата справа
+  &__meta {
+    display: flex;
+    gap: rem(16);
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  &__rubric {
+    @include caption;
+
+    padding: rem(4) rem(8);
+    border: 1px solid $secondary;
+    white-space: nowrap;
+  }
+
+  // Число и месяц выровнены по правому краю
+  &__date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: end;
+  }
+
+  &__day {
+    font-family: Manrope-bold, sans-serif;
+    font-size: rem(40);
+    line-height: rem(40);
+    color: $accent;
+    letter-spacing: -0.03em;
+  }
+
+  &__month {
+    @include caption;
+  }
+
+  &__title {
+    @include h4;
+
+    max-inline-size: rem(416);
+    transition: color $medium $ease-out;
+  }
+
+  &__more {
+    @include body-S;
+
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    block-size: rem(36);
+    padding-inline: rem(32);
+
+    // Акцентная заливка лежит поверх серого фона и при наведении растёт слева направо
+    background-color: $dark-grey;
+    background-image: linear-gradient($accent, $accent);
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0 100%;
+
+    transition: background-size $slow $ease-out;
+  }
+
+  &__more-icon {
+    flex-shrink: 0;
+
+    inline-size: rem(24);
+    block-size: rem(24);
+
+    stroke: currentcolor;
+    stroke-width: 2;
+
+    transition: translate $medium $ease-out;
+  }
+
+  &__link:hover &__title {
+    color: $accent;
+  }
+
+  &__link:hover &__more {
+    background-size: 100% 100%;
+  }
+
+  &__link:hover &__more-icon {
+    translate: rem(4) 0;
+  }
+}

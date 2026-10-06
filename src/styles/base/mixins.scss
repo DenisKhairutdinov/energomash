@@ -3,142 +3,193 @@
 
 // Fonts
 @mixin h1 {
-  font-family: 'Manrope-bold', sans-serif;
+  font-family: Manrope-bold, sans-serif;
   font-size: rem(56);
   line-height: rem(64);
-  letter-spacing: -0.035em;
   text-transform: uppercase;
+  letter-spacing: -0.035em;
 }
 
 @mixin h2 {
-  font-family: 'Manrope-bold', sans-serif;
+  font-family: Manrope-bold, sans-serif;
   font-size: rem(48);
   line-height: rem(52);
-  letter-spacing: -0.03em;
   text-transform: uppercase;
+  letter-spacing: -0.03em;
 }
 
 @mixin h3 {
-  font-family: 'Manrope-bold', sans-serif;
+  font-family: Manrope-bold, sans-serif;
   font-size: rem(32);
   line-height: rem(36);
-  letter-spacing: -0.025em;
   text-transform: uppercase;
+  letter-spacing: -0.025em;
 }
 
 @mixin h4 {
-  font-family: 'Manrope-bold', sans-serif;
+  font-family: Manrope-bold, sans-serif;
   font-size: rem(24);
   line-height: rem(28);
-  letter-spacing: -0.02em;
   text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 @mixin lead {
-  font-family: 'Manrope-regular', sans-serif;
+  font-family: Manrope-regular, sans-serif;
   font-size: rem(20);
   line-height: rem(28);
 }
 
 @mixin lead-bold {
-  font-family: 'Manrope-bold', sans-serif;
+  font-family: Manrope-bold, sans-serif;
   font-size: rem(20);
   line-height: rem(28);
 }
 
 @mixin body-L {
-  font-family: 'Manrope-regular', sans-serif;
+  font-family: Manrope-regular, sans-serif;
   font-size: rem(18);
   line-height: rem(26);
 }
 
 @mixin body-M {
-  font-family: 'Manrope-regular', sans-serif;
+  font-family: Manrope-regular, sans-serif;
   font-size: rem(16);
   line-height: rem(24);
 }
 
 @mixin body-S {
-  font-family: 'Manrope-regular', sans-serif;
+  font-family: Manrope-regular, sans-serif;
   font-size: rem(14);
   line-height: rem(20);
 }
 
 @mixin caption {
-  font-family: 'Manrope-bold', sans-serif;
+  font-family: Manrope-bold, sans-serif;
   font-size: rem(12);
   line-height: rem(16);
 }
 
 @mixin label {
-  font-family: 'Manrope-bold', sans-serif;
+  font-family: Manrope-bold, sans-serif;
   font-size: rem(12);
   line-height: rem(14);
 }
 
 @mixin button-L {
-  font-family: 'Manrope-medium', sans-serif;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  block-size: rem(52);
+  padding-inline: rem(24);
+  border: none;
+
+  font-family: Manrope-medium, sans-serif;
   font-size: rem(14);
   line-height: rem(14);
   letter-spacing: 0.12em;
-  padding-inline: rem(24);
-  block-size: rem(52);
+
   box-shadow: $shadow-sm;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
+
   transition:
     translate $medium $ease-out,
     box-shadow $medium $ease-out;
 
   &:hover {
+    translate: 0 -2px;
     box-shadow: $shadow-md;
-    translate: 0 -4px;
+
+    // Кнопка уезжает вверх из-под курсора: полоса под ней удерживает hover и убирает дрожание
+    &::after {
+      content: '';
+
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline: 0;
+
+      block-size: 4px;
+    }
   }
 }
 
 @mixin button-M {
-  font-family: 'Manrope-medium', sans-serif;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  block-size: rem(44);
+  padding-inline: rem(20);
+  border: none;
+
+  font-family: Manrope-medium, sans-serif;
   font-size: rem(14);
   line-height: rem(14);
   letter-spacing: 0.12em;
-  padding-inline: rem(20);
-  block-size: rem(44);
+
   box-shadow: $shadow-sm;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
+
   transition:
     translate $medium $ease-out,
     box-shadow $medium $ease-out;
 
   &:hover {
+    translate: 0 -2px;
     box-shadow: $shadow-md;
-    translate: 0 -4px;
+
+    // Кнопка уезжает вверх из-под курсора: полоса под ней удерживает hover и убирает дрожание
+    &::after {
+      content: '';
+
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline: 0;
+
+      block-size: 4px;
+    }
   }
 }
 
 @mixin button-S {
-  font-family: 'Manrope-medium', sans-serif;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  block-size: rem(36);
+  padding-inline: rem(16);
+  border: none;
+
+  font-family: Manrope-medium, sans-serif;
   font-size: rem(12);
   line-height: rem(12);
   letter-spacing: 0.12em;
-  padding-inline: rem(16);
-  block-size: rem(36);
+
   box-shadow: $shadow-sm;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
+
   transition:
     translate $medium $ease-out,
     box-shadow $medium $ease-out;
 
   &:hover {
+    translate: 0 -2px;
     box-shadow: $shadow-md;
-    translate: 0 -4px;
+
+    // Кнопка уезжает вверх из-под курсора: полоса под ней удерживает hover и убирает дрожание
+    &::after {
+      content: '';
+
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline: 0;
+
+      block-size: 4px;
+    }
   }
 }
 
@@ -147,8 +198,49 @@
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 1px;
-  background-color: $accent;
-  padding: 0;
-  margin: 0;
+
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+
+  background-color: $accent;
+}
+
+// Уголки-скобки по четырём углам элемента: восемь линий-градиентов без лишней разметки
+@mixin corners($color, $length, $width: 1px) {
+  $line: linear-gradient($color, $color);
+  $size:
+    $length $width,
+    $width $length;
+
+  background-image: $line, $line, $line, $line, $line, $line, $line, $line;
+  background-repeat: no-repeat;
+  background-position:
+    left top,
+    left top,
+    right top,
+    right top,
+    left bottom,
+    left bottom,
+    right bottom,
+    right bottom;
+  background-size: $size, $size, $size, $size;
+}
+
+// Меняет только длину уголков: для анимации появления поверх миксина corners
+@mixin corners-size($length, $width: 1px) {
+  $size:
+    $length $width,
+    $width $length;
+
+  background-size: $size, $size, $size, $size;
+}
+
+// Секция на десктопе занимает экран целиком за вычетом шапки (нужно для постраничной прокрутки)
+@mixin section-full {
+  @media (min-width: $breakpoint-lg) {
+    block-size: calc(100vh - #{rem($header-height)});
+
+    @content;
+  }
 }

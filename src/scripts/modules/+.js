@@ -1,1 +1,7 @@
+import './catalog.ts'
+import './filter.ts'
+import './fullpage.ts'
 import './global/+.js'
+import './reveal.ts'
+import './slider.ts'
+import './smooth-scroll.ts'

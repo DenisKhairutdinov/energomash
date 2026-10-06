@@ -1,0 +1,91 @@
+.cta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  min-block-size: rem(451);
+
+  // Левая половина серая, правая светлая: крайние колонки остаются пустыми
+  background-image: linear-gradient(to right, $bg-grey 50%, $bg 50%);
+
+  &__text {
+    display: flex;
+    grid-column: 2;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: rem(32);
+
+    color: $primary;
+    text-align: end;
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+  }
+
+  &__description {
+    @include body-M;
+
+    margin: 0;
+  }
+
+  &__form {
+    display: flex;
+    grid-column: 3;
+    flex-direction: column;
+    gap: rem(16);
+    align-items: flex-start;
+    justify-content: center;
+
+    min-block-size: 0;
+    padding: rem(32);
+  }
+
+  &__field {
+    inline-size: 100%;
+    block-size: rem(44);
+    padding: rem(12);
+    border: 1px solid $primary;
+    border-radius: 0;
+
+    font-family: Manrope-regular, sans-serif;
+    font-size: rem(12);
+    line-height: rem(16);
+    color: $primary;
+
+    background-color: transparent;
+    outline: none;
+
+    transition: border-color $fast $ease-out;
+
+    &::placeholder {
+      color: $dark-grey;
+      opacity: 1;
+    }
+
+    &:focus {
+      border-color: $accent;
+    }
+
+    // Комментарий занимает всю оставшуюся высоту блока
+    &--comment {
+      resize: none;
+      flex: 1 0 0;
+      min-block-size: rem(44);
+    }
+  }
+
+  &__submit {
+    @include button-M;
+
+    cursor: pointer;
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $primary;
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    min-block-size: 0;
+  }
+}

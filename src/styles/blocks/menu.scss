@@ -1,0 +1,296 @@
+$dropdown-offset: 8;
+$dropdown-padding: 12;
+$dropdown-shift: 6;
+$dropdown-scale: 0.96;
+$dropdown-open: 350ms;
+$dropdown-open-delay: 50ms;
+$dropdown-close: 150ms;
+$dropdown-close-delay: 80ms;
+$dropdown-intent: 100ms;
+$dropdown-stagger: 30ms;
+$dropdown-item-shift: 8;
+$dropdown-hover: #f5f5f31f;
+$ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+$corner-length: 6;
+$corner-width: 1px;
+
+.menu {
+  block-size: 100%;
+
+  &__list {
+    display: flex;
+    gap: rem(16);
+    align-items: center;
+    block-size: 100%;
+  }
+
+  // Пункт растянут на всю высоту шапки, чтобы курсор не терял hover по пути к выпадающему списку
+  &__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    block-size: 100%;
+  }
+
+  // Подсветка гаснет плавно, а загорается сразу: при быстром движении по списку ничего не мигает
+  &__link,
+  &__sublink {
+    @include body-S;
+
+    display: block;
+
+    padding: rem(8) rem(12);
+
+    color: $primary;
+    white-space: nowrap;
+
+    transition:
+      color $fast $ease-out,
+      background-color $fast $ease-out;
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: 2px;
+    }
+  }
+
+  // Уголки по четырём углам пункта: восемь линий-градиентов, которые вырастают из углов.
+  // В покое длина линий нулевая, при наведении и на текущей странице — $corner-length
+  &__link {
+    $line: linear-gradient($primary, $primary);
+    $hidden:
+      0 $corner-width,
+      $corner-width 0;
+    $shown:
+      rem($corner-length) $corner-width,
+      $corner-width rem($corner-length);
+
+    background-image: $line, $line, $line, $line, $line, $line, $line, $line;
+    background-repeat: no-repeat;
+    background-position:
+      left top,
+      left top,
+      right top,
+      right top,
+      left bottom,
+      left bottom,
+      right bottom,
+      right bottom;
+    background-size: $hidden, $hidden, $hidden, $hidden;
+
+    transition:
+      background-size $medium $ease-out,
+      background-color $fast $ease-out;
+
+    &:hover,
+    &--active {
+      background-size: $shown, $shown, $shown, $shown;
+    }
+  }
+
+  &__item:hover > &__link,
+  &__item:focus-within > &__link {
+    $shown:
+      rem($corner-length) $corner-width,
+      $corner-width rem($corner-length);
+
+    background-size: $shown, $shown, $shown, $shown;
+  }
+
+  // Выделенный пункт (каталог): всегда залит, при наведении перекрашивается в акцентный цвет
+  &__link--accent {
+    color: $secondary;
+    background-color: $primary;
+    background-image: none;
+  }
+
+  &__link--accent:hover,
+  &__item:hover > &__link--accent,
+  &__item:focus-within > &__link--accent {
+    background-color: $accent;
+  }
+
+  // Панель тёмная, как плашки в hero и футер: на светлой шапке она читается отдельным слоем.
+  // Закрытое состояние: панель прозрачна, чуть приподнята и уменьшена к левому верхнему углу.
+  // Закрывается коротким затуханием без движения; сдвиг и масштаб сбрасываются уже невидимыми.
+  // Задержка перед закрытием прощает неточное движение курсора
+  &__dropdown {
+    will-change: opacity, translate, scale;
+
+    position: absolute;
+    inset-block-start: calc(100% + #{rem($dropdown-offset)});
+    inset-inline-start: 0;
+    transform-origin: top left;
+    translate: 0 rem(-$dropdown-shift);
+    scale: $dropdown-scale;
+
+    min-inline-size: rem(240);
+    padding: rem($dropdown-padding);
+    border: 1px solid $dark-grey;
+
+    visibility: hidden;
+    opacity: 0;
+    background-color: $primary;
+    box-shadow: $shadow-md;
+
+    transition:
+      opacity $dropdown-close $ease-out $dropdown-close-delay,
+      translate 0s linear $dropdown-close + $dropdown-close-delay,
+      scale 0s linear $dropdown-close + $dropdown-close-delay,
+      visibility 0s linear $dropdown-close + $dropdown-close-delay;
+
+    // Невидимый мостик через зазор до родителя, чтобы hover не обрывался
+    &::before {
+      content: '';
+
+      position: absolute;
+      inset-block-end: 100%;
+      inset-inline: 0;
+
+      block-size: rem($dropdown-offset + 1);
+    }
+
+    // Вложенные уровни выезжают вправо от родительского пункта
+    &--nested {
+      inset-block-start: rem(-$dropdown-padding - 1);
+      inset-inline-start: calc(100% + #{rem($dropdown-padding + $dropdown-offset)});
+      translate: rem(-$dropdown-shift) 0;
+    }
+  }
+
+  &__dropdown--nested::before {
+    inset-block: 0;
+    inset-inline: auto 100%;
+    inline-size: rem($dropdown-padding + $dropdown-offset + 1);
+    block-size: auto;
+  }
+
+  &__item:hover > &__dropdown,
+  &__item:focus-within > &__dropdown,
+  &__subitem:hover > &__dropdown,
+  &__subitem:focus-within > &__dropdown {
+    translate: 0;
+    scale: 1;
+
+    visibility: visible;
+    opacity: 1;
+
+    transition:
+      opacity $dropdown-open $ease-expo $dropdown-open-delay,
+      translate $dropdown-open $ease-expo $dropdown-open-delay,
+      scale $dropdown-open $ease-expo $dropdown-open-delay,
+      visibility 0s linear $dropdown-open-delay;
+  }
+
+  // При переходе на соседний раздел прежняя панель исчезает сразу, без наложения на новую
+  &__list:hover > &__item:not(:hover) > &__dropdown {
+    transition: none;
+  }
+
+  // Вложенный уровень открывается с небольшой паузой, а соседний в тот же момент исчезает:
+  // панели меняются чисто, а проход курсора по диагонали через соседние пункты ничего не переключает
+  &__subitem:hover > &__dropdown,
+  &__subitem:focus-within > &__dropdown {
+    transition-delay: $dropdown-intent;
+  }
+
+  &__sublist:hover > &__subitem:not(:hover) > &__dropdown {
+    transition: all 0s linear $dropdown-intent;
+  }
+
+  // Пункты стоят вплотную: между ними нет мёртвых зон, где подсветка гасла бы на долю секунды
+  &__sublist {
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Пункты проявляются по очереди со сдвигом слева. Закрытое состояние сбрасывается без анимации
+  // и только после того, как панель погасла: на закрытии пункты не двигаются
+  &__subitem {
+    position: relative;
+    translate: rem(-$dropdown-item-shift) 0;
+    opacity: 0;
+    transition:
+      translate 0s linear $dropdown-close + $dropdown-close-delay,
+      opacity 0s linear $dropdown-close + $dropdown-close-delay;
+  }
+
+  &__item:hover > &__dropdown > &__sublist > &__subitem,
+  &__item:focus-within > &__dropdown > &__sublist > &__subitem,
+  &__subitem:hover > &__dropdown > &__sublist > &__subitem,
+  &__subitem:focus-within > &__dropdown > &__sublist > &__subitem {
+    translate: 0;
+    opacity: 1;
+    transition:
+      translate $dropdown-open $ease-expo,
+      opacity $dropdown-open $ease-expo;
+  }
+
+  // Очерёдность: каждый следующий пункт стартует на $dropdown-stagger позже предыдущего
+  @for $i from 1 through 8 {
+    &__item:hover > &__dropdown > &__sublist > &__subitem:nth-child(#{$i}),
+    &__item:focus-within > &__dropdown > &__sublist > &__subitem:nth-child(#{$i}) {
+      transition-delay: $dropdown-open-delay + $i * $dropdown-stagger;
+    }
+
+    &__subitem:hover > &__dropdown > &__sublist > &__subitem:nth-child(#{$i}),
+    &__subitem:focus-within > &__dropdown > &__sublist > &__subitem:nth-child(#{$i}) {
+      transition-delay: $dropdown-intent + $i * $dropdown-stagger;
+    }
+  }
+
+  // Пункт панели под курсором получает подложку светлее фона панели.
+  // Она загорается сразу, а гаснет плавно: при быстром движении по списку ничего не мигает
+  &__sublink {
+    display: flex;
+    gap: rem(24);
+    align-items: center;
+    justify-content: space-between;
+
+    color: $secondary;
+  }
+
+  &__sublink:not(.menu__sublink--active):hover,
+  &__subitem:hover > &__sublink:not(.menu__sublink--active),
+  &__subitem:focus-within > &__sublink:not(.menu__sublink--active) {
+    background-color: $dropdown-hover;
+    transition-duration: 0s;
+  }
+
+  &__sublink--active {
+    color: $primary;
+    background-color: $secondary;
+  }
+
+  &__arrow {
+    flex-shrink: 0;
+
+    inline-size: rem(16);
+    block-size: rem(16);
+    margin-inline-end: rem(-4);
+
+    opacity: 0.5;
+
+    stroke: currentcolor;
+    stroke-width: 2;
+
+    transition:
+      translate $dropdown-open $ease-expo,
+      opacity $fast $ease-out;
+  }
+
+  &__subitem:hover > &__sublink > &__arrow,
+  &__subitem:focus-within > &__sublink > &__arrow {
+    translate: rem(3) 0;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__dropdown,
+    &__subitem,
+    &__arrow {
+      transition-delay: 0s !important;
+      transition-duration: 0s !important;
+    }
+  }
+}

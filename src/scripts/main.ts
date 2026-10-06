@@ -1,3 +1,20 @@
 import 'virtual:svg-icons-register';
-import '../styles/main.scss';
 // import './modules/+.js';
+import { initCatalog } from './modules/catalog.ts';
+import { initFilter } from './modules/filter.ts';
+import { hasFullpageSections, initFullpage } from './modules/fullpage.ts';
+import { initReveal } from './modules/reveal.ts';
+import { initSliders } from './modules/slider.ts';
+import { initSmoothScroll } from './modules/smooth-scroll.ts';
+
+initFilter();
+initCatalog();
+initSliders();
+initReveal();
+
+// На страницах с постраничной прокруткой переходы между секциями плавные сами по себе
+if (hasFullpageSections()) {
+  initFullpage();
+} else {
+  initSmoothScroll();
+}

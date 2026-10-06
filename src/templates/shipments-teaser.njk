@@ -1,0 +1,84 @@
+{# Данные-заглушки (включая даты и города), позже придут из БД. focus — какая часть кадра видна в узкой плитке, по горизонтали #}
+{%
+  set shipments = [
+    {
+      model: "ППЦН-30/3-PLT-1500",
+      type: "Полуприцеп-цистерна для нефти",
+      image: "/src/assets/images/shipment-1.jpg",
+      focus: "58%",
+      datetime: "2026-08-12",
+      date: "12 августа 2026",
+      city: "Сургут",
+      specs: [["Объём", "32 м³"], ["Количество осей", "4"], ["Сечение", "круг"], ["Количество секций", "1"]]
+    },
+    {
+      model: "ППЦН-28/2-BPW-1350",
+      type: "Полуприцеп-цистерна для нефти",
+      image: "/src/assets/images/shipment-2.jpg",
+      focus: "30%",
+      datetime: "2026-07-30",
+      date: "30 июля 2026",
+      city: "Нижневартовск",
+      specs: [["Объём", "32 м³"], ["Количество осей", "4"], ["Сечение", "круг"], ["Количество секций", "1"]]
+    },
+    {
+      model: "ППЦН-30/3-PLT-1500",
+      type: "Полуприцеп-цистерна для нефти",
+      image: "/src/assets/images/shipment-1.jpg",
+      focus: "85%",
+      datetime: "2026-07-18",
+      date: "18 июля 2026",
+      city: "Уфа",
+      specs: [["Объём", "32 м³"], ["Количество осей", "4"], ["Сечение", "круг"], ["Количество секций", "1"]]
+    }
+  ]
+%}
+<section
+  class="shipments-teaser"
+  data-fullpage-section
+  data-fullpage-label="Отгрузки"
+  data-reveal-group
+>
+  <div class="shipments-teaser__head">
+    <h2 class="shipments-teaser__title" data-reveal>Недавно отгруженная техника</h2>
+    <a class="shipments-teaser__button" href="/shipments.html" data-reveal>Смотреть всю технику</a>
+  </div>
+  {# Аккордеон: плитка под курсором раскрывается, остальные сжимаются #}
+  <ul class="shipments-teaser__list">
+    {% for item in shipments %}
+      <li class="shipments-teaser__item" data-reveal>
+        <a class="shipments-teaser__link" href="/product.html">
+          <img
+            class="shipments-teaser__image"
+            src="{{ item.image }}"
+            width="1800"
+            height="1350"
+            alt="{{ item.type }} {{ item.model }}"
+            loading="lazy"
+            style="--focus: {{ item.focus }}"
+          />
+          <span class="shipments-teaser__info">
+            <span class="shipments-teaser__info-content">
+              <span class="shipments-teaser__type">{{ item.type }}</span>
+              <span class="shipments-teaser__model">{{ item.model }}</span>
+              <span class="shipments-teaser__shipped">
+                Отгружено <time datetime="{{ item.datetime }}">{{ item.date }}</time> ·
+                {{ item.city }}
+              </span>
+              <span class="shipments-teaser__details">
+                <span class="shipments-teaser__specs">
+                  {% for spec in item.specs %}
+                    <span class="shipments-teaser__spec">
+                      <span>{{ spec[0] }}</span>
+                      <span>{{ spec[1] }}</span>
+                    </span>
+                  {% endfor %}
+                </span>
+              </span>
+            </span>
+          </span>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</section>

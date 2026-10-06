@@ -1,0 +1,107 @@
+$tick: 12;
+$tick-hover: 18;
+$tick-active: 28;
+
+// Индикатор секций при постраничной прокрутке. Создаётся скриптом fullpage.ts
+.page-indicator {
+  pointer-events: none;
+
+  position: fixed;
+  z-index: 9;
+  inset-block: rem($header-height) 0;
+  inset-inline-end: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+
+  // Кликабельная зона заметно больше самого деления
+  &__item {
+    pointer-events: auto;
+    cursor: pointer;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    inline-size: rem(44);
+    block-size: rem(22);
+    padding: 0;
+    padding-inline-end: rem(8);
+    border: 0;
+
+    background: none;
+
+    // Светлое деление с мягкой тенью читается и на фотографиях, и на светлых блоках
+    &::after {
+      content: '';
+
+      inline-size: rem($tick);
+      block-size: rem(2);
+
+      background-color: $secondary;
+      box-shadow:
+        0 0 rem(6) #00000059,
+        0 rem(1) rem(2) #00000073;
+
+      transition:
+        inline-size $medium $ease-out,
+        background-color $fast $ease-out;
+    }
+
+    &:hover::after,
+    &:focus-visible::after {
+      inline-size: rem($tick-hover);
+    }
+
+    // Текущая секция: деление длиннее и толще. Цвет тот же: акцентный терялся на красных цистернах
+    &[aria-current='true']::after {
+      inline-size: rem($tick-active);
+      block-size: rem(3);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: -2px;
+    }
+  }
+
+  // Название секции на тёмной плашке выезжает слева от деления при наведении
+  &__label {
+    @include caption;
+
+    pointer-events: none;
+
+    position: absolute;
+    inset-inline-end: 100%;
+    translate: rem(6) 0;
+
+    padding: rem(4) rem(8);
+
+    color: $secondary;
+    white-space: nowrap;
+
+    opacity: 0;
+    background-color: $primary;
+
+    transition:
+      translate $medium $ease-out,
+      opacity $fast $ease-out;
+  }
+
+  &__item:hover &__label,
+  &__item:focus-visible &__label {
+    translate: 0;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__item::after,
+    &__label {
+      transition: none;
+    }
+  }
+}

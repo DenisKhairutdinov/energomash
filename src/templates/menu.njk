@@ -1,0 +1,123 @@
+{%
+  set catalogItems = [
+    {
+      id: "semitrailers",
+      title: "Полуприцепы-цистерны",
+      url: "/catalog.html?type=semitrailer",
+      children: [
+        { id: "semitrailers-light-oil", title: "Для светлых нефтепродуктов", url: "/catalog.html?type=semitrailer&purpose=fuel" },
+        { id: "semitrailers-dark-oil", title: "Для темных нефтепродуктов", url: "/catalog.html?type=semitrailer&purpose=oil" },
+        { id: "semitrailers-tech-water", title: "Для технической воды", url: "/catalog.html?type=semitrailer&purpose=tech-water" },
+        { id: "semitrailers-vacuum", title: "Вакуумные", url: "/catalog.html?type=semitrailer&purpose=vacuum" }
+      ]
+    },
+    {
+      id: "chassis",
+      title: "Цистерны на шасси",
+      url: "/catalog.html?type=chassis",
+      children: [
+        { id: "chassis-refuelers", title: "Автотопливозаправщики", url: "/catalog.html?type=chassis&purpose=refueler" },
+        { id: "chassis-light-oil", title: "Для светлых нефтепродуктов", url: "/catalog.html?type=chassis&purpose=fuel" },
+        { id: "chassis-dark-oil", title: "Для темных нефтепродуктов", url: "/catalog.html?type=chassis&purpose=oil" },
+        { id: "chassis-tech-water", title: "Для технической воды", url: "/catalog.html?type=chassis&purpose=tech-water" },
+        { id: "chassis-drinking-water", title: "Для питьевой воды", url: "/catalog.html?type=chassis&purpose=drinking-water" },
+        { id: "chassis-oil-gathering", title: "Для сбора нефти", url: "/catalog.html?type=chassis&purpose=oil-gathering" },
+        { id: "chassis-municipal", title: "Коммунальные", url: "/catalog.html?type=chassis&purpose=municipal" }
+      ]
+    }
+  ]
+%}
+{%
+  set menuItems = [
+    { id: "catalog", title: "Каталог", url: "/catalog.html", accent: true, children: catalogItems },
+    { id: "stock", title: "В наличии", url: "/catalog.html?in-stock=1", urlSuffix: "&in-stock=1", children: catalogItems },
+    {
+      id: "terms",
+      title: "Условия",
+      url: "/terms.html",
+      children: [
+        { id: "leasing", title: "Лизинг", url: "/leasing.html" },
+        { id: "subsidies", title: "Субсидии", url: "/subsidies.html" },
+        { id: "dealers", title: "Дилерам", url: "/dealers.html" },
+        { id: "tenders", title: "Тендеры", url: "/tenders.html" }
+      ]
+    },
+    {
+      id: "about",
+      title: "О заводе",
+      url: "/about.html",
+      children: [
+        { id: "company", title: "О компании / география поставок", url: "/company.html" },
+        { id: "manufacture", title: "Производство", url: "/manufacture.html" },
+        { id: "shipments", title: "Наши отгрузки", url: "/shipments.html" },
+        { id: "services", title: "Сервис и запчасти", url: "/services.html" },
+        { id: "docs", title: "Сертификаты и документы", url: "/docs.html" },
+        { id: "faq", title: "Вопросы и ответы", url: "/faq.html" },
+        { id: "company-details", title: "Реквизиты", url: "/company-details.html" },
+        { id: "job", title: "Вакансии", url: "/job.html" }
+      ]
+    },
+    {
+      id: "blog",
+      title: "Блог",
+      url: "/blog.html",
+      children: [
+        { id: "news", title: "Новости и акции", url: "/blog.html" },
+        { id: "engineering", title: "Инженерные решения", url: "/blog.html" },
+        { id: "selection-guide", title: "Гид по подбору", url: "/blog.html" },
+        { id: "service-guide", title: "Гид по сервису", url: "/blog.html" },
+        { id: "transport-safety", title: "Транспортная безопасность", url: "/blog.html" },
+        { id: "factory-rhythm", title: "Заводской ритм", url: "/blog.html" },
+        { id: "events", title: "Мероприятия", url: "/blog.html" },
+        { id: "experience", title: "Опыт эксплуатации", url: "/blog.html" }
+      ]
+    },
+    { id: "contacts", title: "Контакты", url: "/contacts.html" }
+  ]
+%}
+{# currentPage задаётся на странице в виде "раздел" или "раздел/подраздел" #}
+{% set currentPath = (currentPage or "").split("/") %}
+{# Рекурсивный вывод подменю: глубина вложенности не ограничена. urlSuffix дописывается ко всем ссылкам ветки #}
+{% macro submenu(items, activeId, nested, urlSuffix) %}
+  <div class="menu__dropdown {{ 'menu__dropdown--nested' if nested }}">
+    <ul class="menu__sublist">
+      {% for item in items %}
+        <li class="menu__subitem">
+          <a
+            class="menu__sublink {{ 'menu__sublink--active' if item.id == activeId }}"
+            href="{{ item.url }}{{ urlSuffix }}"
+            {% if item.children %}aria-haspopup="true"{% endif %}
+          >
+            <span>{{ item.title }}</span>
+            {% if item.children %}
+              <svg class="menu__arrow" aria-hidden="true">
+                <use href="#icon-expand-right"></use>
+              </svg>
+            {% endif %}
+          </a>
+          {% if item.children %}
+            {{ submenu(item.children, "", true, urlSuffix) }}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endmacro %}
+<nav class="menu" aria-label="Основное меню">
+  <ul class="menu__list">
+    {% for item in menuItems %}
+      <li class="menu__item">
+        <a
+          class="menu__link {{ 'menu__link--accent' if item.accent }} {{ 'menu__link--active' if item.id == currentPath[0] }}"
+          href="{{ item.url }}"
+          {% if item.id == currentPage %}aria-current="page"{% endif %}
+        >
+          {{ item.title }}
+        </a>
+        {% if item.children %}
+          {{ submenu(item.children, currentPath[1] if item.id == currentPath[0] else "", false, item.urlSuffix or "") }}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

@@ -1,0 +1,80 @@
+{# Техника в наличии: слайдер — одна модель крупно, фото и тёмная панель с характеристиками #}
+{% import "stock-data.njk" as stock %}
+<section
+  class="stock-slider"
+  data-fullpage-section
+  data-fullpage-label="Техника в наличии"
+  data-reveal-group
+  data-slider
+>
+  <div class="stock-slider__head">
+    <div class="stock-slider__heading" data-reveal>
+      <h2 class="stock-slider__title">Техника<br />в наличии</h2>
+    </div>
+    <div class="stock-slider__controls" data-reveal>
+      <p class="stock-slider__counter" aria-live="polite">
+        <span class="stock-slider__current" data-slider-current>01</span>
+        <span class="stock-slider__total">/ 0{{ stock.items | length }}</span>
+      </p>
+      <div class="stock-slider__nav">
+        <button
+          class="stock-slider__arrow"
+          type="button"
+          aria-label="Предыдущая модель"
+          data-slider-prev
+        >
+          <svg class="stock-slider__arrow-icon stock-slider__arrow-icon--prev" aria-hidden="true">
+            <use href="#icon-expand-right"></use>
+          </svg>
+        </button>
+        <button
+          class="stock-slider__arrow"
+          type="button"
+          aria-label="Следующая модель"
+          data-slider-next
+        >
+          <svg class="stock-slider__arrow-icon" aria-hidden="true">
+            <use href="#icon-expand-right"></use>
+          </svg>
+        </button>
+      </div>
+      <a class="stock-slider__button" href="/catalog.html?in-stock=1">Смотреть всё наличие</a>
+    </div>
+  </div>
+  <div class="stock-slider__viewport" data-slider-viewport data-reveal>
+    <div class="stock-slider__track">
+      {% for item in stock.items %}
+        <article class="stock-slider__slide">
+          <img
+            class="stock-slider__image"
+            src="{{ item.image }}"
+            width="1800"
+            height="1350"
+            alt="{{ item.type }} {{ item.model }}"
+            loading="lazy"
+          />
+          <div class="stock-slider__panel">
+            <div class="stock-slider__panel-head">
+              <span class="stock-slider__type">{{ item.type }}</span>
+              <h3 class="stock-slider__model">{{ item.model }}</h3>
+            </div>
+            <div class="stock-slider__specs">
+              {% for spec in item.specs %}
+                <span class="stock-slider__spec">
+                  <span>{{ spec[0] }}</span>
+                  <span>{{ spec[1] }}</span>
+                </span>
+              {% endfor %}
+            </div>
+            <a class="stock-slider__more" href="/product.html">
+              Подробнее
+              <svg class="stock-slider__more-icon" aria-hidden="true">
+                <use href="#icon-expand-right"></use>
+              </svg>
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

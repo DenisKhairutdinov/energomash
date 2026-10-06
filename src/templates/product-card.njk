@@ -1,1 +1,38 @@
-<article class="product"></article>
+{# Карточка техники. Ждёт переменную product; без неё показывает заглушку #}
+{% set item = product or {} %}
+<article class="product-card" data-reveal>
+  <a class="product-card__link" href="{{ item.url or '/product.html' }}">
+    <span class="product-card__media">
+      <img
+        class="product-card__image"
+        src="{{ item.image or '/src/assets/images/shipment-1.jpg' }}"
+        width="1800"
+        height="1350"
+        alt="{{ item.type or 'Полуприцеп-цистерна' }} {{ item.model or '' }}"
+        loading="lazy"
+        style="--focus: {{ item.focus or '50%' }}"
+      />
+      {% if item.badge %}
+        <span class="product-card__badge">{{ item.badge }}</span>
+      {% endif %}
+    </span>
+    <span class="product-card__body">
+      <span class="product-card__type">{{ item.type or "Полуприцеп-цистерна" }}</span>
+      <span class="product-card__model">{{ item.model or "Модель" }}</span>
+      <span class="product-card__specs">
+        {% for spec in item.specs or [] %}
+          <span class="product-card__spec">
+            <span>{{ spec[0] }}</span>
+            <span>{{ spec[1] }}</span>
+          </span>
+        {% endfor %}
+      </span>
+    </span>
+    <span class="product-card__more">
+      Подробнее
+      <svg class="product-card__more-icon" aria-hidden="true">
+        <use href="#icon-expand-right"></use>
+      </svg>
+    </span>
+  </a>
+</article>

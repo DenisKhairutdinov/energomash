@@ -1,0 +1,234 @@
+// Техника в наличии: слайдер — одна модель крупно
+.stock-slider {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  min-block-size: rem(901);
+  background-color: $bg;
+
+  @include section-full {
+    min-block-size: 0;
+  }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    padding: rem(32);
+
+    background-color: $bg-grey;
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+    color: $primary;
+  }
+
+  &__controls {
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+    align-items: flex-start;
+  }
+
+  // Номер текущей модели крупно, как число в карточке блога
+  &__counter {
+    display: flex;
+    gap: rem(8);
+    align-items: baseline;
+    margin: 0;
+  }
+
+  &__current {
+    font-family: Manrope-bold, sans-serif;
+    font-size: rem(40);
+    line-height: rem(40);
+    color: $accent;
+    letter-spacing: -0.03em;
+  }
+
+  &__total {
+    @include body-M;
+
+    color: $dark-grey;
+  }
+
+  &__nav {
+    display: flex;
+    gap: rem(8);
+  }
+
+  // Ячейки стрелок — как ячейки мессенджеров в шапке: тонкие линии по бокам, заливка при наведении.
+  // Блок здесь серый, поэтому линии и заливка светлые
+  &__arrow {
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem(48);
+    block-size: rem(44);
+    padding: 0;
+    border: 0;
+    border-inline: 1px solid $bg;
+
+    color: $primary;
+
+    background-color: transparent;
+
+    transition: background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $bg;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: 2px;
+    }
+  }
+
+  &__arrow-icon {
+    inline-size: rem(24);
+    block-size: rem(24);
+    stroke: currentcolor;
+    stroke-width: 2;
+
+    &--prev {
+      rotate: 180deg;
+    }
+  }
+
+  &__button {
+    @include button-M;
+
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $primary;
+  }
+
+  // Окно слайдера занимает три колонки; слайды едут внутри него
+  &__viewport {
+    overflow: hidden;
+    grid-column: 2 / -1;
+    min-inline-size: 0;
+  }
+
+  &__track {
+    display: flex;
+    block-size: 100%;
+  }
+
+  // Слайд: фото на две трети, тёмная панель с характеристиками на треть
+  &__slide {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    flex: 0 0 100%;
+    min-inline-size: 0;
+  }
+
+  &__image {
+    inline-size: 100%;
+    block-size: 100%;
+    min-block-size: 0;
+    object-fit: cover;
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: rem(32);
+    justify-content: space-between;
+
+    padding: rem(32);
+
+    color: $secondary;
+
+    background-color: $primary;
+  }
+
+  &__panel-head {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+  }
+
+  &__type {
+    @include caption;
+
+    color: $dark-grey;
+  }
+
+  &__model {
+    @include h2;
+
+    margin: 0;
+  }
+
+  &__specs {
+    @include body-S;
+
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+    margin-block-start: auto;
+  }
+
+  &__spec {
+    display: flex;
+    gap: rem(16);
+    justify-content: space-between;
+
+    padding-block-end: rem(4);
+    border-block-end: 1px solid $dark-grey;
+
+    white-space: nowrap;
+  }
+
+  // Полоса «Подробнее» — как в карточках: серая, при наведении заливается акцентным
+  &__more {
+    @include body-S;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    block-size: rem(36);
+    margin-inline: rem(-32);
+    padding-inline: rem(32);
+
+    color: $secondary;
+
+    background-color: $dark-grey;
+    background-image: linear-gradient($accent, $accent);
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0 100%;
+
+    transition: background-size $slow $ease-out;
+
+    &:hover {
+      background-size: 100% 100%;
+    }
+  }
+
+  &__more-icon {
+    flex-shrink: 0;
+
+    inline-size: rem(24);
+    block-size: rem(24);
+
+    stroke: currentcolor;
+    stroke-width: 2;
+
+    transition: translate $medium $ease-out;
+  }
+
+  &__more:hover &__more-icon {
+    translate: rem(4) 0;
+  }
+}

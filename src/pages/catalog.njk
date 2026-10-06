@@ -1,5 +1,6 @@
 {% set pageTitle = "Каталог" %}
+{% set currentPage = "catalog" %}
 {% extends "layout.njk" %}
 {% block content %}
-  <section class="catalog"></section>
+  {% include "catalog.njk" %}
 {% endblock %}

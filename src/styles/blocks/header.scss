@@ -1,0 +1,115 @@
+.header {
+  position: fixed;
+  z-index: 10;
+  inset-block-start: 0;
+  inset-inline: 0;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+
+  block-size: rem($header-height);
+  padding-inline: rem(32);
+
+  background-color: $bg;
+  box-shadow: $shadow-md;
+
+  &__main {
+    display: flex;
+    align-items: center;
+    block-size: 100%;
+  }
+
+  &__logo {
+    display: block;
+    flex-shrink: 0;
+
+    // Смещение из макета: логотип стоит на 2px ниже центра шапки
+    margin-block-start: rem(4);
+  }
+
+  // Меню прижато к правому краю левой половины шапки. Текст последнего пункта стоит в 32px
+  // от середины страницы, на одной вертикали с заголовком hero; 12px — внутреннее поле пункта
+  .menu {
+    margin-inline: auto rem(32 - 12);
+  }
+
+  &__aside {
+    display: flex;
+    gap: rem(16);
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__contacts {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  &__contact {
+    @include body-S;
+
+    display: flex;
+    gap: rem(4);
+    align-items: center;
+
+    font-family: Manrope-bold, sans-serif;
+    color: $primary;
+    white-space: nowrap;
+
+    transition: opacity $fast $ease-out;
+
+    &:hover {
+      opacity: 0.6;
+    }
+  }
+
+  &__contact-icon {
+    flex-shrink: 0;
+    inline-size: rem(24);
+    block-size: rem(24);
+    fill: $fill-icon;
+
+    // mail.svg обрезан по контуру (20×17), добираем поля до бокса 24×24
+    &--mail {
+      padding: rem(3.5) rem(2);
+    }
+  }
+
+  &__links {
+    display: flex;
+    gap: rem(8);
+    align-items: center;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem(48);
+    block-size: rem(44);
+    border-inline: 1px solid $light-grey;
+
+    transition: background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $light-grey;
+    }
+  }
+
+  &__link-icon {
+    inline-size: rem(22);
+    block-size: rem(22);
+    fill: $primary;
+  }
+
+  &__button {
+    @include button-M;
+
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $primary;
+  }
+}

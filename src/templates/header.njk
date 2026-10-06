@@ -1,1 +1,51 @@
-<header class="header"></header>
+<header class="header" data-header>
+  <div class="header__main">
+    <a class="header__logo" href="/" aria-label="Энергомаш — на главную">
+      <img src="/src/assets/images/logo.svg" width="208" height="32" alt="Энергомаш" />
+    </a>
+    {% include "menu.njk" %}
+  </div>
+  <div class="header__aside">
+    <ul class="header__contacts">
+      <li>
+        <a class="header__contact" href="tel:88001012200">
+          <svg class="header__contact-icon" aria-hidden="true">
+            <use href="#icon-phone"></use>
+          </svg>
+          8 (800) 101-22-00
+        </a>
+      </li>
+      <li>
+        <a class="header__contact" href="mailto:1@bik55.ru">
+          <svg class="header__contact-icon header__contact-icon--mail" aria-hidden="true">
+            <use href="#icon-mail"></use>
+          </svg>
+          1@bik55.ru
+        </a>
+      </li>
+    </ul>
+    <ul class="header__links">
+      <li>
+        <a class="header__link" href="#" target="_blank" rel="noopener noreferrer" aria-label="MAX">
+          <svg class="header__link-icon" aria-hidden="true">
+            <use href="#icon-max"></use>
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a
+          class="header__link"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="ВКонтакте"
+        >
+          <svg class="header__link-icon" aria-hidden="true">
+            <use href="#icon-vk"></use>
+          </svg>
+        </a>
+      </li>
+    </ul>
+    <a class="header__button" href="/contacts.html">Связаться</a>
+  </div>
+</header>

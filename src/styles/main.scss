@@ -7,9 +7,11 @@ html {
   color: $primary;
 }
 
+// Шапка зафиксирована поверх страницы, контент начинается под ней
 main {
   position: relative;
   z-index: 1;
+  padding-block-start: rem($header-height);
 }
 
 ul {
@@ -26,6 +28,29 @@ a {
 .container {
   @include grid;
 
-  block-size: 100vh;
   inline-size: 100%;
+  block-size: 100vh;
+}
+
+// Начальное состояние для анимации появления (reveal.ts): стили приходят раньше скрипта,
+// поэтому содержимое должно быть спрятано уже в первом кадре. Без JS и при «уменьшить движение» всё видно сразу
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal-group] [data-reveal] {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .js [data-reveal-group] [data-reveal-image] {
+    transform: scale(1.06);
+  }
+}
+
+// Во время постраничной прокрутки (fullpage.ts) секции не ловят курсор, чтобы ховеры не срабатывали на ходу
+.is-scrolling [data-fullpage-section] {
+  pointer-events: none;
+}
+
+// При постраничной прокрутке полоса прокрутки скрыта: положение показывает индикатор секций
+.has-fullpage {
+  scrollbar-width: none;
 }

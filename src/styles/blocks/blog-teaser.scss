@@ -1,0 +1,44 @@
+.blog-teaser {
+  display: grid;
+  grid-auto-rows: rem(451);
+  grid-template-columns: repeat(4, 1fr);
+
+  // Линии между карточками: зазор, сквозь который виден фон секции.
+  // Цвет темнее, чем во второй секции: на тёмных фото светлая линия той же толщины выглядит жирнее
+  gap: 1px;
+
+  background-color: $dark-grey;
+
+  @include section-full {
+    grid-auto-rows: auto;
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  // Блок с заголовком занимает первую колонку на всю высоту секции
+  &__head {
+    display: flex;
+    grid-row: 1 / span 2;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    padding: rem(32);
+
+    background-color: $bg;
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+    color: $primary;
+  }
+
+  &__button {
+    @include button-M;
+
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $primary;
+  }
+}

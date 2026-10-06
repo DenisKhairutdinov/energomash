@@ -1,0 +1,7 @@
+// Последний «лист» страницы: форма заявки сверху, футер снизу, поровну
+.page-end {
+  @include section-full {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+  }
+}

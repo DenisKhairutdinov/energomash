@@ -1,1 +1,172 @@
-<section class="hero"></section>
+{# Назначения техники — по категориям каталога bik55.ru. Объёмы — крайние значения модельного ряда, м³ #}
+{%
+  set filterGroups = [
+    {
+      type: "semitrailer",
+      label: "Назначение полуприцепа",
+      volume: [17, 35],
+      options: [
+        { value: "fuel", title: "ГСМ (бензовозы)" },
+        { value: "oil", title: "Нефть (нефтевозы)" },
+        { value: "tech-water", title: "Техническая вода" },
+        { value: "vacuum", title: "Вакуумные" }
+      ]
+    },
+    {
+      type: "chassis",
+      label: "Назначение цистерны на шасси",
+      volume: [9, 22],
+      options: [
+        { value: "fuel", title: "ГСМ" },
+        { value: "refueler", title: "АТЗ" },
+        { value: "oil", title: "Нефть" },
+        { value: "tech-water", title: "Тех. вода" },
+        { value: "drinking-water", title: "Питьевая вода" },
+        { value: "oil-gathering", title: "Сбор нефти" },
+        { value: "municipal", title: "Коммунальные" }
+      ]
+    }
+  ]
+%}
+<section class="hero" data-fullpage-section data-fullpage-label="Главный экран" data-reveal-group>
+  <img
+    class="hero__background"
+    src="/src/assets/images/color.png"
+    width="3840"
+    height="1920"
+    alt=""
+    fetchpriority="high"
+    data-reveal-image
+  />
+  <div class="hero__main">
+    <h1 class="hero__title" data-reveal>
+      Производство<br />
+      полуприцепов-цистерн<br />
+      и цистерн на шасси
+    </h1>
+    <div class="hero__actions" data-reveal>
+      <a class="hero__button hero__button--accent" href="/catalog.html?in-stock=1"
+        >Техника в наличии</a
+      >
+      <button class="hero__button" type="button">Заказать звонок</button>
+    </div>
+    <ul class="hero__utp-list" data-reveal>
+      <li><a class="hero__utp" href="/leasing.html">Лизинг от партнёров</a></li>
+      <li><a class="hero__utp" href="/subsidies.html">Субсидия на покупку</a></li>
+      <li><a class="hero__utp" href="/docs.html">Документы и допуски</a></li>
+      <li><a class="hero__utp" href="/services.html">Сервис и запчасти</a></li>
+    </ul>
+  </div>
+  <div class="hero__categories">
+    <a class="hero__category" href="/catalog.html?type=semitrailer" data-reveal>
+      <span class="hero__category-head">
+        <span class="hero__category-title">Полуприцепы-<br />цистерны</span>
+        <svg class="hero__category-arrow" aria-hidden="true">
+          <use href="#icon-expand-right"></use>
+        </svg>
+      </span>
+      <svg class="hero__category-image hero__category-image--ppc" aria-hidden="true">
+        <use href="#icon-ppc"></use>
+      </svg>
+    </a>
+    <a class="hero__category" href="/catalog.html?type=chassis" data-reveal>
+      <span class="hero__category-head">
+        <span class="hero__category-title">Цистерны<br />на шасси</span>
+        <svg class="hero__category-arrow" aria-hidden="true">
+          <use href="#icon-expand-right"></use>
+        </svg>
+      </span>
+      <svg class="hero__category-image hero__category-image--shassi" aria-hidden="true">
+        <use href="#icon-shassi"></use>
+      </svg>
+    </a>
+  </div>
+  <form class="hero__filter" action="/catalog.html" method="get" data-filter data-reveal>
+    <h2 class="hero__filter-title">Подбор по параметрам</h2>
+    <div class="hero__filter-fields">
+      <div class="hero__options" role="radiogroup" aria-label="Тип техники">
+        <label class="hero__option">
+          <input
+            class="hero__option-input"
+            type="radio"
+            name="type"
+            value="semitrailer"
+            checked
+            data-filter-type
+          />
+          <span class="hero__option-label">Полуприцеп-цистерна</span>
+        </label>
+        <label class="hero__option">
+          <input
+            class="hero__option-input"
+            type="radio"
+            name="type"
+            value="chassis"
+            data-filter-type
+          />
+          <span class="hero__option-label">Цистерна на шасси</span>
+        </label>
+      </div>
+      {# Набор назначений зависит от типа техники: показывается только группа выбранного типа #}
+      {% for group in filterGroups %}
+        {% set isActiveGroup = loop.first %}
+        <div
+          class="hero__options hero__options--{{ group.type }}"
+          role="radiogroup"
+          aria-label="{{ group.label }}"
+          data-filter-group="{{ group.type }}"
+          data-filter-volume-min="{{ group.volume[0] }}"
+          data-filter-volume-max="{{ group.volume[1] }}"
+          {{ "hidden" if not isActiveGroup }}
+        >
+          {% for option in group.options %}
+            <label class="hero__option">
+              <input
+                class="hero__option-input"
+                type="radio"
+                name="purpose"
+                value="{{ option.value }}"
+                {{ "checked" if isActiveGroup and loop.first }}
+                {{ "disabled" if not isActiveGroup }}
+              />
+              <span class="hero__option-label">{{ option.title }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <div class="hero__filter-row">
+        <div class="hero__volume" role="group" aria-label="Объём">
+          <label class="hero__volume-field">
+            Объём от
+            <input
+              class="hero__volume-input"
+              type="text"
+              name="volume-from"
+              inputmode="numeric"
+              placeholder="{{ filterGroups[0].volume[0] }}"
+              data-filter-volume-from
+            />
+          </label>
+          <label class="hero__volume-field">
+            до
+            <input
+              class="hero__volume-input"
+              type="text"
+              name="volume-to"
+              inputmode="numeric"
+              placeholder="{{ filterGroups[0].volume[1] }}"
+              data-filter-volume-to
+            />
+            м³
+          </label>
+        </div>
+        <label class="hero__check">
+          <input class="hero__check-input" type="checkbox" name="in-stock" value="1" />
+          <span class="hero__check-box" aria-hidden="true"></span>
+          Только в наличии
+        </label>
+      </div>
+    </div>
+    <button class="hero__submit" type="submit">Подобрать</button>
+  </form>
+</section>

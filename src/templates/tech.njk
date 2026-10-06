@@ -1,0 +1,43 @@
+{# Карточки статей: тексты-заглушки, позже придут из БД #}
+<section
+  class="tech"
+  data-fullpage-section
+  data-fullpage-label="Технологии и условия"
+  data-reveal-group
+>
+  <div class="tech__head">
+    <h2 class="tech__title" data-reveal>Технологии<br />и условия</h2>
+  </div>
+  <img
+    class="tech__image tech__image--semitrailer"
+    src="/src/assets/images/tech-semitrailer.jpg"
+    width="1600"
+    height="1200"
+    alt="Полуприцеп-цистерна «Энергомаш» на площадке завода"
+    loading="lazy"
+    data-reveal
+  />
+  {% for index in range(1, 6) %}
+    <a class="tech__item" href="#" data-reveal>
+      <span class="tech__cover">
+        <span class="tech__item-title">Заголовок статьи<br />в несколько строк</span>
+        <span class="tech__item-text">Описание статьи<br />в несколько строк</span>
+      </span>
+      <span class="tech__more">
+        Подробнее
+        <svg class="tech__more-icon" aria-hidden="true">
+          <use href="#icon-expand-right"></use>
+        </svg>
+      </span>
+    </a>
+  {% endfor %}
+  <img
+    class="tech__image tech__image--tank"
+    src="/src/assets/images/color.png"
+    width="3840"
+    height="1920"
+    alt="Полуприцеп-цистерна на фоне резервуарного парка"
+    loading="lazy"
+    data-reveal
+  />
+</section>

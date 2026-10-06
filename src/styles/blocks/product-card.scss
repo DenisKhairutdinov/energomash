@@ -1,0 +1,154 @@
+$zoom-duration: 700ms;
+$zoom-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+// Карточка техники: фото, тип, модель, ключевые характеристики и полоса «Подробнее»
+.product-card {
+  // Карточка заполняет ячейку целиком, даже когда лежит внутри обёртки, а не прямо в сетке
+  block-size: 100%;
+  min-block-size: 0;
+  background-color: $bg;
+
+  // Под кнопкой остаётся полоса фона высотой 32px, как в карточках статей
+  &__link {
+    display: flex;
+    flex-direction: column;
+
+    block-size: 100%;
+    padding-block-end: rem(32);
+
+    color: $primary;
+  }
+
+  // Фото занимает всю высоту, оставшуюся от текста
+  &__media {
+    position: relative;
+    overflow: hidden;
+    flex: 1 0 0;
+    min-block-size: 0;
+  }
+
+  &__image {
+    position: absolute;
+    inset: 0;
+
+    inline-size: 100%;
+    block-size: 100%;
+
+    object-fit: cover;
+    object-position: var(--focus, 50%) center;
+
+    transition: scale $zoom-duration $zoom-ease;
+  }
+
+  // При наведении фото чуть приближается внутри своей рамки
+  &__link:hover &__image {
+    scale: 1.04;
+  }
+
+  &__badge {
+    @include caption;
+
+    position: absolute;
+    inset-block-start: rem(16);
+    inset-inline-start: rem(32);
+
+    padding: rem(4) rem(8);
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: $primary;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    padding: rem(20) rem(32);
+  }
+
+  &__type {
+    @include caption;
+
+    overflow: hidden;
+    color: $dark-grey;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__model {
+    @include h4;
+
+    transition: color $medium $ease-out;
+  }
+
+  &__link:hover &__model {
+    color: $accent;
+  }
+
+  &__specs {
+    @include body-S;
+
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+    margin-block-start: rem(12);
+  }
+
+  &__spec {
+    display: flex;
+    gap: rem(16);
+    justify-content: space-between;
+
+    border-block-end: 1px solid $light-grey;
+
+    white-space: nowrap;
+  }
+
+  &__more {
+    @include body-S;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    block-size: rem(36);
+    padding-inline: rem(32);
+
+    color: $secondary;
+
+    // Акцентная заливка лежит поверх серого фона и при наведении растёт слева направо
+    background-color: $dark-grey;
+    background-image: linear-gradient($accent, $accent);
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0 100%;
+
+    transition: background-size $slow $ease-out;
+  }
+
+  &__more-icon {
+    flex-shrink: 0;
+
+    inline-size: rem(24);
+    block-size: rem(24);
+
+    stroke: currentcolor;
+    stroke-width: 2;
+
+    transition: translate $medium $ease-out;
+  }
+
+  &__link:hover &__more {
+    background-size: 100% 100%;
+  }
+
+  &__link:hover &__more-icon {
+    translate: rem(4) 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__image {
+      transition: none;
+    }
+  }
+}

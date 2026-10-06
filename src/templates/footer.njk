@@ -1,1 +1,130 @@
-<footer class="footer"></footer>
+{# Верхний уровень меню. Полное дерево с подразделами — в menu.njk #}
+{%
+  set footerMenu = [
+    { title: "Каталог", url: "/catalog.html" },
+    { title: "В наличии", url: "/catalog.html?in-stock=1" },
+    { title: "Условия", url: "/terms.html" },
+    { title: "О заводе", url: "/about.html" },
+    { title: "Блог", url: "/blog.html" },
+    { title: "Контакты", url: "/contacts.html" }
+  ]
+%}
+<footer class="footer" data-reveal-group>
+  <div class="footer__column" data-reveal>
+    <a class="footer__logo" href="/" aria-label="Энергомаш — на главную">
+      <img src="/src/assets/images/logo.svg" width="208" height="32" alt="Энергомаш" />
+    </a>
+    <p class="footer__lead">
+      Завод-производитель<br />
+      полуприцепов-цистерн<br />
+      и цистерн на шасси
+    </p>
+    <div class="footer__bottom">
+      <ul class="footer__links">
+        <li>
+          <a
+            class="footer__link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="MAX"
+          >
+            <svg class="footer__link-icon" aria-hidden="true">
+              <use href="#icon-max"></use>
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a
+            class="footer__link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="ВКонтакте"
+          >
+            <svg class="footer__link-icon" aria-hidden="true">
+              <use href="#icon-vk"></use>
+            </svg>
+          </a>
+        </li>
+      </ul>
+      <p class="footer__note">© 2026 ООО «Энергомаш». Все права защищены</p>
+    </div>
+  </div>
+  <nav class="footer__column" aria-label="Навигация в футере" data-reveal>
+    <h2 class="footer__title">Навигация</h2>
+    <ul class="footer__menu">
+      {% for item in footerMenu %}
+        <li><a class="footer__menu-link" href="{{ item.url }}">{{ item.title }}</a></li>
+      {% endfor %}
+    </ul>
+    <ul class="footer__bottom footer__policies">
+      <li><a class="footer__note" href="#">Политика обработки персональных данных</a></li>
+      <li><a class="footer__note" href="#">Правила обработки cookie</a></li>
+    </ul>
+  </nav>
+  <div class="footer__column" data-reveal>
+    <h2 class="footer__title">Контакты</h2>
+    <ul class="footer__contacts">
+      <li>
+        <a class="footer__contact footer__contact--phone" href="tel:88001012200">
+          <svg class="footer__contact-icon" aria-hidden="true">
+            <use href="#icon-phone"></use>
+          </svg>
+          8 (800) 101-22-00
+        </a>
+      </li>
+      <li>
+        <a class="footer__contact" href="mailto:1@bik55.ru">
+          <svg class="footer__contact-icon footer__contact-icon--mail" aria-hidden="true">
+            <use href="#icon-mail"></use>
+          </svg>
+          1@bik55.ru
+        </a>
+      </li>
+    </ul>
+    <dl class="footer__details">
+      <div class="footer__detail">
+        <dt>Офис в Челябинске</dt>
+        <dd>ул. Кирова, 159, офис 1709</dd>
+      </div>
+      <div class="footer__detail">
+        <dt>Офис в Набережных Челнах</dt>
+        <dd>проспект Хасана Туфана, 12, офис 1910</dd>
+      </div>
+      <div class="footer__detail">
+        <dt>Производство</dt>
+        <dd>Челябинская область, Мисяш, 5 км автодороги Чебаркуль-Архангельское</dd>
+      </div>
+    </dl>
+  </div>
+  <div class="footer__column" data-reveal>
+    <h2 class="footer__title">Реквизиты</h2>
+    <dl class="footer__details">
+      <div class="footer__detail">
+        <dt>Наименование</dt>
+        <dd>ООО «Энергомаш»</dd>
+      </div>
+      <div class="footer__detail">
+        <dt>ИНН / КПП</dt>
+        <dd>7415011651 / 165001001</dd>
+      </div>
+      <div class="footer__detail">
+        <dt>ОГРН</dt>
+        <dd>1027401995455</dd>
+      </div>
+      <div class="footer__detail">
+        <dt>Юридический и почтовый адрес</dt>
+        <dd>
+          423810, Республика Татарстан, г. Набережные Челны, пр. Хасана Туфана, д. 12, оф. 1910
+        </dd>
+      </div>
+    </dl>
+    <a class="footer__bottom footer__more" href="/company-details.html">
+      Все реквизиты
+      <svg class="footer__more-icon" aria-hidden="true">
+        <use href="#icon-expand-right"></use>
+      </svg>
+    </a>
+  </div>
+</footer>

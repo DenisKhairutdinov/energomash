@@ -1,0 +1,30 @@
+{# Запасной вариант блока «Техника в наличии»: карточки 3×2. На главной сейчас стоит слайдер #}
+{% import "stock-data.njk" as stock %}
+<section
+  class="stock-teaser"
+  data-fullpage-section
+  data-fullpage-label="Техника в наличии"
+  data-reveal-group
+>
+  <div class="stock-teaser__head">
+    <div class="stock-teaser__heading" data-reveal>
+      <h2 class="stock-teaser__title">Техника<br />в наличии</h2>
+    </div>
+    <a class="stock-teaser__button" href="/catalog.html?in-stock=1" data-reveal
+      >Смотреть всё наличие</a
+    >
+  </div>
+  {% for item in stock.items %}
+    {%
+      set product = {
+        model: item.model,
+        type: item.type,
+        image: item.image,
+        focus: item.focus,
+        badge: "В наличии",
+        specs: item.specs.slice(0, 2)
+      }
+    %}
+    {% include "product-card.njk" %}
+  {% endfor %}
+</section>

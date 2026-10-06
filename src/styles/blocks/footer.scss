@@ -1,0 +1,195 @@
+.footer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  min-block-size: rem(450);
+
+  color: $secondary;
+
+  background-color: $primary;
+
+  // Содержимое колонки идёт сверху вниз с одним шагом; второстепенное прижато к низу
+  &__column {
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+    align-items: flex-start;
+
+    min-block-size: 0;
+    padding: rem(32);
+
+    & + & {
+      border-inline-start: 1px solid $dark-grey;
+    }
+  }
+
+  // Нижняя строка колонки: у всех четырёх стоит на одной линии
+  &__bottom {
+    margin-block-start: auto;
+  }
+
+  // Цветной логотип из шапки перекрашивается в светлый, отдельный файл не нужен
+  &__logo {
+    display: block;
+    filter: brightness(0) invert(0.96);
+  }
+
+  &__lead {
+    @include body-M;
+
+    margin: 0;
+  }
+
+  &__title {
+    @include h4;
+
+    margin: 0;
+  }
+
+  // Приглушённый мелкий текст: копирайт и юридические ссылки
+  &__note {
+    @include body-S;
+
+    margin: 0;
+    color: $dark-grey;
+  }
+
+  &__note[href] {
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $secondary;
+    }
+  }
+
+  &__policies {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+  }
+
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+  }
+
+  &__menu-link,
+  &__contact,
+  &__more {
+    @include body-S;
+
+    color: $secondary;
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  &__contacts {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+  }
+
+  &__contact {
+    display: flex;
+    gap: rem(8);
+    align-items: center;
+    white-space: nowrap;
+
+    // Телефон — главный способ связи, поэтому крупнее остального
+    &--phone {
+      @include lead-bold;
+    }
+  }
+
+  &__contact-icon {
+    flex-shrink: 0;
+    inline-size: rem(24);
+    block-size: rem(24);
+    fill: currentcolor;
+
+    // mail.svg обрезан по контуру (20×17), добираем поля до бокса 24×24
+    &--mail {
+      padding: rem(3.5) rem(2);
+    }
+  }
+
+  // Подпись приглушена и стоит над значением: так реквизиты и адреса читаются списком, а не сплошным текстом
+  &__details {
+    @include body-S;
+
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+    margin: 0;
+
+    dt {
+      @include caption;
+
+      color: $dark-grey;
+    }
+
+    dd {
+      margin: 0;
+    }
+  }
+
+  &__more {
+    display: flex;
+    gap: rem(4);
+    align-items: center;
+  }
+
+  &__more-icon {
+    flex-shrink: 0;
+
+    inline-size: rem(20);
+    block-size: rem(20);
+
+    stroke: currentcolor;
+    stroke-width: 2;
+
+    transition: translate $medium $ease-out;
+  }
+
+  &__more:hover &__more-icon {
+    translate: rem(4) 0;
+  }
+
+  &__links {
+    display: flex;
+    gap: rem(8);
+    align-items: center;
+    margin-block-end: rem(24);
+  }
+
+  // Как в шапке: иконка в ячейке с тонкими линиями по бокам
+  &__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem(48);
+    block-size: rem(44);
+    border-inline: 1px solid $dark-grey;
+
+    transition: background-color $fast $ease-out;
+
+    &:hover {
+      background-color: #f5f5f326;
+    }
+  }
+
+  &__link-icon {
+    inline-size: rem(22);
+    block-size: rem(22);
+    fill: $secondary;
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    min-block-size: 0;
+  }
+}

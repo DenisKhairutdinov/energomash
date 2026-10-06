@@ -1,0 +1,315 @@
+$corner-length: 6;
+$card-block-size: 440;
+
+// Каталог: слева заголовок и тип техники, справа фильтр и прокручиваемая сетка карточек
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  min-block-size: rem(901);
+  background-color: $bg;
+
+  @include section-full {
+    min-block-size: 0;
+  }
+
+  &__aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-block-size: 0;
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+    align-items: flex-start;
+
+    padding: rem(32);
+  }
+
+  &__title {
+    @include h1;
+
+    margin: 0;
+    color: $primary;
+  }
+
+  &__count {
+    @include body-M;
+
+    margin: 0;
+    color: $primary;
+  }
+
+  &__reset {
+    @include body-S;
+
+    cursor: pointer;
+
+    padding: 0;
+    border: 0;
+
+    color: $dark-grey;
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    text-underline-position: from-font;
+
+    background: none;
+
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  // Плашки типа техники — как категории в hero, только на плотном тёмном фоне
+  &__types {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__type {
+    cursor: pointer;
+    position: relative;
+    display: block;
+
+    & + & {
+      border-block-start: 1px solid $dark-grey;
+    }
+  }
+
+  &__type-input {
+    cursor: pointer;
+
+    position: absolute;
+    inset: 0;
+
+    margin: 0;
+
+    opacity: 0;
+  }
+
+  // Чертёж красится через currentcolor, поэтому меняется вместе с текстом
+  &__type-body {
+    display: flex;
+    flex-direction: column;
+    gap: rem(20);
+    align-items: flex-start;
+
+    padding: rem(20) rem(32);
+
+    color: $secondary;
+
+    background-color: $primary;
+
+    transition: color $medium $ease-out;
+  }
+
+  &__type:hover &__type-body,
+  &__type-input:checked + &__type-body {
+    color: $accent;
+  }
+
+  &__type-input:focus-visible + &__type-body {
+    outline: 2px solid $accent;
+    outline-offset: -2px;
+  }
+
+  &__type-title {
+    @include h4;
+  }
+
+  &__type-image {
+    block-size: rem(104);
+    fill: currentcolor;
+
+    &--ppc {
+      aspect-ratio: 304 / 100;
+    }
+
+    &--shassi {
+      aspect-ratio: 260 / 100;
+    }
+  }
+
+  &__main {
+    display: flex;
+    grid-column: 2 / -1;
+    flex-direction: column;
+
+    min-block-size: 0;
+    border-inline-start: 1px solid $light-grey;
+  }
+
+  &__filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(16) rem(24);
+
+    padding: rem(24) rem(32);
+
+    background-color: $bg-grey;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    // Группа не для выбранного типа техники не должна занимать место
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__legend {
+    @include body-S;
+
+    padding: 0;
+    color: $primary;
+  }
+
+  &__options,
+  &__volume {
+    display: flex;
+    gap: rem(2);
+
+    block-size: rem(40);
+    padding: rem(2);
+    border: 1px solid $primary;
+  }
+
+  &__option {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+  }
+
+  &__option-input {
+    cursor: pointer;
+
+    position: absolute;
+    inset: 0;
+
+    margin: 0;
+
+    opacity: 0;
+  }
+
+  // Уголки, как у пунктов меню: в покое нулевой длины, при наведении вырастают из углов
+  &__option-label {
+    @include body-S;
+    @include corners($primary, 0);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-inline-size: rem(44);
+    padding-inline: rem(14);
+
+    color: $primary;
+    white-space: nowrap;
+
+    transition:
+      color $fast $ease-out,
+      background-color $fast $ease-out,
+      background-size $medium $ease-out;
+  }
+
+  &__option:hover &__option-label {
+    @include corners-size(rem($corner-length));
+  }
+
+  &__option-input:checked + &__option-label {
+    color: $secondary;
+    background-color: $primary;
+  }
+
+  &__option-input:focus-visible + &__option-label {
+    outline: 2px solid $accent;
+    outline-offset: 2px;
+  }
+
+  &__volume {
+    @include body-S;
+
+    gap: rem(8);
+    align-items: center;
+    padding-inline: rem(12);
+    color: $primary;
+  }
+
+  &__volume-field {
+    display: flex;
+    gap: rem(6);
+    align-items: center;
+
+    block-size: 100%;
+
+    white-space: nowrap;
+  }
+
+  &__volume-input {
+    inline-size: rem(44);
+    block-size: rem(28);
+    padding: rem(4);
+    border: 1px solid $primary;
+
+    font: inherit;
+    color: $primary;
+
+    background-color: $bg;
+    outline: none;
+
+    transition: border-color $fast $ease-out;
+
+    &:focus {
+      border-color: $accent;
+    }
+  }
+
+  // Сетка карточек прокручивается внутри своей области: фильтр и тип техники остаются на месте
+  &__results {
+    scrollbar-color: $primary transparent;
+    scrollbar-width: thin;
+
+    overflow-y: auto;
+    flex: 1 0 0;
+
+    min-block-size: 0;
+  }
+
+  // Линии между карточками рисуются контуром самих карточек, а не фоном списка:
+  // пустые ячейки в неполном ряду остаются чистыми
+  &__list {
+    display: grid;
+    grid-auto-rows: rem($card-block-size);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+  }
+
+  &__item {
+    min-inline-size: 0;
+    box-shadow: 0 0 0 1px $light-grey;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__empty {
+    @include body-M;
+
+    margin: 0;
+    padding: rem(32);
+    color: $primary;
+  }
+}

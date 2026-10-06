@@ -2,4 +2,9 @@
 {% extends "layout.njk" %}
 {% block content %}
   {% include "hero.njk" %}
+  {% include "shipments-teaser.njk" %}
+  {% include "stock-slider.njk" %}
+  {# Запасной вариант блока наличия — карточки 3×2: {% raw %}{% include "stock-teaser.njk" %}{% endraw %} #}
+  {# Секция «Технологии и условия» пока скрыта: {% raw %}{% include "tech.njk" %}{% endraw %} #}
+  {% include "blog-teaser.njk" %}
 {% endblock %}

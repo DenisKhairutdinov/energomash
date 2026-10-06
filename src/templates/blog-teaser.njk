@@ -1,0 +1,20 @@
+{# Данные-заглушки, позже придут из БД #}
+{%
+  set posts = [
+    { day: "01", month: "августа", datetime: "2026-08-01", rubric: "Новости и акции" },
+    { day: "24", month: "июля", datetime: "2026-07-24", rubric: "Инженерные решения" },
+    { day: "15", month: "июля", datetime: "2026-07-15", rubric: "Гид по подбору" },
+    { day: "03", month: "июля", datetime: "2026-07-03", rubric: "Опыт эксплуатации" },
+    { day: "20", month: "июня", datetime: "2026-06-20", rubric: "Заводской ритм" },
+    { day: "08", month: "июня", datetime: "2026-06-08", rubric: "Мероприятия" }
+  ]
+%}
+<section class="blog-teaser" data-fullpage-section data-fullpage-label="Блог" data-reveal-group>
+  <div class="blog-teaser__head">
+    <h2 class="blog-teaser__title" data-reveal>Блог</h2>
+    <a class="blog-teaser__button" href="/blog.html" data-reveal>Смотреть все</a>
+  </div>
+  {% for post in posts %}
+    {% include "blog-card.njk" %}
+  {% endfor %}
+</section>
