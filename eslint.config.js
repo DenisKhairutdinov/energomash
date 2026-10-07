@@ -30,5 +30,13 @@ export default defineConfig(
     },
   },
 
+  // Скрипты сборки данных: в выходном JSON null означает «значения нет» и нужен шаблонам
+  {
+    files: ['tools/**/*.mjs'],
+    rules: {
+      'unicorn/no-null': 'off',
+    },
+  },
+
   eslintConfigPrettier,
 );

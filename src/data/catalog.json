@@ -1,0 +1,519 @@
+{
+  "catalog": {
+    "source": {
+      "dump": "backup-2026-10-07T09-00-09.mysql",
+      "generatedAt": "2026-10-07"
+    },
+    "total": 892,
+    "types": [
+      {
+        "id": "semitrailer",
+        "label": "Полуприцепы-цистерны",
+        "icon": "ppc",
+        "count": 631,
+        "volume": [
+          16,
+          40
+        ]
+      },
+      {
+        "id": "chassis",
+        "label": "Цистерны на шасси",
+        "icon": "shassi",
+        "count": 261,
+        "volume": [
+          9,
+          22
+        ]
+      }
+    ],
+    "purposes": [
+      {
+        "value": "fuel",
+        "label": "ГСМ"
+      },
+      {
+        "value": "refueler",
+        "label": "АТЗ"
+      },
+      {
+        "value": "oil",
+        "label": "Нефть"
+      },
+      {
+        "value": "tech-water",
+        "label": "Тех. вода"
+      },
+      {
+        "value": "vacuum",
+        "label": "Вакуумные"
+      },
+      {
+        "value": "drinking-water",
+        "label": "Питьевая вода"
+      },
+      {
+        "value": "oil-gathering",
+        "label": "Сбор нефти"
+      },
+      {
+        "value": "municipal",
+        "label": "Коммунальные"
+      }
+    ],
+    "filters": [
+      {
+        "name": "purpose",
+        "label": "Назначение",
+        "kind": "list",
+        "primary": true,
+        "types": [],
+        "options": [
+          {
+            "value": "fuel",
+            "label": "ГСМ",
+            "count": 175
+          },
+          {
+            "value": "refueler",
+            "label": "АТЗ",
+            "count": 122
+          },
+          {
+            "value": "oil",
+            "label": "Нефть",
+            "count": 295
+          },
+          {
+            "value": "tech-water",
+            "label": "Тех. вода",
+            "count": 195
+          },
+          {
+            "value": "vacuum",
+            "label": "Вакуумные",
+            "count": 35
+          },
+          {
+            "value": "drinking-water",
+            "label": "Питьевая вода",
+            "count": 3
+          },
+          {
+            "value": "oil-gathering",
+            "label": "Сбор нефти",
+            "count": 51
+          },
+          {
+            "value": "municipal",
+            "label": "Коммунальные",
+            "count": 16
+          }
+        ]
+      },
+      {
+        "name": "stock",
+        "label": "Наличие",
+        "kind": "flag",
+        "primary": true,
+        "types": [],
+        "options": [
+          {
+            "value": "in",
+            "label": "Только в наличии",
+            "count": 162
+          }
+        ]
+      },
+      {
+        "name": "volume",
+        "label": "Объём цистерны",
+        "kind": "range",
+        "primary": true,
+        "unit": "м³",
+        "types": [],
+        "min": 9,
+        "max": 40
+      },
+      {
+        "name": "kit",
+        "label": "Дополнительно",
+        "kind": "flag",
+        "primary": true,
+        "types": [
+          "chassis"
+        ],
+        "options": [
+          {
+            "value": "kit",
+            "label": "Навесное оборудование",
+            "count": 58
+          }
+        ]
+      },
+      {
+        "name": "sections",
+        "label": "Количество секций",
+        "kind": "list",
+        "primary": true,
+        "types": [],
+        "options": [
+          {
+            "value": "1",
+            "label": "1",
+            "count": 570
+          },
+          {
+            "value": "2",
+            "label": "2",
+            "count": 125
+          },
+          {
+            "value": "3",
+            "label": "3",
+            "count": 110
+          },
+          {
+            "value": "4",
+            "label": "4",
+            "count": 8
+          }
+        ]
+      },
+      {
+        "name": "shape",
+        "label": "Тип сечения цистерны",
+        "kind": "list",
+        "primary": false,
+        "types": [],
+        "options": [
+          {
+            "value": "case",
+            "label": "Чемодан",
+            "count": 517
+          },
+          {
+            "value": "round",
+            "label": "Круглое",
+            "count": 78
+          }
+        ]
+      },
+      {
+        "name": "construction",
+        "label": "Особенность конструкции",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "semitrailer"
+        ],
+        "options": [
+          {
+            "value": "frame",
+            "label": "Рамный",
+            "count": 482
+          },
+          {
+            "value": "frameless",
+            "label": "Безрамный",
+            "count": 20
+          }
+        ]
+      },
+      {
+        "name": "insulated",
+        "label": "Термоизоляция",
+        "kind": "flag",
+        "primary": false,
+        "types": [
+          "semitrailer"
+        ],
+        "options": [
+          {
+            "value": "yes",
+            "label": "С термоизоляцией",
+            "count": 204
+          }
+        ]
+      },
+      {
+        "name": "suspension",
+        "label": "Подвеска",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "semitrailer"
+        ],
+        "options": [
+          {
+            "value": "air",
+            "label": "Пневматическая",
+            "count": 319
+          },
+          {
+            "value": "spring",
+            "label": "Рессорная",
+            "count": 310
+          }
+        ]
+      },
+      {
+        "name": "ssu",
+        "label": "Высота ССУ, мм",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "semitrailer"
+        ],
+        "options": [
+          {
+            "value": "1250",
+            "label": "1250",
+            "count": 2
+          },
+          {
+            "value": "1350",
+            "label": "1350",
+            "count": 42
+          },
+          {
+            "value": "1400",
+            "label": "1400",
+            "count": 240
+          },
+          {
+            "value": "1450",
+            "label": "1450",
+            "count": 6
+          },
+          {
+            "value": "1500",
+            "label": "1500",
+            "count": 326
+          }
+        ]
+      },
+      {
+        "name": "axles",
+        "label": "Количество осей",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "semitrailer"
+        ],
+        "options": [
+          {
+            "value": "2",
+            "label": "2",
+            "count": 299
+          },
+          {
+            "value": "3",
+            "label": "3",
+            "count": 205
+          }
+        ]
+      },
+      {
+        "name": "axle",
+        "label": "Оси",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "semitrailer"
+        ],
+        "options": [
+          {
+            "value": "bpw",
+            "label": "BPW",
+            "count": 276
+          },
+          {
+            "value": "plt",
+            "label": "PLT",
+            "count": 244
+          }
+        ]
+      },
+      {
+        "name": "tyres",
+        "label": "Шины",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "semitrailer"
+        ],
+        "options": [
+          {
+            "value": "385",
+            "label": "385/65R22,5",
+            "count": 256
+          },
+          {
+            "value": "425",
+            "label": "425/85R21",
+            "count": 308
+          }
+        ]
+      },
+      {
+        "name": "pump",
+        "label": "Насос",
+        "kind": "list",
+        "primary": false,
+        "types": [],
+        "options": [
+          {
+            "value": "vr-8-3",
+            "label": "ВР-8/3",
+            "count": 16
+          },
+          {
+            "value": "ko-505",
+            "label": "КО-505",
+            "count": 45
+          },
+          {
+            "value": "svn-80",
+            "label": "СВН-80",
+            "count": 105
+          },
+          {
+            "value": "svn-80a",
+            "label": "СВН-80А",
+            "count": 1
+          },
+          {
+            "value": "scl-01",
+            "label": "СЦЛ-01",
+            "count": 20
+          },
+          {
+            "value": "scl-01a",
+            "label": "СЦЛ-01А",
+            "count": 180
+          },
+          {
+            "value": "pnr-124d",
+            "label": "PNR-124D",
+            "count": 17
+          }
+        ]
+      },
+      {
+        "name": "drive",
+        "label": "Привод насоса",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "chassis"
+        ],
+        "options": [
+          {
+            "value": "cardan",
+            "label": "Карданный",
+            "count": 94
+          },
+          {
+            "value": "hydro",
+            "label": "Гидро",
+            "count": 32
+          }
+        ]
+      },
+      {
+        "name": "uvt",
+        "label": "Расположение УВТ",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "chassis"
+        ],
+        "options": [
+          {
+            "value": "side",
+            "label": "Боковое",
+            "count": 43
+          },
+          {
+            "value": "rear",
+            "label": "В заднем отсеке",
+            "count": 43
+          }
+        ]
+      },
+      {
+        "name": "neck",
+        "label": "Горловины",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "chassis"
+        ],
+        "options": [
+          {
+            "value": "1",
+            "label": "1",
+            "count": 27
+          },
+          {
+            "value": "2",
+            "label": "2",
+            "count": 18
+          }
+        ]
+      },
+      {
+        "name": "chassis",
+        "label": "Шасси",
+        "kind": "list",
+        "primary": false,
+        "types": [
+          "chassis"
+        ],
+        "options": [
+          {
+            "value": "kamaz-6520",
+            "label": "КАМАЗ-6520",
+            "count": 14
+          },
+          {
+            "value": "kamaz-6522",
+            "label": "КАМАЗ-6522",
+            "count": 18
+          },
+          {
+            "value": "kamaz-43118",
+            "label": "КАМАЗ-43118",
+            "count": 63
+          },
+          {
+            "value": "kamaz-65111",
+            "label": "КАМАЗ-65111",
+            "count": 36
+          },
+          {
+            "value": "kamaz-65115",
+            "label": "КАМАЗ-65115",
+            "count": 95
+          },
+          {
+            "value": "kamaz-65224",
+            "label": "КАМАЗ-65224",
+            "count": 6
+          },
+          {
+            "value": "kamaz-65225",
+            "label": "КАМАЗ-65225",
+            "count": 14
+          },
+          {
+            "value": "ural-5557",
+            "label": "УРАЛ-5557",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  }
+}

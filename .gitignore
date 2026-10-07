@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Бэкапы сайта и дампы базы
+backup-*/
+*.mysql
+*.sql
+
+# Превью фото каталога: генерируются командой npm run photos:thumbs из исходников в src/assets/models
+src/assets/models/thumbs/
