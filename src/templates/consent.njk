@@ -1,0 +1,25 @@
+{# Согласие на обработку персональных данных — обязательный чекбокс в формах заявки. #}
+{# Проверка и ошибка — scripts/modules/forms/form.ts (поле consent, ошибка в data-form-error) #}
+<div class="consent">
+  <label class="consent__label">
+    <input
+      class="consent__input"
+      type="checkbox"
+      name="consent"
+      value="on"
+      aria-required="true"
+      aria-describedby="consent-error-{{ consentId }}"
+    />
+    <span class="consent__box" aria-hidden="true"></span>
+    <span class="consent__text">
+      Я согласен на обработку
+      <a class="consent__link" href="#">персональных данных</a>
+    </span>
+  </label>
+  <span
+    class="consent__error"
+    id="consent-error-{{ consentId }}"
+    hidden
+    data-form-error="consent"
+  ></span>
+</div>

@@ -6,6 +6,39 @@
     {% include "menu.njk" %}
   </div>
   <div class="header__aside">
+    {# Поиск по коду и названию модели: подсказки под полем, Enter без выбора — результаты в каталоге (?q=) #}
+    <form
+      class="header__search search"
+      action="/catalog.html"
+      method="get"
+      role="search"
+      data-search
+    >
+      <svg class="search__icon" aria-hidden="true">
+        <use href="#icon-search"></use>
+      </svg>
+      <input
+        class="search__input"
+        type="search"
+        name="q"
+        placeholder="Код или название модели"
+        aria-label="Поиск по коду и названию модели"
+        autocomplete="off"
+        role="combobox"
+        aria-expanded="false"
+        aria-controls="search-results"
+        aria-autocomplete="list"
+        data-search-input
+      />
+      <kbd class="search__hint" aria-hidden="true">/</kbd>
+      <div
+        class="search__results"
+        id="search-results"
+        role="listbox"
+        hidden
+        data-search-results
+      ></div>
+    </form>
     <ul class="header__contacts">
       <li>
         <a class="header__contact" href="tel:88001012200">
@@ -46,6 +79,13 @@
         </a>
       </li>
     </ul>
-    <a class="header__button" href="/contacts.html">Связаться</a>
+    {# Открывает окно заявки; без скриптов ссылка ведёт на страницу контактов #}
+    <a
+      class="header__button"
+      href="/contacts.html"
+      data-modal-open="request"
+      data-modal-kind="contact"
+      >Связаться</a
+    >
   </div>
 </header>

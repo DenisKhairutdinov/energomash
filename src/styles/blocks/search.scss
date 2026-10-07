@@ -1,0 +1,191 @@
+$search-width: 400;
+$results-width: 440;
+$search-size: 44;
+
+// Поиск по коду и названию модели. Поле в шапке, под ним тёмная панель подсказок — как выпадающее меню
+.search {
+  position: relative;
+  inline-size: rem($search-width);
+
+  &__icon {
+    pointer-events: none;
+
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    translate: 0 -50%;
+
+    inline-size: rem(18);
+    block-size: rem(18);
+
+    stroke: $dark-grey;
+    stroke-width: 2;
+
+    transition: stroke $fast $ease-out;
+  }
+
+  // Поле без плашки и рамки: лупа, текст и тонкая линия снизу. При наведении линия темнеет,
+  // в фокусе — становится акцентной, как и лупа
+  &__input {
+    inline-size: 100%;
+    block-size: rem($search-size);
+    padding-inline: rem(28) rem(24);
+    border: 0;
+    border-block-end: 1px solid $line-light;
+    border-radius: 0;
+
+    color: $primary;
+
+    appearance: none;
+    background-color: transparent;
+    outline: none;
+
+    transition: border-color $fast $ease-out;
+
+    &::placeholder {
+      color: $dark-grey;
+      opacity: 1;
+    }
+
+    // Свой вид без встроенного крестика браузера
+    &::-webkit-search-cancel-button {
+      appearance: none;
+    }
+
+    &:hover {
+      border-block-end-color: $primary60;
+    }
+
+    &:focus {
+      border-block-end-color: $accent;
+    }
+
+    @include body-S;
+  }
+
+  &:focus-within &__icon {
+    stroke: $accent;
+  }
+
+  // Подсказка про горячую клавишу: исчезает, когда поле в фокусе или в нём есть текст
+  &__hint {
+    @include caption;
+
+    pointer-events: none;
+
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0;
+    translate: 0 -50%;
+
+    color: $dark-grey;
+
+    transition: opacity $fast $ease-out;
+  }
+
+  &:focus-within &__hint,
+  &__input:not(:placeholder-shown) ~ &__hint {
+    opacity: 0;
+  }
+
+  &__results {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: calc(100% + #{rem(8)});
+    inset-inline-start: 0;
+
+    inline-size: rem($results-width);
+
+    color: $secondary;
+
+    background-color: $primary;
+    box-shadow: $shadow-md;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  // Результат: название и код в одной строке, под ними тип техники
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+
+    padding: rem(16) rem(24);
+    border-block-end: 1px solid $line-dark;
+
+    color: $secondary;
+
+    transition: background-color $fast $ease-out;
+
+    &:hover,
+    &[aria-selected='true'] {
+      background-color: $line-dark;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: -2px;
+    }
+  }
+
+  &__row {
+    display: flex;
+    gap: rem(16);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__name {
+    @include lead-bold;
+  }
+
+  &__code {
+    @include caption;
+
+    flex-shrink: 0;
+    padding: rem(4) rem(8);
+    border: 1px solid $line-dark;
+    white-space: nowrap;
+  }
+
+  &__type {
+    @include caption;
+
+    color: $light-grey;
+  }
+
+  // Последняя строка: все результаты в каталоге
+  &__all {
+    @include body-S;
+
+    display: flex;
+    gap: rem(16);
+    align-items: center;
+    justify-content: space-between;
+
+    padding: rem(16) rem(24);
+
+    color: $accent;
+
+    transition: background-color $fast $ease-out;
+
+    &:hover,
+    &[aria-selected='true'] {
+      background-color: $line-dark;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: -2px;
+    }
+  }
+
+  &__empty {
+    @include body-S;
+
+    padding: rem(16) rem(24);
+    color: $light-grey;
+  }
+}

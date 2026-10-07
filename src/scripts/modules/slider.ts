@@ -5,11 +5,15 @@ const SLIDE_SELECTOR = '[data-slider-slide]';
 const MEDIA_SELECTOR = '[data-slider-media]';
 const IMAGE_SELECTOR = '[data-slider-image]';
 const PANEL_SELECTOR = '[data-slider-panel]';
+// Места, над которыми автоплей ждёт: панель модели и блок стрелок
+const PAUSE_SELECTOR = `${PANEL_SELECTOR}, [data-slider-nav]`;
 const TEXT_SELECTOR = '[data-slider-text]';
 const PREV_SELECTOR = '[data-slider-prev]';
 const NEXT_SELECTOR = '[data-slider-next]';
 const CURRENT_SELECTOR = '[data-slider-current]';
 const PROGRESS_SELECTOR = '[data-slider-progress]';
+const AUTOPLAY_ATTRIBUTE = 'sliderAutoplay';
+const AUTOPLAY_VISIBLE_RATIO = 0.3;
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 const ACTIVE_CLASS = 'is-active';
 
@@ -37,10 +41,6 @@ export const initSliders = (): void => {
   for (const root of roots) {
     const slides = [...root.querySelectorAll<HTMLElement>(SLIDE_SELECTOR)];
 
-    if (slides.length < 2) {
-      continue;
-    }
-
     const current = root.querySelector<HTMLElement>(CURRENT_SELECTOR);
     const progress = root.querySelector<HTMLElement>(PROGRESS_SELECTOR);
     let index = Math.max(
@@ -60,7 +60,7 @@ export const initSliders = (): void => {
     };
 
     const show = (direction: 1 | -1): void => {
-      if (isAnimating) {
+      if (isAnimating || slides.length < 2) {
         return;
       }
 
@@ -145,8 +145,63 @@ export const initSliders = (): void => {
         );
     };
 
-    root.querySelector(PREV_SELECTOR)?.addEventListener('click', () => show(-1));
-    root.querySelector(NEXT_SELECTOR)?.addEventListener('click', () => show(1));
+    // Автоплей: слайд сменяется сам через data-slider-autoplay секунд. Он не мешает: стоит, пока курсор на панели
+    // или стрелках, пока вкладка скрыта и пока секция не видна на экране, а после ручного листания отсчёт начинается заново
+    const delay = Number(root.dataset[AUTOPLAY_ATTRIBUTE]);
+    let timer: gsap.core.Tween | undefined;
+    let isHovered = false;
+    let isVisible = false;
+
+    const canPlay = (): boolean => delay > 0 && !isHovered && isVisible && !document.hidden;
+
+    const schedule = (): void => {
+      timer?.kill();
+      timer = undefined;
+
+      if (canPlay()) {
+        timer = gsap.delayedCall(delay, () => {
+          show(1);
+          schedule();
+        });
+      }
+    };
+
+    root.querySelector(PREV_SELECTOR)?.addEventListener('click', () => {
+      show(-1);
+      schedule();
+    });
+    root.querySelector(NEXT_SELECTOR)?.addEventListener('click', () => {
+      show(1);
+      schedule();
+    });
     updateCounter();
+
+    if (delay > 0) {
+      // Пауза — пока курсор на панели с характеристиками или на стрелках: их читают и нажимают. Фото само
+      // курсор не останавливает, иначе слайдер почти не листался бы: мышь обычно лежит где-то на нём.
+      // Фокус не учитывается: после клика по стрелке он остаётся на ней и навсегда остановил бы автоплей
+      root.addEventListener('pointerover', (event) => {
+        const isOnControl =
+          event.target instanceof Element && event.target.closest(PAUSE_SELECTOR) !== null;
+
+        if (isOnControl !== isHovered) {
+          isHovered = isOnControl;
+          schedule();
+        }
+      });
+      root.addEventListener('pointerleave', () => {
+        isHovered = false;
+        schedule();
+      });
+      document.addEventListener('visibilitychange', schedule);
+
+      new IntersectionObserver(
+        ([entry]) => {
+          isVisible = entry.isIntersecting;
+          schedule();
+        },
+        { threshold: AUTOPLAY_VISIBLE_RATIO },
+      ).observe(root);
+    }
   }
 };

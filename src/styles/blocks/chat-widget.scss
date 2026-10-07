@@ -1,0 +1,46 @@
+// Кнопка живого чата: акцентный круг в правом нижнем углу поверх страницы. Стоит на месте:
+// в этом углу (88 × 88 px от края окна) вёрстка секций ничего интерактивного не размещает
+.chat-widget {
+  cursor: pointer;
+
+  position: fixed;
+  z-index: 50;
+  inset-block-end: rem($chat-offset);
+  inset-inline-end: rem($chat-offset);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  inline-size: rem($chat-size);
+  block-size: rem($chat-size);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+
+  color: $secondary;
+
+  background-color: $accent;
+  box-shadow: $shadow-md;
+
+  transition: scale $medium $ease-out;
+
+  &:hover {
+    scale: 1.08;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 3px;
+  }
+
+  &__icon {
+    inline-size: rem(28);
+    block-size: rem(28);
+    fill: currentcolor;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

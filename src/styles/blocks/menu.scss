@@ -1,5 +1,8 @@
 $dropdown-open: 500ms;
-$dropdown-open-delay: 50ms;
+
+// Панель открывается не сразу: если курсор пробежал по пунктам быстрее этой паузы, hover успевает уйти,
+// переход отменяется и панель не мелькает. Это же время ждёт и следующая панель при переходе между пунктами
+$dropdown-open-delay: 240ms;
 $dropdown-close: 150ms;
 $dropdown-close-delay: 80ms;
 
@@ -8,9 +11,6 @@ $dropdown-items-delay: 120ms;
 $dropdown-stagger: 35ms;
 $dropdown-item-shift: 12;
 $dropdown-hover: #f5f5f31f;
-
-// Линии сетки панели: светлые с малой непрозрачностью, как в футере
-$dropdown-line: #f5f5f326;
 $ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
 $corner-length: 6;
 $corner-width: 1px;
@@ -203,8 +203,8 @@ $corner-width: 1px;
 
     block-size: 100%;
     padding: rem(24) rem(32);
-    border-block-end: 1px solid $dropdown-line;
-    border-inline-end: 1px solid $dropdown-line;
+    border-block-end: 1px solid $line-dark;
+    border-inline-end: 1px solid $line-dark;
 
     color: $secondary;
 
@@ -242,8 +242,8 @@ $corner-width: 1px;
     justify-content: space-between;
 
     padding: rem(24) rem(32);
-    border-block-end: 1px solid $dropdown-line;
-    border-inline-end: 1px solid $dropdown-line;
+    border-block-end: 1px solid $line-dark;
+    border-inline-end: 1px solid $line-dark;
 
     color: $secondary;
 

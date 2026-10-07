@@ -21,6 +21,10 @@ const KEY_STEP = 160;
 const PAGE_KEY_SHARE = 0.9;
 const SCROLLING_CLASS = 'is-scrolling';
 const ACTIVE_CLASS = 'has-fullpage';
+// Пока открыто окно (modals/request-modal.ts), страница под ним стоит на месте
+const MODAL_OPEN_CLASS = 'has-modal';
+// Прокрутка колесом и жестами внутри окна принадлежит самому окну, листание страницы её не перехватывает
+const IGNORED_SELECTOR = 'dialog';
 const INDICATOR_CLASS = 'page-indicator';
 
 const getSections = (): HTMLElement[] => [
@@ -219,6 +223,10 @@ export const initFullpage = (): void => {
     target?: EventTarget | null,
     isGesture = true,
   ): void => {
+    if (document.documentElement.classList.contains(MODAL_OPEN_CLASS)) {
+      return;
+    }
+
     if (isGesture) {
       const now = performance.now();
 
@@ -252,7 +260,13 @@ export const initFullpage = (): void => {
   const handleKeydown = (event: KeyboardEvent): void => {
     const target = event.target instanceof Element ? event.target : undefined;
 
-    if (target?.closest(FORM_FIELDS_SELECTOR) || event.altKey || event.ctrlKey || event.metaKey) {
+    if (
+      target?.closest(FORM_FIELDS_SELECTOR) ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      document.documentElement.classList.contains(MODAL_OPEN_CLASS)
+    ) {
       return;
     }
 
@@ -288,6 +302,7 @@ export const initFullpage = (): void => {
     const observer = Observer.create({
       target: document,
       type: 'wheel,touch',
+      ignore: IGNORED_SELECTOR,
       wheelSpeed: -1,
       tolerance: 10,
       preventDefault: true,

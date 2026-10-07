@@ -34,7 +34,6 @@ $more-size: 44;
     @include h2;
 
     margin: 0;
-    hyphens: auto;
     color: $primary;
   }
 
@@ -59,6 +58,9 @@ $more-size: 44;
   }
 
   &__slide {
+    // Своя область наложения: затемнение одного слайда не должно ложиться на другой при смене.
+    // Без этого при переходе вверх затемнение уходящего слайда лежало поверх нового и в конце резко пропадало
+    isolation: isolate;
     position: relative;
 
     overflow: hidden;
@@ -102,16 +104,19 @@ $more-size: 44;
 
     object-fit: cover;
     object-position: center bottom;
+
+    // Фотографии блога чёрно-белые: публикации выглядят единым рядом независимо от исходных кадров
+    filter: grayscale(1);
   }
 
-  // Рубрика слева, дата справа
+  // Дата слева, рубрика справа
   &__meta {
     position: relative;
     z-index: 2;
 
     display: flex;
     gap: rem(16);
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
   }
 
@@ -127,14 +132,12 @@ $more-size: 44;
     white-space: nowrap;
   }
 
-  // Число и месяц выровнены по правому краю
+  // Число и месяц в одну строку («03 июля»), на одной базовой линии
   &__date {
     display: flex;
-    flex-direction: column;
     flex-shrink: 0;
-    align-items: flex-end;
-
-    text-align: end;
+    gap: rem(8);
+    align-items: baseline;
   }
 
   // Число крупно, как в исходных карточках блога
@@ -166,13 +169,40 @@ $more-size: 44;
     transition: color $medium $ease-out;
   }
 
+  // На большом экране дата крупнее, чем в строках списка: это главная публикация блока
+  &__slide &__day {
+    font-size: rem(72);
+    line-height: rem(72);
+  }
+
+  &__slide &__month {
+    @include lead;
+  }
+
+  &__slide &__date {
+    gap: rem(12);
+  }
+
+  // Под заголовком на большом экране — короткое описание
+  &__slide &__text {
+    flex-direction: column;
+    gap: rem(16);
+    align-items: flex-start;
+  }
+
+  &__lead {
+    @include lead;
+
+    max-inline-size: rem(640);
+    color: $light-grey;
+  }
+
   &__slide &__name {
     @include h2;
 
     max-inline-size: rem(640);
   }
 
-  &__slide:hover &__name,
   &__link:hover &__name {
     color: $accent;
   }
@@ -204,14 +234,12 @@ $more-size: 44;
     transition: translate $medium $ease-out;
   }
 
-  &__slide:hover &__more,
   &__link:hover &__more {
     border-color: $accent;
     color: $secondary;
     background-color: $accent;
   }
 
-  &__slide:hover &__more-icon,
   &__link:hover &__more-icon {
     translate: rem(2) 0;
   }
@@ -234,23 +262,57 @@ $more-size: 44;
   // Строка списка: рубрика и дата сверху, заголовок и стрелка снизу.
   // Строка, чья публикация открыта слева, остаётся серой
   &__link {
+    position: relative;
+
     display: flex;
     flex-direction: column;
     gap: rem(16);
     justify-content: space-between;
 
     block-size: 100%;
-    padding: rem(24) rem(32);
+    padding: rem(16) rem(32);
 
     color: $primary;
 
     background-color: $bg;
 
-    transition: background-color $medium $ease-out;
+    transition: background-color $fast $ease-out;
   }
 
-  &__link:hover,
+  // Строка выбранной публикации серая. Выбор происходит сразу при наведении (blog.ts), поэтому
+  // отдельного стиля наведения нет, а заливка меняется почти мгновенно: без запаздывания за курсором
   &__item.is-active &__link {
     background-color: $bg-grey;
+  }
+
+  // В строке списка стрелка стоит у правого края под рубрикой: у нижней строки она оказывается
+  // выше виджета чата, который занимает нижний правый угол окна
+  &__link &__more {
+    position: absolute;
+    inset-block-start: rem(68);
+    inset-inline-end: rem(32);
+  }
+
+  // Заголовок в строке не заходит под виджет чата: справа остаётся место под его ширину и зазор
+  &__link &__text {
+    padding-inline-end: rem($chat-size + 16);
+  }
+
+  // Тег в строке списка серый, вместе с рамкой (она currentcolor): на светлой плитке он не спорит с заголовком
+  &__link &__rubric {
+    color: $dark-grey;
+  }
+
+  // Заголовок в строке — ровно две строки: крупнее прежнего, длинный обрезается многоточием
+  &__link &__name {
+    @include h4;
+
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+
+    text-overflow: ellipsis;
   }
 }

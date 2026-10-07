@@ -36,20 +36,27 @@ export const initReveal = (): void => {
   const lastShares = new Map<Element, number>();
 
   for (const group of groups) {
-    const items = gsap
-      .timeline({ paused: true })
-      .fromTo(
-        group.querySelectorAll<HTMLElement>(ITEM_SELECTOR),
+    const itemTargets = group.querySelectorAll<HTMLElement>(ITEM_SELECTOR);
+    const imageTargets = group.querySelectorAll<HTMLElement>(IMAGE_SELECTOR);
+    const items = gsap.timeline({ paused: true });
+    const images = gsap.timeline({ paused: true });
+
+    // В секции может не быть элементов или фона: пустую цель GSAP не принимает и пишет предупреждение
+    if (itemTargets.length > 0) {
+      items.fromTo(
+        itemTargets,
         { autoAlpha: 0, y: OFFSET },
         { autoAlpha: 1, y: 0, duration: DURATION, ease: EASE, stagger: STAGGER },
       );
-    const images = gsap
-      .timeline({ paused: true })
-      .fromTo(
-        group.querySelectorAll<HTMLElement>(IMAGE_SELECTOR),
+    }
+
+    if (imageTargets.length > 0) {
+      images.fromTo(
+        imageTargets,
         { scale: IMAGE_SCALE },
         { scale: 1, duration: IMAGE_DURATION, ease: 'power2.out' },
       );
+    }
 
     timelines.set(group, [items, images]);
   }

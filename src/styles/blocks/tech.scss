@@ -56,7 +56,7 @@
   // Линии только на стыках двух карточек и на всю высоту ячейки.
   // Вертикальная: левый сосед в том же ряду — карточка (сетка в 4 колонки)
   &__item + &__item:not(:nth-child(4n + 1)) {
-    border-inline-start: 1px solid $light-grey;
+    border-inline-start: 1px solid $line-light;
   }
 
   // Полоса «Подробнее» перекрывает линию, чтобы соседние полосы шли без разрыва
@@ -66,7 +66,7 @@
 
   // Горизонтальная: ячейка прямо над карточкой, на 4 раньше в сетке, — тоже карточка
   &__item + * + * + * + &__item {
-    border-block-start: 1px solid $light-grey;
+    border-block-start: 1px solid $line-light;
   }
 
   &__item-title {

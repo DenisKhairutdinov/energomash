@@ -26,6 +26,11 @@
 
     // Смещение из макета: логотип стоит на 2px ниже центра шапки
     margin-block-start: rem(4);
+    transition: opacity $fast $ease-out;
+
+    &:hover {
+      opacity: 0.75;
+    }
   }
 
   // Меню прижато к правому краю левой половины шапки. Текст последнего пункта стоит в 32px
@@ -39,6 +44,11 @@
     gap: rem(16);
     align-items: center;
     justify-content: flex-end;
+  }
+
+  // Поиск прижат вправо, к контактам: левее него свободное место шапки
+  &__search {
+    margin-inline: auto rem(16);
   }
 
   &__contacts {
@@ -90,7 +100,7 @@
 
     inline-size: rem(48);
     block-size: rem(44);
-    border-inline: 1px solid $light-grey;
+    border-inline: 1px solid $line-light;
 
     transition: background-color $fast $ease-out;
 

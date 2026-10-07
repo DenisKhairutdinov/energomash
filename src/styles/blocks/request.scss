@@ -1,8 +1,5 @@
 $field-size: 48;
 
-// Линии на сером фоне: основной тёмный цвет с малой непрозрачностью — чуть темнее самого фона
-$line: #0d0e131f;
-
 // Заявка: вступление, прямые контакты и форма на две колонки — по общей сетке 4 × 1fr.
 // Левая половина серая, правая светлая, как было в прежнем блоке
 .request {
@@ -30,7 +27,6 @@ $line: #0d0e131f;
     @include h2;
 
     margin: 0;
-    hyphens: auto;
   }
 
   &__description {
@@ -49,7 +45,7 @@ $line: #0d0e131f;
     min-inline-size: 0;
     min-block-size: 0;
     padding: rem(32);
-    border-inline-start: 1px solid $line;
+    border-inline-start: 1px solid $line-light;
   }
 
   &__label {
@@ -95,12 +91,12 @@ $line: #0d0e131f;
 
     inline-size: rem(48);
     block-size: rem(44);
-    border-inline: 1px solid $line;
+    border-inline: 1px solid $line-light;
 
     transition: background-color $fast $ease-out;
 
     &:hover {
-      background-color: $line;
+      background-color: $line-light;
     }
   }
 
@@ -121,6 +117,32 @@ $line: #0d0e131f;
     min-inline-size: 0;
     min-block-size: 0;
     padding: rem(32);
+  }
+
+  // Подпись над полем, как в окне заявки и фильтрах
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: rem(6);
+
+    min-inline-size: 0;
+    min-block-size: 0;
+
+    // Комментарий забирает оставшуюся высоту формы
+    &--comment {
+      grid-column: 1 / -1;
+    }
+  }
+
+  &__legend {
+    @include caption;
+
+    color: $dark-grey;
+  }
+
+  // Звёздочка у обязательного поля: остальные поля формы необязательные
+  &__required {
+    color: $accent;
   }
 
   &__field {
@@ -148,40 +170,39 @@ $line: #0d0e131f;
       border-color: $accent;
     }
 
+    // Неверное поле: рамка и подсказка акцентного цвета
+    &[aria-invalid='true'] {
+      border-color: $accent;
+    }
+
     &--comment {
       resize: none;
 
-      grid-column: 1 / -1;
+      flex: 1 1 0;
 
-      block-size: 100%;
+      block-size: auto;
       min-block-size: rem($field-size);
       padding-block: rem(12);
     }
   }
 
+  &__error {
+    @include caption;
+
+    color: $accent;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  // Согласие на обработку данных над кнопкой, кнопка слева
   &__footer {
     display: flex;
     grid-column: 1 / -1;
-    gap: rem(24);
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  &__note {
-    @include caption;
-
-    max-inline-size: rem(320);
-    margin: 0;
-    color: $dark-grey;
-  }
-
-  &__note-link {
-    color: $primary;
-    transition: color $fast $ease-out;
-
-    &:hover {
-      color: $accent;
-    }
+    flex-direction: column;
+    gap: rem(16);
+    align-items: flex-start;
   }
 
   // Главное действие страницы: крупная акцентная кнопка

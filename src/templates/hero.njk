@@ -1,10 +1,11 @@
-{# Назначения техники — по категориям каталога bik55.ru. Объёмы — крайние значения модельного ряда, м³ #}
+{# Назначения техники — по категориям каталога bik55.ru. Объёмы — крайние значения модельного ряда, м³, #}
+{# из данных каталога (src/data/catalog.json) #}
 {%
   set filterGroups = [
     {
       type: "semitrailer",
       label: "Назначение полуприцепа",
-      volume: [17, 35],
+      volume: catalog.types[0].volume,
       options: [
         { value: "fuel", title: "ГСМ (бензовозы)" },
         { value: "oil", title: "Нефть (нефтевозы)" },
@@ -15,7 +16,7 @@
     {
       type: "chassis",
       label: "Назначение цистерны на шасси",
-      volume: [9, 22],
+      volume: catalog.types[1].volume,
       options: [
         { value: "fuel", title: "ГСМ" },
         { value: "refueler", title: "АТЗ" },
@@ -37,7 +38,12 @@
     alt=""
     fetchpriority="high"
     data-reveal-image
+    data-animated-background
   />
+  {# Прозрачные окна над частями фото, где ничего нет: над ними курсор вызывает рябь на фоне #}
+  {# (scripts/modules/water-ripples.ts). Над панелями, текстом и кнопками ряби нет #}
+  <div class="hero__window hero__window--top" aria-hidden="true" data-support-block></div>
+  <div class="hero__window hero__window--bottom" aria-hidden="true" data-support-block></div>
   <div class="hero__main">
     <h1 class="hero__title" data-reveal>
       Производство<br />
@@ -48,7 +54,9 @@
       <a class="hero__button hero__button--accent" href="/catalog.html?in-stock=1"
         >Техника в наличии</a
       >
-      <button class="hero__button" type="button">Заказать звонок</button>
+      <button class="hero__button" type="button" data-modal-open="request" data-modal-kind="call">
+        Заказать звонок
+      </button>
     </div>
     <ul class="hero__utp-list" data-reveal>
       <li><a class="hero__utp" href="/leasing.html">Лизинг от партнёров</a></li>
@@ -83,61 +91,69 @@
   </div>
   <form class="hero__filter" action="/catalog.html" method="get" data-filter data-reveal>
     <h2 class="hero__filter-title">Подбор по параметрам</h2>
+    {# Каждая группа с подписью над полем, как в фильтре каталога; поля занимают всю ширину ячейки #}
     <div class="hero__filter-fields">
-      <div class="hero__options" role="radiogroup" aria-label="Тип техники">
-        <label class="hero__option">
-          <input
-            class="hero__option-input"
-            type="radio"
-            name="type"
-            value="semitrailer"
-            checked
-            data-filter-type
-          />
-          <span class="hero__option-label">Полуприцеп-цистерна</span>
-        </label>
-        <label class="hero__option">
-          <input
-            class="hero__option-input"
-            type="radio"
-            name="type"
-            value="chassis"
-            data-filter-type
-          />
-          <span class="hero__option-label">Цистерна на шасси</span>
-        </label>
+      <div class="hero__field">
+        <span class="hero__legend">Тип техники</span>
+        <div class="hero__options" role="radiogroup" aria-label="Тип техники">
+          <label class="hero__option">
+            <input
+              class="hero__option-input"
+              type="radio"
+              name="type"
+              value="semitrailer"
+              checked
+              data-filter-type
+            />
+            <span class="hero__option-label">Полуприцеп-цистерна</span>
+          </label>
+          <label class="hero__option">
+            <input
+              class="hero__option-input"
+              type="radio"
+              name="type"
+              value="chassis"
+              data-filter-type
+            />
+            <span class="hero__option-label">Цистерна на шасси</span>
+          </label>
+        </div>
       </div>
       {# Набор назначений зависит от типа техники: показывается только группа выбранного типа #}
-      {% for group in filterGroups %}
-        {% set isActiveGroup = loop.first %}
-        <div
-          class="hero__options hero__options--{{ group.type }}"
-          role="radiogroup"
-          aria-label="{{ group.label }}"
-          data-filter-group="{{ group.type }}"
-          data-filter-volume-min="{{ group.volume[0] }}"
-          data-filter-volume-max="{{ group.volume[1] }}"
-          {{ "hidden" if not isActiveGroup }}
-        >
-          {% for option in group.options %}
-            <label class="hero__option">
-              <input
-                class="hero__option-input"
-                type="radio"
-                name="purpose"
-                value="{{ option.value }}"
-                {{ "checked" if isActiveGroup and loop.first }}
-                {{ "disabled" if not isActiveGroup }}
-              />
-              <span class="hero__option-label">{{ option.title }}</span>
-            </label>
-          {% endfor %}
-        </div>
-      {% endfor %}
-      <div class="hero__filter-row">
-        <div class="hero__volume" role="group" aria-label="Объём">
+      <div class="hero__field">
+        <span class="hero__legend">Назначение</span>
+        {% for group in filterGroups %}
+          {% set isActiveGroup = loop.first %}
+          <div
+            class="hero__options hero__options--{{ group.type }}"
+            role="radiogroup"
+            aria-label="{{ group.label }}"
+            data-filter-group="{{ group.type }}"
+            data-filter-volume-min="{{ group.volume[0] }}"
+            data-filter-volume-max="{{ group.volume[1] }}"
+            {{ "hidden" if not isActiveGroup }}
+          >
+            {% for option in group.options %}
+              <label class="hero__option">
+                <input
+                  class="hero__option-input"
+                  type="radio"
+                  name="purpose"
+                  value="{{ option.value }}"
+                  {{ "checked" if isActiveGroup and loop.first }}
+                  {{ "disabled" if not isActiveGroup }}
+                />
+                <span class="hero__option-label">{{ option.title }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="hero__field">
+        <span class="hero__legend">Объём цистерны</span>
+        <div class="hero__volume" role="group" aria-label="Объём цистерны">
           <label class="hero__volume-field">
-            Объём от
+            от
             <input
               class="hero__volume-input"
               type="text"
@@ -160,12 +176,12 @@
             м³
           </label>
         </div>
-        <label class="hero__check">
-          <input class="hero__check-input" type="checkbox" name="in-stock" value="1" />
-          <span class="hero__check-box" aria-hidden="true"></span>
-          Только в наличии
-        </label>
       </div>
+      <label class="hero__check">
+        <input class="hero__check-input" type="checkbox" name="in-stock" value="1" />
+        <span class="hero__check-box" aria-hidden="true"></span>
+        Только в наличии
+      </label>
     </div>
     <button class="hero__submit" type="submit">Подобрать</button>
   </form>

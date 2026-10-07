@@ -1,6 +1,3 @@
-// Линии между колонками: светлый цвет страницы с малой непрозрачностью, чтобы не спорили с текстом
-$line: #f5f5f326;
-
 .footer {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -22,7 +19,7 @@ $line: #f5f5f326;
     padding: rem(32);
 
     & + & {
-      border-inline-start: 1px solid $line;
+      border-inline-start: 1px solid $line-dark;
     }
   }
 
@@ -34,6 +31,17 @@ $line: #f5f5f326;
   // Цветной логотип из шапки перекрашивается в светлый, отдельный файл не нужен
   &__logo {
     display: block;
+    transition: opacity $fast $ease-out;
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+
+  // Светлая версия логотипа на тёмном фоне: яркость сбрасывается у самой картинки, а не у ссылки,
+  // иначе прозрачность при наведении не складывалась бы с фильтром
+  &__logo img,
+  &__logo svg {
     filter: brightness(0) invert(0.96);
   }
 
@@ -98,10 +106,11 @@ $line: #f5f5f326;
     gap: rem(12);
     margin: 0;
 
+    // Мелкие подписи адресов и реквизитов — серые, значения под ними светлые
     dt {
       @include caption;
 
-      color: $light-grey;
+      color: $dark-grey;
     }
 
     dd {

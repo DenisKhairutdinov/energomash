@@ -9,10 +9,12 @@ $more-size: 44;
   grid-auto-rows: rem(451);
   grid-template-columns: repeat(4, 1fr);
 
-  // Линии между плитками: зазор, сквозь который виден фон секции
+  // Линии между плитками: зазор, сквозь который виден фон секции. Фон — цвет страницы с примесью
+  // тёмного, как у остальных разделителей на светлом ($line-light), только сплошной: сквозь зазор
+  // нет подложки, с которой полупрозрачная линия могла бы смешаться
   gap: 1px;
 
-  background-color: $dark-grey;
+  background-color: color-mix(in srgb, $primary 12%, $bg);
 
   @include section-full {
     grid-auto-rows: auto;
@@ -38,7 +40,6 @@ $more-size: 44;
     @include h2;
 
     margin: 0;
-    hyphens: auto;
     color: $primary;
   }
 
@@ -53,6 +54,7 @@ $more-size: 44;
   // Место плитки в сетке задаёт data-place: крупная занимает две колонки на всю высоту
   // и прижата к левому или правому краю, две остальные стоят столбиком с другой стороны
   &__item {
+    position: relative;
     min-inline-size: 0;
     min-block-size: 0;
 
@@ -110,12 +112,91 @@ $more-size: 44;
     object-fit: cover;
     object-position: var(--focus, 50%) center;
 
-    transition: scale $zoom-duration $zoom-ease;
+    transition:
+      scale $zoom-duration $zoom-ease,
+      filter $slow $ease-out;
   }
 
   // При наведении фото чуть приближается внутри своей рамки, как в карточках каталога
   &__link:hover &__image {
     scale: 1.04;
+  }
+
+  // Колонка миниатюр справа на крупной плитке, под стрелкой: на малых плитках её нет. Нижний правый угол
+  // остаётся свободным — там виджет чата. Выбранная миниатюра полностью яркая и в акцентной рамке-контуре
+  &__thumbs {
+    pointer-events: none;
+
+    position: absolute;
+    z-index: 2;
+    inset-block-start: rem(76);
+    inset-inline-end: rem(32);
+
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+
+    opacity: 0;
+
+    transition: opacity $medium $ease-out;
+  }
+
+  &__item[data-place^='big'] &__thumbs {
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  &__thumb {
+    cursor: pointer;
+
+    position: relative;
+
+    overflow: hidden;
+
+    inline-size: rem(96);
+    block-size: rem(72);
+    padding: 0;
+    border: none;
+
+    opacity: 0.65;
+    background-color: $primary;
+
+    transition: opacity $fast $ease-out;
+
+    // Обводка активной миниатюры — слой поверх картинки: у остальных кадров на картинке цветовой фильтр,
+    // он создаёт свой слой наложения, и обычный outline кнопки оказывался под ним, видна была только первая
+    &::after {
+      content: '';
+
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+
+      opacity: 0;
+      box-shadow: inset 0 0 0 2px $accent;
+
+      transition: opacity $fast $ease-out;
+    }
+
+    &:hover,
+    &.is-active {
+      opacity: 1;
+    }
+
+    &.is-active::after {
+      opacity: 1;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: 2px;
+    }
+
+    img {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+    }
   }
 
   // Когда и куда ушла техника — то, что отличает отгрузку от карточки каталога
@@ -133,9 +214,14 @@ $more-size: 44;
     background-color: $primary;
   }
 
-  // Квадратная кнопка-стрелка стоит справа от названия модели, по его нижней линии —
-  // как в панели наличия и в блоге. При наведении заливается акцентным
+  // Квадратная кнопка-стрелка стоит в верхнем правом углу плитки напротив бейджа отгрузки:
+  // нижний правый угол окна занят виджетом чата. При наведении заливается акцентным
   &__more {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: rem(16);
+    inset-inline-end: rem(32);
+
     display: flex;
     flex-shrink: 0;
     align-items: center;
@@ -143,11 +229,11 @@ $more-size: 44;
 
     inline-size: rem($more-size);
     block-size: rem($more-size);
-    border: 1px solid $secondary;
 
-    transition:
-      border-color $medium $ease-out,
-      background-color $medium $ease-out;
+    // Сверху под стрелкой светлое небо фото, а не затемнение: подложка, как у бейджа отгрузки
+    background-color: $primary;
+
+    transition: background-color $medium $ease-out;
   }
 
   &__more-icon {
@@ -161,7 +247,6 @@ $more-size: 44;
   }
 
   &__link:hover &__more {
-    border-color: $accent;
     background-color: $accent;
   }
 
@@ -246,7 +331,7 @@ $more-size: 44;
 
     & + & {
       padding-inline-start: rem(16);
-      border-inline-start: 1px solid $dark-grey;
+      border-inline-start: 1px solid $line-dark;
     }
   }
 

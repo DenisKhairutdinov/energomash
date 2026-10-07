@@ -1,0 +1,100 @@
+$box-size: 18;
+
+// Согласие на обработку персональных данных: чекбокс и подпись со ссылкой на политику.
+// Стоит в обеих формах заявки на светлом фоне, над кнопкой отправки
+.consent {
+  display: flex;
+  flex-direction: column;
+  gap: rem(4);
+
+  &__label {
+    cursor: pointer;
+
+    position: relative;
+
+    display: flex;
+    gap: rem(10);
+    align-items: flex-start;
+  }
+
+  &__input {
+    cursor: pointer;
+
+    position: absolute;
+    inset: 0;
+
+    margin: 0;
+
+    opacity: 0;
+  }
+
+  // Квадрат с рамкой; отметка — акцентный квадрат внутри, вырастает из центра, как в фильтре на главной
+  &__box {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem($box-size);
+    block-size: rem($box-size);
+    border: 1px solid $primary;
+
+    transition: border-color $fast $ease-out;
+
+    &::before {
+      content: '';
+
+      scale: 0;
+
+      inline-size: rem(10);
+      block-size: rem(10);
+
+      background-color: $accent;
+
+      transition: scale $medium $ease-out;
+    }
+  }
+
+  &__input:checked + &__box::before {
+    scale: 1;
+  }
+
+  &__label:hover &__box,
+  &__input:focus-visible + &__box {
+    border-color: $accent;
+  }
+
+  // Не отмечено при отправке: рамка акцентного цвета
+  &__input[aria-invalid='true'] + &__box {
+    border-color: $accent;
+  }
+
+  &__text {
+    @include caption;
+
+    max-inline-size: rem(300);
+    color: $dark-grey;
+  }
+
+  &__link {
+    position: relative;
+    color: $primary;
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  &__error {
+    @include caption;
+
+    // Под строкой согласия, над кнопкой
+    padding-inline-start: rem($box-size + 10);
+    color: $accent;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+}

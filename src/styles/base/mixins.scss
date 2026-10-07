@@ -8,6 +8,7 @@
   line-height: rem(64);
   text-transform: uppercase;
   letter-spacing: -0.035em;
+  hyphens: none;
 }
 
 @mixin h2 {
@@ -16,6 +17,7 @@
   line-height: rem(52);
   text-transform: uppercase;
   letter-spacing: -0.03em;
+  hyphens: none;
 }
 
 @mixin h3 {
@@ -24,6 +26,7 @@
   line-height: rem(36);
   text-transform: uppercase;
   letter-spacing: -0.025em;
+  hyphens: none;
 }
 
 @mixin h4 {
@@ -32,6 +35,7 @@
   line-height: rem(28);
   text-transform: uppercase;
   letter-spacing: -0.02em;
+  hyphens: none;
 }
 
 @mixin lead {
@@ -234,6 +238,12 @@
     $width $length;
 
   background-size: $size, $size, $size, $size;
+}
+
+// Единая цветокоррекция фотографий техники. Значение лежит в CSS-переменной --photo-filter (main.scss),
+// поэтому его можно подбирать на лету: в DevTools поменять --photo-filter на элементе html
+@mixin photo-grade {
+  filter: var(--photo-filter);
 }
 
 // Секция на десктопе занимает экран целиком за вычетом шапки (нужно для постраничной прокрутки)

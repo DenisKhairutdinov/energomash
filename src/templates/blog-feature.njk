@@ -1,5 +1,5 @@
-{# Блог: слева крупно — самая свежая публикация, справа список остальных. Строка под курсором открывает #}
-{# свою публикацию на большом экране, а когда курсор уходит со списка, возвращается свежая (scripts/modules/blog.ts). #}
+{# Блог: слева крупно — самая свежая публикация, справа список остальных четырёх. Строка под курсором открывает свою на большом #}
+{# экране; когда курсор ушёл со списка, снова самая свежая (scripts/modules/blog.ts). Большой экран не кликабелен. #}
 {# Данные-заглушки (включая фото), позже придут из БД #}
 {%
   set posts = [
@@ -19,16 +19,19 @@
 >
   <div class="blog-feature__head">
     <h2 class="blog-feature__title" data-reveal>Блог</h2>
-    <a class="blog-feature__button" href="/blog.html" data-reveal>Смотреть все</a>
+    {# Появление — на обёртке: GSAP ставит элементу inline-стили transform, и подъём кнопки при наведении не работал #}
+    <div data-reveal>
+      <a class="blog-feature__button" href="/blog.html">Смотреть все</a>
+    </div>
   </div>
-  {# Большой экран: публикации лежат стопкой, видна помеченная is-active #}
+  {# Большой экран: публикации лежат стопкой, видна помеченная is-active. Это не ссылка: переходить к публикации #}
+  {# можно только из списка справа #}
   <div class="blog-feature__stage" data-reveal>
     {% for post in posts %}
-      <a
+      <div
         class="blog-feature__slide {{ 'is-active' if loop.first }}"
-        href="{{ post.url or '/blog-single.html' }}"
         data-blog-slide
-        {{ 'tabindex="-1" aria-hidden="true"' | safe if not loop.first }}
+        {{ 'aria-hidden="true"' | safe if not loop.first }}
       >
         <img
           class="blog-feature__image"
@@ -40,47 +43,47 @@
           data-blog-image
         />
         <span class="blog-feature__meta">
-          <span class="blog-feature__rubric" data-blog-text>{{ post.rubric }}</span>
           <time class="blog-feature__date" datetime="{{ post.datetime }}" data-blog-text>
             <span class="blog-feature__day">{{ post.day }}</span>
             <span class="blog-feature__month">{{ post.month }}</span>
           </time>
+          <span class="blog-feature__rubric" data-blog-text>{{ post.rubric }}</span>
         </span>
         <span class="blog-feature__text">
           <span class="blog-feature__name" data-blog-text>
             {{ post.title or "Заголовок новости в несколько строк" }}
           </span>
-          <span class="blog-feature__more" aria-hidden="true" data-blog-text>
-            <svg class="blog-feature__more-icon">
-              <use href="#icon-expand-right"></use>
-            </svg>
+          <span class="blog-feature__lead" data-blog-text>
+            {{ post.excerpt or "Краткое описание публикации: о чём материал и что из него можно узнать, в одну-две строки." }}
           </span>
         </span>
-      </a>
+      </div>
     {% endfor %}
   </div>
-  {# В списке — все публикации, кроме самой свежей: она стоит крупно, пока курсор не на списке #}
+  {# В списке — четыре публикации, кроме самой свежей: она стоит на большом экране, пока курсор не на списке. #}
+  {# Строка открытой публикации отмечена is-active #}
   <ul class="blog-feature__list" data-blog-list>
     {% for post in posts %}
       {% if not loop.first %}
         <li class="blog-feature__item" data-blog-item="{{ loop.index0 }}" data-reveal>
           <a class="blog-feature__link" href="{{ post.url or '/blog-single.html' }}">
             <span class="blog-feature__meta">
-              <span class="blog-feature__rubric">{{ post.rubric }}</span>
               <time class="blog-feature__date" datetime="{{ post.datetime }}">
                 <span class="blog-feature__day">{{ post.day }}</span>
                 <span class="blog-feature__month">{{ post.month }}</span>
               </time>
+              <span class="blog-feature__rubric">{{ post.rubric }}</span>
             </span>
             <span class="blog-feature__text">
               <span class="blog-feature__name">
                 {{ post.title or "Заголовок новости в несколько строк" }}
               </span>
-              <span class="blog-feature__more" aria-hidden="true">
-                <svg class="blog-feature__more-icon">
-                  <use href="#icon-expand-right"></use>
-                </svg>
-              </span>
+            </span>
+            {# Стрелка у правого края на середине строки: в нижнем углу окна стоит виджет чата #}
+            <span class="blog-feature__more" aria-hidden="true">
+              <svg class="blog-feature__more-icon">
+                <use href="#icon-expand-right"></use>
+              </svg>
             </span>
           </a>
         </li>

@@ -40,7 +40,7 @@ $option-hover: #f5f5f31f;
     min-block-size: 0;
 
     & + & {
-      border-block-start: 1px solid $dark-grey;
+      border-block-start: 1px solid $line-dark;
     }
   }
 
@@ -184,12 +184,10 @@ $option-hover: #f5f5f31f;
     z-index: 1;
 
     display: flex;
-    flex-wrap: wrap;
-    gap: rem(14) rem(20);
-    align-items: flex-end;
+    flex-direction: column;
 
-    padding: rem(20) rem(32) rem(24);
-    border-inline-start: 1px solid $dark-grey;
+    padding-inline: rem(32);
+    border-inline-start: 1px solid $line-dark;
 
     color: $secondary;
 
@@ -197,6 +195,27 @@ $option-hover: #f5f5f31f;
 
     // Тень, как у шапки: карточки уезжают под фильтр
     box-shadow: $shadow-md;
+  }
+
+  // Параметры в двух зонах: основные всегда на виду, технические раскрываются кнопкой.
+  // Группы выровнены по нижней кромке полей, зоны отделены тонкой линией, как ячейки меню
+  &__primary,
+  &__extra {
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(16) rem(32);
+    align-items: flex-end;
+
+    padding-block: rem(20);
+  }
+
+  &__extra {
+    border-block-start: 1px solid $line-dark;
+  }
+
+  // Технические параметры свёрнуты, пока их не откроют кнопкой «Все параметры»
+  &__filter--collapsed &__extra {
+    display: none;
   }
 
   &__group {
@@ -342,21 +361,72 @@ $option-hover: #f5f5f31f;
     }
   }
 
-  // Итог подбора и сброс стоят в ряду с параметрами, у правого края полосы
+  // Нижняя полоса фильтра: слева раскрытие параметров, справа итог подбора и сброс
   &__summary {
     display: flex;
     gap: rem(16);
     align-items: center;
 
-    block-size: rem($control-size);
-    margin-inline-start: auto;
+    padding-block: rem(16);
+    border-block-start: 1px solid $line-dark;
   }
 
   &__count {
     @include body-M;
 
     margin: 0;
+    margin-inline-start: auto;
     white-space: nowrap;
+  }
+
+  // Контурная кнопка рядом со сбросом: не спорит с главным действием
+  &__more {
+    @include button-S;
+
+    cursor: pointer;
+
+    display: flex;
+    gap: rem(8);
+    align-items: center;
+
+    border: 1px solid $secondary;
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: transparent;
+
+    transition:
+      color $fast $ease-out,
+      background-color $fast $ease-out;
+
+    &:hover,
+    &:focus-visible {
+      color: $primary;
+      background-color: $secondary;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: 2px;
+    }
+  }
+
+  // Сколько выбрано среди скрытых параметров: фильтр действует, даже когда группы свёрнуты
+  &__more-count {
+    min-inline-size: rem(20);
+    padding: rem(2) rem(6);
+
+    font-size: rem(12);
+    line-height: rem(16);
+    color: $secondary;
+    text-align: center;
+
+    background-color: $accent;
+
+    &[hidden] {
+      display: none;
+    }
   }
 
   &__reset {
@@ -417,7 +487,7 @@ $option-hover: #f5f5f31f;
     flex: 1 0 0;
 
     min-block-size: 0;
-    border-inline-start: 1px solid $light-grey;
+    border-inline-start: 1px solid $line-light;
 
     // При постраничной прокрутке положение показывает индикатор секций
     .has-fullpage & {
@@ -425,24 +495,40 @@ $option-hover: #f5f5f31f;
     }
   }
 
-  // Линии между карточками рисуются контуром самих карточек, а не фоном списка:
-  // пустые ячейки в неполном ряду остаются чистыми.
+  // Линии между карточками рисуются самими карточками (правая и нижняя кромка), а не фоном списка:
+  // пустые ячейки в неполном ряду остаются чистыми, а на стыках линия одинарная.
   // Высота ряда следует из фото: кадр 4:3 показывается целиком, без узкой обрезки
   &__list {
     --product-card-media-ratio: 4 / 3;
 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
   }
 
+  // Линия лежит поверх содержимого: иначе серая подложка фото закрыла бы её
   &__item {
+    position: relative;
     min-inline-size: 0;
-    box-shadow: 0 0 0 1px $light-grey;
+
+    &::after {
+      pointer-events: none;
+      content: '';
+
+      position: absolute;
+      inset: 0;
+
+      border-block-end: 1px solid $line-light;
+      border-inline-end: 1px solid $line-light;
+    }
 
     &[hidden] {
       display: none;
     }
+  }
+
+  // Метка конца списка для догрузки: невидимая, но с высотой, чтобы наблюдатель её замечал
+  &__sentinel {
+    block-size: 1px;
   }
 
   &__empty {

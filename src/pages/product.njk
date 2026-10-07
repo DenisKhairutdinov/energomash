@@ -1,6 +1,6 @@
-{% set pageTitle = "Название продукта и БД" %}
+{% set pageTitle = "Модель" %}
 {% set currentPage = "catalog" %}
 {% extends "layout.njk" %}
 {% block content %}
-  <section class="product"></section>
+  {% include "product.njk" %}
 {% endblock %}

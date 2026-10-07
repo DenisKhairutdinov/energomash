@@ -3,6 +3,9 @@ import { Flip } from 'gsap/Flip';
 
 const ROOT_SELECTOR = '[data-shipments]';
 const ITEM_SELECTOR = '[data-shipments-item]';
+const IMAGE_SELECTOR = '[data-shipments-image]';
+const THUMB_SELECTOR = '[data-shipments-thumb]';
+const ACTIVE_CLASS = 'is-active';
 const HOVER_QUERY = '(hover: hover)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 const BIG_PREFIX = 'big';
@@ -32,6 +35,8 @@ export const initShipments = (): void => {
   for (const root of roots) {
     const items = [...root.querySelectorAll<HTMLElement>(ITEM_SELECTOR)];
     let isAnimating = false;
+    // Сброс оттенка фото у каждой плитки: заполняется ниже, вместе с обработчиками миниатюр
+    const resetTone = new Map<HTMLElement, () => void>();
 
     const activate = (item: HTMLElement): void => {
       if (isAnimating || isBig(item)) {
@@ -47,6 +52,7 @@ export const initShipments = (): void => {
 
       for (const [index, other] of others.entries()) {
         other.dataset.place = `${index === 0 ? 'top' : 'bottom'}-${oppositeSide}`;
+        resetTone.get(other)?.();
       }
 
       isAnimating = true;
@@ -67,6 +73,35 @@ export const initShipments = (): void => {
         },
       });
     };
+
+    // Миниатюры: наведение на кадр ставит его оттенок на основное фото плитки (оно плавно перекрашивается,
+    // transition filter в стилях). С клавиатуры то же делает фокус, а нажатие ничего не открывает: миниатюры вне ссылки
+    for (const item of items) {
+      const image = item.querySelector<HTMLImageElement>(IMAGE_SELECTOR);
+      const thumbs = [...item.querySelectorAll<HTMLButtonElement>(THUMB_SELECTOR)];
+
+      const select = (thumb: HTMLButtonElement): void => {
+        for (const other of thumbs) {
+          other.classList.toggle(ACTIVE_CLASS, other === thumb);
+        }
+
+        if (image) {
+          image.style.filter = thumb.dataset.filter ?? '';
+        }
+      };
+
+      for (const thumb of thumbs) {
+        thumb.addEventListener('pointerenter', () => select(thumb));
+        thumb.addEventListener('focus', () => select(thumb));
+      }
+
+      // Плитка перестала быть крупной (миниатюры скрылись) — на ней снова оригинальное фото
+      resetTone.set(item, () => {
+        if (thumbs[0]) {
+          select(thumbs[0]);
+        }
+      });
+    }
 
     for (const item of items) {
       item.addEventListener('pointerenter', () => activate(item));

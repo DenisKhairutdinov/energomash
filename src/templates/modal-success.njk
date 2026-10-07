@@ -1,0 +1,31 @@
+{# Окно подтверждения отправки. Открывается событием pubsub «success-modal: open-request» #}
+{# после отправки заявки (окно заявки и форма внизу страницы), закрывается «success-modal: close». #}
+{# Логика — scripts/modules/modals/success-modal.ts #}
+<dialog class="modal" role="alertdialog" aria-labelledby="success-modal-title" data-success-modal>
+  <div class="modal__panel modal__panel--compact" data-modal-panel>
+    <button
+      class="modal__close modal__close--light"
+      type="button"
+      aria-label="Закрыть окно"
+      data-modal-close
+    >
+      <svg class="modal__close-icon" aria-hidden="true">
+        <use href="#icon-close"></use>
+      </svg>
+    </button>
+    <div class="modal__done">
+      <span class="modal__done-mark" aria-hidden="true" data-modal-item>
+        <svg class="modal__done-icon">
+          <use href="#icon-check"></use>
+        </svg>
+      </span>
+      <h2 class="modal__done-title" id="success-modal-title" data-success-title data-modal-item>
+        Заявка принята
+      </h2>
+      <p class="modal__done-text" data-success-text data-modal-item>
+        Менеджер свяжется с вами в рабочее время и ответит на все вопросы.
+      </p>
+      <button class="modal__submit" type="button" data-modal-close data-modal-item>Хорошо</button>
+    </div>
+  </div>
+</dialog>

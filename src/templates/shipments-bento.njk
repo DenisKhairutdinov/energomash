@@ -35,6 +35,18 @@
     }
   ]
 %}
+{# Миниатюры отгрузки: одно и то же фото в разных оттенках. Пока настоящих кадров нет, смену фото показывают #}
+{# цветовые фильтры: оригинал, светлое и тёмное чёрно-белое, светлая и тёмная сепия. Наведение на миниатюру ставит #}
+{# её фильтр на основное фото (scripts/modules/shipments.ts) #}
+{%
+  set tones = [
+    { label: "Оригинал", filter: "none" },
+    { label: "Чёрно-белое, светлое", filter: "grayscale(1) brightness(1.08) contrast(0.95)" },
+    { label: "Чёрно-белое, тёмное", filter: "grayscale(1) brightness(0.72) contrast(1.25)" },
+    { label: "Сепия, светлая", filter: "sepia(0.55) contrast(1.05)" },
+    { label: "Сепия, тёмная", filter: "sepia(1) brightness(0.82) contrast(1.1)" }
+  ]
+%}
 {# Места плиток в сетке. Без скриптов остаётся эта расстановка: первая крупно, две справа #}
 {% set places = ["big-left", "top-right", "bottom-right"] %}
 <section
@@ -46,7 +58,10 @@
 >
   <div class="shipments-bento__head">
     <h2 class="shipments-bento__title" data-reveal>Недавно отгруженная техника</h2>
-    <a class="shipments-bento__button" href="/shipments.html" data-reveal>Смотреть всю технику</a>
+    {# Появление — на обёртке: GSAP ставит элементу inline-стили transform, и подъём кнопки при наведении не работал #}
+    <div data-reveal>
+      <a class="shipments-bento__button" href="/shipments.html">Смотреть всю технику</a>
+    </div>
   </div>
   {% for item in shipments %}
     <article
@@ -63,21 +78,22 @@
           alt="{{ item.type }} {{ item.model }}"
           loading="lazy"
           style="--focus: {{ item.focus }}"
+          data-shipments-image
         />
         <span class="shipments-bento__shipped">
           <time datetime="{{ item.datetime }}">{{ item.date }}</time> · {{ item.city }}
         </span>
+        {# Стрелка в верхнем правом углу напротив бейджа: нижний правый угол окна занят виджетом чата #}
+        <span class="shipments-bento__more" aria-hidden="true">
+          <svg class="shipments-bento__more-icon">
+            <use href="#icon-expand-right"></use>
+          </svg>
+        </span>
         <span class="shipments-bento__info">
-          {# Стрелка стоит справа от названия модели, как в панели наличия и в блоге #}
           <span class="shipments-bento__title-row">
             <span class="shipments-bento__heading">
               <span class="shipments-bento__type">{{ item.type }}</span>
               <span class="shipments-bento__model">{{ item.model }}</span>
-            </span>
-            <span class="shipments-bento__more" aria-hidden="true">
-              <svg class="shipments-bento__more-icon">
-                <use href="#icon-expand-right"></use>
-              </svg>
             </span>
           </span>
           <span class="shipments-bento__details">
@@ -92,6 +108,27 @@
           </span>
         </span>
       </a>
+      {# Миниатюры вне ссылки: кнопки внутри <a> недопустимы. Видны только на открытой (крупной) плитке #}
+      <div class="shipments-bento__thumbs" role="group" aria-label="Фотографии отгрузки">
+        {% for tone in tones %}
+          <button
+            class="shipments-bento__thumb {{ 'is-active' if loop.first }}"
+            type="button"
+            aria-label="Фото {{ loop.index }}: {{ tone.label }}"
+            data-shipments-thumb
+            data-filter="{{ tone.filter }}"
+          >
+            <img
+              src="{{ item.image }}"
+              width="96"
+              height="72"
+              alt=""
+              loading="lazy"
+              style="filter: {{ tone.filter }}"
+            />
+          </button>
+        {% endfor %}
+      </div>
     </article>
   {% endfor %}
 </section>

@@ -1,20 +1,45 @@
 {# Карточка техники. Ждёт переменную product; без неё показывает заглушку. #}
-{# Ссылка на модель стоит на названии и растянута на всю карточку; кнопка стоимости лежит поверх неё #}
+{# Ссылка на модель стоит на названии и растянута на всю карточку; кнопка стоимости лежит поверх неё. #}
+{# icon — силуэт техники из спрайта (ppc, shassi) вместо фото, пока фотографий нет. #}
+{# template — заготовка для каталога: скрипт находит части по data-card-* и подставляет данные #}
 {% set item = product or {} %}
 <article class="product-card" data-reveal>
   <div class="product-card__inner">
     <span class="product-card__media">
-      <img
-        class="product-card__image"
-        src="{{ item.image or '/src/assets/images/shipment-1.jpg' }}"
-        width="1800"
-        height="1350"
-        alt="{{ item.type or 'Полуприцеп-цистерна' }} {{ item.model or '' }}"
-        loading="lazy"
-        style="--focus: {{ item.focus or '50%' }}"
-      />
-      {% if item.badge %}
-        <span class="product-card__badge {{ 'product-card__badge--muted' if item.badgeMuted }}"
+      {% if item.icon or item.template %}
+        <svg
+          class="product-card__icon"
+          role="img"
+          aria-label="{{ item.type }} {{ item.model }}"
+          data-card-icon
+        >
+          <use href="#icon-{{ item.icon or 'ppc' }}"></use>
+        </svg>
+        {# Подпись под силуэтом, пока нет фото. В заготовке скрыта: каталог показывает её, если фото не нашлось #}
+        <span class="product-card__soon" {{ "hidden" if item.template }} data-card-soon
+          >Фото скоро появится</span
+        >
+      {% else %}
+        <img
+          class="product-card__image"
+          src="{{ item.image or '/src/assets/images/shipment-1.jpg' }}"
+          width="1800"
+          height="1350"
+          alt="{{ item.type or 'Полуприцеп-цистерна' }} {{ item.model or '' }}"
+          loading="lazy"
+          style="--focus: {{ item.focus or '50%' }}"
+        />
+      {% endif %}
+      {# Код модели плашкой на фото, напротив плашки наличия. В заготовке скрыта: каталог показывает её, если у модели есть код #}
+      {% if item.code or item.template %}
+        <span class="product-card__code" {{ "hidden" if item.template }} data-card-code
+          >{{ "Код " ~ item.code if item.code }}</span
+        >
+      {% endif %}
+      {% if item.badge or item.template %}
+        <span
+          class="product-card__badge {{ 'product-card__badge--muted' if item.badgeMuted }}"
+          data-card-badge
           >{{ item.badge }}</span
         >
       {% endif %}
@@ -22,24 +47,39 @@
     <span class="product-card__body">
       <span class="product-card__head">
         <span class="product-card__heading">
-          <span class="product-card__type">{{ item.type or "Полуприцеп-цистерна" }}</span>
-          <a class="product-card__link" href="{{ item.url or '/product.html' }}">
-            <span class="product-card__model">{{ item.model or "Модель" }}</span>
+          <span class="product-card__type" data-card-type
+            >{{ item.type or "Полуприцеп-цистерна" }}</span
+          >
+          <a class="product-card__link" href="{{ item.url or '/product.html' }}" data-card-link>
+            <span class="product-card__model" data-card-model>{{ item.model or "Модель" }}</span>
           </a>
         </span>
       </span>
-      <span class="product-card__specs">
-        {% for spec in item.specs or [] %}
-          <span class="product-card__spec">
-            <span class="product-card__spec-label">{{ spec[0] }}</span>
-            <span class="product-card__spec-value">{{ spec[1] }}</span>
+      <span class="product-card__specs" data-card-specs>
+        {# У заготовки одна пустая характеристика — образец для остальных #}
+        {% set specs = item.specs or [] %}
+        {% if item.template %}
+          {% set specs = [["", ""]] %}
+        {% endif %}
+        {% for spec in specs %}
+          <span class="product-card__spec" data-card-spec>
+            <span class="product-card__spec-label" data-card-spec-label>{{ spec[0] }}</span>
+            <span class="product-card__spec-value" data-card-spec-value>{{ spec[1] }}</span>
           </span>
         {% endfor %}
       </span>
       {# Действия собраны в один ряд: запрос стоимости и стрелка перехода к модели. #}
-      {# Кнопка пока без действия: форму запроса подключим позже #}
+      {# Кнопка открывает окно заявки с названием модели (pubsub: request-modal) #}
       <span class="product-card__actions">
-        <button class="product-card__price" type="button">Узнать стоимость</button>
+        <button
+          class="product-card__price"
+          type="button"
+          data-modal-open="request"
+          data-modal-kind="price"
+          data-modal-model="{{ item.model }}"
+        >
+          Узнать стоимость
+        </button>
         <span class="product-card__more" aria-hidden="true">
           <svg class="product-card__more-icon">
             <use href="#icon-expand-right"></use>

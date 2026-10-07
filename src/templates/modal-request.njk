@@ -1,0 +1,68 @@
+{# Окно заявки. Открывается событием pubsub «request-modal: open-request» (kind: price | call, model), #}
+{# закрывается «request-modal: close», при отправке публикует «request-modal: submit». #}
+{# Кнопки на странице открывают его атрибутами data-modal-open="request" data-modal-kind data-modal-model. #}
+{# Логика — scripts/modules/modals/request-modal.ts. Тексты по умолчанию — для «Узнать стоимость» #}
+<dialog class="modal" aria-labelledby="request-modal-title" data-request-modal>
+  <div class="modal__panel" data-modal-panel>
+    <button class="modal__close" type="button" aria-label="Закрыть окно" data-modal-close>
+      <svg class="modal__close-icon" aria-hidden="true">
+        <use href="#icon-close"></use>
+      </svg>
+    </button>
+    <div class="modal__aside">
+      <span class="modal__label" data-modal-label data-modal-item>Заявка на расчёт</span>
+      <div class="modal__intro" data-modal-item>
+        <h2 class="modal__title" id="request-modal-title" data-modal-title>Узнать стоимость</h2>
+        <p class="modal__description" data-modal-description>
+          Оставьте контакты — рассчитаем стоимость, подберём комплектацию и пришлём коммерческое
+          предложение.
+        </p>
+      </div>
+      <div class="modal__aside-foot" data-modal-item>
+        <div class="modal__model" hidden data-modal-model-row>
+          <span class="modal__label">Модель</span>
+          <span class="modal__model-name" data-modal-model></span>
+        </div>
+        <div class="modal__direct">
+          <span class="modal__label">Или позвоните</span>
+          <a class="modal__phone" href="tel:88001012200">8 (800) 101-22-00</a>
+        </div>
+      </div>
+    </div>
+    <div class="modal__content">
+      <form class="modal__form" action="#" method="post" novalidate data-modal-form>
+        <input type="hidden" name="kind" value="price" />
+        <input type="hidden" name="model" value="" />
+        <label class="modal__group" data-modal-item>
+          <span class="modal__legend">Ваше имя</span>
+          <input class="modal__field" type="text" name="name" autocomplete="name" />
+        </label>
+        <label class="modal__group" data-modal-item>
+          <span class="modal__legend"
+            >Телефон <span class="modal__required" aria-hidden="true">*</span></span
+          >
+          <input
+            class="modal__field"
+            type="tel"
+            name="phone"
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder="+7 (___) ___-__-__"
+            aria-required="true"
+            aria-describedby="modal-error-phone"
+          />
+          <span class="modal__error" id="modal-error-phone" hidden data-form-error="phone"></span>
+        </label>
+        <label class="modal__group" data-modal-item>
+          <span class="modal__legend">Комментарий</span>
+          <textarea class="modal__field modal__field--comment" name="comment"></textarea>
+        </label>
+        <div class="modal__footer" data-modal-item>
+          {% set consentId = "modal" %}
+          {% include "consent.njk" %}
+          <button class="modal__submit" type="submit">Отправить заявку</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</dialog>

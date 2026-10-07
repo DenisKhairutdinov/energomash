@@ -1,0 +1,371 @@
+$modal-width: 960;
+$modal-height: 600;
+$done-width: 480;
+$field-size: 48;
+$close-size: 40;
+
+// Пока открыто окно, страница под ним не прокручивается
+:root.has-modal {
+  overflow: hidden;
+}
+
+// Окно заявки: сам dialog занимает весь экран и служит затемнением, панель стоит по центру.
+// Панель — две половины, как блок заявки на странице: тёмная с описанием и светлая с формой
+.modal {
+  position: fixed;
+  inset: 0;
+
+  inline-size: 100%;
+  max-inline-size: none;
+  block-size: 100%;
+  max-block-size: none;
+  margin: 0;
+  padding: rem(32);
+  border: 0;
+
+  color: $primary;
+
+  background-color: $primary60;
+
+  // Затемнение рисует сам dialog, чтобы оно проявлялось вместе с панелью
+  &::backdrop {
+    background: transparent;
+  }
+
+  &[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  &__panel {
+    position: relative;
+
+    overflow: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    inline-size: min(100%, rem($modal-width));
+
+    // Высота рассчитана на форму с двумя ошибками: окно не прыгает при ошибках и подтверждении
+    min-block-size: min(100%, rem($modal-height));
+    max-block-size: 100%;
+
+    background-color: $bg;
+    box-shadow: $shadow-md;
+  }
+
+  // Крестик в углу светлой половины: квадрат с рамкой, при наведении заливается, как стрелка карточки
+  &__close {
+    cursor: pointer;
+
+    position: absolute;
+    z-index: 1;
+    inset-block-start: rem(16);
+    inset-inline-end: rem(16);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem($close-size);
+    block-size: rem($close-size);
+    padding: 0;
+    border: 1px solid $primary;
+
+    color: $primary;
+
+    background-color: transparent;
+
+    transition:
+      color $medium $ease-out,
+      border-color $medium $ease-out,
+      background-color $medium $ease-out;
+
+    &:hover {
+      border-color: $accent;
+      color: $secondary;
+      background-color: $accent;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: 2px;
+    }
+  }
+
+  &__close-icon {
+    inline-size: rem(24);
+    block-size: rem(24);
+    stroke: currentcolor;
+    stroke-width: 2;
+  }
+
+  // Тёмная половина: о чём заявка, модель и телефон
+  &__aside {
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+    justify-content: space-between;
+
+    min-inline-size: 0;
+    padding: rem(32);
+
+    color: $secondary;
+
+    background-color: $primary;
+  }
+
+  &__label {
+    @include caption;
+
+    color: $light-grey;
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__title {
+    @include h3;
+
+    margin: 0;
+  }
+
+  &__description {
+    @include body-M;
+
+    margin: 0;
+    color: $light-grey;
+  }
+
+  &__aside-foot {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__model {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+
+    padding-block: rem(16);
+    border-block: 1px solid $line-dark;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__model-name {
+    @include h4;
+
+    overflow-wrap: anywhere;
+  }
+
+  &__direct {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+  }
+
+  // Ссылка по умолчанию тёмная, а сторона — тёмная: цвет задан явно
+  &__phone {
+    @include lead;
+
+    color: $secondary;
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  // Светлая половина: форма или подтверждение на её месте
+  &__content {
+    min-inline-size: 0;
+    padding: rem(32);
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+
+    // Справа остаётся место под крестик
+    padding-block-start: rem($close-size + 8);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  // Подпись над полем, как в фильтрах
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: rem(6);
+  }
+
+  &__legend {
+    @include caption;
+
+    color: $dark-grey;
+  }
+
+  // Звёздочка у обязательного поля: остальные поля формы необязательные
+  &__required {
+    color: $accent;
+  }
+
+  &__field {
+    @include body-M;
+
+    inline-size: 100%;
+    block-size: rem($field-size);
+    padding-inline: rem(16);
+    border: 1px solid $primary;
+    border-radius: 0;
+
+    color: $primary;
+
+    background-color: transparent;
+    outline: none;
+
+    transition: border-color $fast $ease-out;
+
+    &::placeholder {
+      color: $dark-grey;
+      opacity: 1;
+    }
+
+    &:focus {
+      border-color: $accent;
+    }
+
+    // Неверное поле: рамка и подсказка акцентного цвета
+    &[aria-invalid='true'] {
+      border-color: $accent;
+    }
+
+    &--comment {
+      resize: none;
+      block-size: rem(96);
+      padding-block: rem(12);
+    }
+  }
+
+  &__error {
+    @include caption;
+
+    color: $accent;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+    align-items: flex-start;
+  }
+
+  // Главное действие окна — акцентная кнопка по миксину button-L, как в блоке заявки
+  &__submit {
+    @include button-L;
+
+    cursor: pointer;
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $accent;
+  }
+
+  // Окно подтверждения: компактная тёмная панель по центру, как тёмная половина окна заявки
+  &__panel--compact {
+    grid-template-columns: minmax(0, 1fr);
+
+    inline-size: min(100%, rem($done-width));
+    min-block-size: 0;
+
+    color: $secondary;
+
+    background-color: $primary;
+  }
+
+  // На тёмной панели крестик светлый
+  &__close--light {
+    border-color: $secondary;
+    color: $secondary;
+  }
+
+  &__done {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+    align-items: flex-start;
+
+    padding: rem(48) rem(40) rem(40);
+  }
+
+  // Акцентный круг с галочкой: галочка прорисовывается при открытии окна
+  &__done-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: rem(72);
+    block-size: rem(72);
+    margin-block-end: rem(8);
+    border-radius: 50%;
+
+    color: $secondary;
+
+    background-color: $accent;
+  }
+
+  &__done-icon {
+    inline-size: rem(40);
+    block-size: rem(40);
+
+    stroke: currentcolor;
+    stroke-dasharray: 24;
+    stroke-linecap: square;
+  }
+
+  &[open] &__done-icon {
+    animation: modal-check $medium $ease-out 0.35s both;
+  }
+
+  &__done-title {
+    @include h3;
+
+    margin: 0;
+  }
+
+  &__done-text {
+    @include body-M;
+
+    margin: 0 0 rem(16);
+    color: $light-grey;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[open] &__done-icon {
+      animation: none;
+    }
+  }
+}
+
+@keyframes modal-check {
+  from {
+    stroke-dashoffset: 24;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}

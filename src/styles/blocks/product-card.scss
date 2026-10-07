@@ -57,9 +57,14 @@ $wide-size: 528;
 
     aspect-ratio: var(--product-card-media-ratio, auto);
     min-block-size: 0;
+
+    // Серая подложка под фото и силуэтом: кадр читается как отдельный блок карточки
+    background-color: $bg-grey;
   }
 
   &__image {
+    @include photo-grade;
+
     position: absolute;
     inset: 0;
 
@@ -72,8 +77,47 @@ $wide-size: 528;
     transition: scale $zoom-duration $zoom-ease;
   }
 
+  // Фото, которое подгружает каталог (catalog.ts), проявляется поверх серой подложки, когда загрузится
+  &__image[data-card-photo] {
+    opacity: 0;
+    transition:
+      opacity $slow $ease-out,
+      scale $zoom-duration $zoom-ease;
+  }
+
+  &__image[data-card-photo].is-loaded {
+    opacity: 1;
+  }
+
+  // Подпись под силуэтом у карточек без фото
+  &__soon {
+    @include caption;
+
+    position: absolute;
+    inset-block-end: rem(20);
+    inset-inline: 0;
+
+    color: $dark-grey;
+    text-align: center;
+  }
+
+  // Силуэт техники вместо фото: по центру кадра, с полями по краям, как чертёж на выборе типа
+  &__icon {
+    position: absolute;
+    inset: 0;
+
+    inline-size: 94%;
+    block-size: 100%;
+    margin-inline: auto;
+
+    fill: $primary;
+
+    transition: scale $zoom-duration $zoom-ease;
+  }
+
   // При наведении фото чуть приближается внутри своей рамки
-  &:hover &__image {
+  &:hover &__image,
+  &:hover &__icon {
     scale: 1.04;
   }
 
@@ -94,6 +138,27 @@ $wide-size: 528;
     // Техника под заказ не спорит с той, что есть на складе
     &--muted {
       background-color: $primary80;
+    }
+  }
+
+  // Код модели — тёмная плашка на фото напротив плашки наличия, выше фото по слоям
+  &__code {
+    @include caption;
+
+    position: absolute;
+    z-index: 1;
+    inset-block-start: rem(16);
+    inset-inline-end: rem(24);
+
+    padding: rem(6) rem(10);
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: $primary;
+
+    &[hidden] {
+      display: none;
     }
   }
 
@@ -136,21 +201,19 @@ $wide-size: 528;
     min-inline-size: 0;
   }
 
+  // Тип и название показываются целиком: длинные переносятся на следующую строку, а не обрезаются
   &__type {
     @include caption;
 
-    overflow: hidden;
     color: $dark-grey;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
 
   &__model {
     @include h4;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
     transition: color $medium $ease-out;
   }
 
@@ -213,7 +276,7 @@ $wide-size: 528;
 
     &:nth-child(even) {
       padding-inline-start: rem(16);
-      border-inline-start: 1px solid $light-grey;
+      border-inline-start: 1px solid $line-light;
     }
   }
 
@@ -226,7 +289,7 @@ $wide-size: 528;
 
     &__spec:not(:first-child) {
       padding-inline-start: rem(16);
-      border-inline-start: 1px solid $light-grey;
+      border-inline-start: 1px solid $line-light;
     }
   }
 

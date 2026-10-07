@@ -1,0 +1,386 @@
+$thumb-size: 88;
+
+// Страница модели, первый экран: слева серая колонка с названием и кнопкой, справа фото на три колонки
+.product {
+  position: relative;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  // Единственный ряд ровно по высоте секции: содержимое левой колонки подстраивается под неё, а не растягивает страницу
+  grid-template-rows: minmax(0, 1fr);
+
+  min-block-size: rem(901);
+
+  background-color: $bg;
+
+  @include section-full {
+    min-block-size: 0;
+  }
+
+  &__info {
+    display: flex;
+    grid-row: 1 / -1;
+    flex-direction: column;
+    gap: rem(20);
+    justify-content: space-between;
+
+    min-block-size: 0;
+    padding: rem(32);
+
+    background-color: $white;
+  }
+
+  &__back {
+    @include caption;
+
+    display: flex;
+    gap: rem(8);
+    align-items: center;
+    align-self: flex-start;
+
+    color: $dark-grey;
+
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  &__back-icon {
+    rotate: 180deg;
+
+    inline-size: rem(20);
+    block-size: rem(20);
+
+    stroke: currentcolor;
+    stroke-width: 2;
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+    align-items: flex-start;
+  }
+
+  // Тип техники и код модели в одной строке
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(12);
+    align-items: center;
+  }
+
+  &__type {
+    @include caption;
+
+    margin: 0;
+    color: $dark-grey;
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  // Код модели — такая же тёмная плашка, как на фото в карточках
+  &__code {
+    @include caption;
+
+    margin: 0;
+    padding: rem(6) rem(10);
+    color: $secondary;
+    background-color: $primary;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__buy {
+    display: flex;
+    gap: rem(16);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__status {
+    @include body-M;
+
+    display: flex;
+    gap: rem(8);
+    align-items: center;
+    margin: 0;
+
+    &::before {
+      content: '';
+      inline-size: rem(8);
+      block-size: rem(8);
+      background-color: $dark-grey;
+    }
+
+    &--in::before {
+      background-color: $accent;
+    }
+  }
+
+  &__button {
+    @include button-L;
+
+    cursor: pointer;
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: $primary;
+
+    transition: background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $accent;
+    }
+  }
+
+  // Фото на всю область; миниатюры лежат на нём внизу слева — справа внизу место чата
+  &__gallery {
+    position: relative;
+
+    overflow: hidden;
+    grid-column: 2 / -1;
+    grid-row: 1;
+
+    border-inline-start: 1px solid $line-light;
+
+    background-color: $bg-grey;
+  }
+
+  &__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__image {
+    @include photo-grade;
+
+    position: absolute;
+    inset: 0;
+
+    inline-size: 100%;
+    block-size: 100%;
+
+    opacity: 0;
+    object-fit: cover;
+
+    transition: opacity $slow $ease-out;
+
+    &.is-loaded {
+      opacity: 1;
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    translate: -50% -50%;
+
+    inline-size: 60%;
+    block-size: 60%;
+
+    color: $dark-grey;
+
+    opacity: 0.4;
+  }
+
+  &__soon {
+    @include caption;
+
+    position: absolute;
+    inset-block-end: rem(32);
+    inset-inline-start: 50%;
+    translate: -50% 0;
+
+    color: $dark-grey;
+  }
+
+  &__thumbs {
+    position: absolute;
+    z-index: 1;
+    inset-block-end: rem(32);
+    inset-inline-start: rem(32);
+
+    display: flex;
+    gap: rem(8);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__thumb {
+    cursor: pointer;
+
+    overflow: hidden;
+
+    inline-size: rem($thumb-size);
+    block-size: rem($thumb-size * 0.75);
+    padding: 0;
+
+    // Обводки у неактивных нет (рамка прозрачная, чтобы размер не менялся), вместо неё тень: миниатюры лежат
+    // на фото, и тень отделяет их от кадра. У активной — акцентная рамка
+    border: 1px solid transparent;
+
+    opacity: 0.7;
+    background-color: $primary;
+    box-shadow:
+      rem(0) rem(4) rem(12) #0006,
+      rem(0) rem(1) rem(3) #0004;
+
+    transition: opacity $fast $ease-out;
+
+    &:hover,
+    &.is-active {
+      opacity: 1;
+    }
+
+    &.is-active {
+      border-color: $accent;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: 2px;
+    }
+  }
+
+  &__thumb-image {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  // Модель не найдена: сообщение занимает место фото
+  &__error {
+    @include lead;
+
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: calc(25% + #{rem(32)});
+    translate: 0 -50%;
+
+    margin: 0;
+
+    &[hidden] {
+      display: none;
+    }
+
+    a {
+      color: $accent;
+    }
+  }
+}
+
+
+// Основные характеристики в левой колонке: плитки по две в ряд на белом, вплотную друг к другу.
+// Плитки тянутся на всю свободную высоту колонки (но не ниже 88px): подпись сверху, значение прижато к низу,
+// так значения образуют ровную нижнюю линию, а подписи — верхнюю. Линия везде 1px: у сетки сверху и слева,
+// у каждой плитки справа и снизу — общие стороны не удваиваются
+.product__specs {
+  display: grid;
+  grid-auto-flow: dense;
+  grid-auto-rows: minmax(rem(88), 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex: 1 1 0;
+
+  min-block-size: 0;
+  margin: 0;
+  border-block-start: 1px solid $line-light;
+  border-inline-start: 1px solid $line-light;
+}
+
+.product__spec {
+  display: flex;
+  flex-direction: column;
+  gap: rem(8);
+  justify-content: space-between;
+
+  min-inline-size: 0;
+  padding: rem(14) rem(16);
+  border-block-end: 1px solid $line-light;
+  border-inline-end: 1px solid $line-light;
+
+  &--wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.product__spec-label {
+  @include caption;
+
+  color: $dark-grey;
+}
+
+// Типографика как у характеристик в блоке «Недавно отгруженная техника»: подпись caption, значение lead-bold
+.product__spec-value {
+  @include lead-bold;
+
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+// Опции под характеристиками: комплектация и оборудование модели ярлыками в строку
+.product__options {
+  display: flex;
+  flex-direction: column;
+  gap: rem(8);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.product__options-title {
+  @include caption;
+
+  margin: 0;
+  color: $dark-grey;
+}
+
+// Опции — ровная сетка по две в ряд, как характеристики, только мельче: подпись слева, маркер-квадрат акцентного цвета
+.product__options-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  margin: 0;
+  border-block-start: 1px solid $line-light;
+  border-inline-start: 1px solid $line-light;
+}
+
+.product__option {
+  @include caption;
+
+  display: flex;
+  gap: rem(8);
+  align-items: center;
+
+  min-inline-size: 0;
+  min-block-size: rem(36);
+  padding: rem(6) rem(12);
+  border-block-end: 1px solid $line-light;
+  border-inline-end: 1px solid $line-light;
+
+  &::before {
+    content: '';
+
+    flex-shrink: 0;
+
+    inline-size: rem(6);
+    block-size: rem(6);
+
+    background-color: $accent;
+  }
+}

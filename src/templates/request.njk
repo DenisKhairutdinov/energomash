@@ -41,49 +41,51 @@
       </li>
     </ul>
   </div>
-  <form class="request__form" action="#" method="post" data-reveal>
-    <input
-      class="request__field"
-      type="text"
-      name="name"
-      placeholder="Ваше имя"
-      aria-label="Ваше имя"
-      autocomplete="name"
-    />
-    <input
-      class="request__field"
-      type="tel"
-      name="phone"
-      placeholder="Телефон"
-      aria-label="Телефон"
-      autocomplete="tel"
-    />
-    <input
-      class="request__field"
-      type="email"
-      name="email"
-      placeholder="Email"
-      aria-label="Email"
-      autocomplete="email"
-    />
-    <input
-      class="request__field"
-      type="text"
-      name="model"
-      placeholder="Модель или тип техники"
-      aria-label="Модель или тип техники"
-    />
-    <textarea
-      class="request__field request__field--comment"
-      name="comment"
-      placeholder="Комментарий"
-      aria-label="Комментарий"
-    ></textarea>
+  {# Поля как в окне заявки: подпись над полем, телефон по маске. Обязателен только телефон (отмечен *), #}
+  {# остальное необязательно, кроме согласия на обработку данных. Проверка и ошибки — scripts/modules/forms/form.ts #}
+  <form class="request__form" action="#" method="post" novalidate data-request-form data-reveal>
+    <label class="request__group">
+      <span class="request__legend">Ваше имя</span>
+      <input class="request__field" type="text" name="name" autocomplete="name" />
+    </label>
+    <label class="request__group">
+      <span class="request__legend"
+        >Телефон <span class="request__required" aria-hidden="true">*</span></span
+      >
+      <input
+        class="request__field"
+        type="tel"
+        name="phone"
+        inputmode="tel"
+        autocomplete="tel"
+        placeholder="+7 (___) ___-__-__"
+        aria-required="true"
+        aria-describedby="request-error-phone"
+      />
+      <span class="request__error" id="request-error-phone" hidden data-form-error="phone"></span>
+    </label>
+    <label class="request__group">
+      <span class="request__legend">Email</span>
+      <input
+        class="request__field"
+        type="email"
+        name="email"
+        autocomplete="email"
+        aria-describedby="request-error-email"
+      />
+      <span class="request__error" id="request-error-email" hidden data-form-error="email"></span>
+    </label>
+    <label class="request__group">
+      <span class="request__legend">Модель или тип техники</span>
+      <input class="request__field" type="text" name="model" />
+    </label>
+    <label class="request__group request__group--comment">
+      <span class="request__legend">Комментарий</span>
+      <textarea class="request__field request__field--comment" name="comment"></textarea>
+    </label>
     <div class="request__footer">
-      <p class="request__note">
-        Нажимая кнопку, вы соглашаетесь с
-        <a class="request__note-link" href="#">политикой обработки персональных данных</a>
-      </p>
+      {% set consentId = "request" %}
+      {% include "consent.njk" %}
       <button class="request__submit" type="submit">Отправить заявку</button>
     </div>
   </form>

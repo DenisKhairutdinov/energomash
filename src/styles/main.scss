@@ -4,6 +4,9 @@
 @import '/src/styles/blocks/+.css';
 
 html {
+  // Цветокоррекция всех фотографий техники (vars.scss) — одна переменная на сайт
+  --photo-filter: #{$photo-filter};
+
   color: $primary;
 }
 

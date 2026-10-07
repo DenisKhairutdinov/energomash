@@ -1,6 +1,6 @@
-{% import "catalog-data.njk" as catalog %}
 {# Каталог: слева на сетке из двух равных половин заголовок и тип техники, #}
 {# справа сверху фильтр, под ним прокручиваемая сетка карточек. #}
+{# Данные — src/data/catalog.json (переменная catalog), собираются из дампа базы: npm run catalog:import. #}
 {# Фильтрация и чтение параметров из адреса — в scripts/modules/catalog.ts #}
 <section class="catalog" data-fullpage-section data-fullpage-label="Каталог">
   <div class="catalog__intro">
@@ -45,43 +45,31 @@
     </label>
   </div>
   <div class="catalog__main">
-    <form class="catalog__filter" id="catalog-filter" action="/catalog.html" data-catalog-filter>
-      {% for group in catalog.groups %}
-        <fieldset
-          class="catalog__group"
-          data-catalog-group
-          {% if group.types %}data-catalog-types="{{ group.types }}"{% endif %}
-          {{ "hidden disabled" if group.types and group.types != "none" }}
-        >
-          <legend class="catalog__legend">{{ group.label }}</legend>
-          <div class="catalog__options">
-            {% for option in group.options %}
-              <label class="catalog__option" data-catalog-option>
-                <input
-                  class="catalog__option-input"
-                  type="checkbox"
-                  name="{{ group.name }}"
-                  value="{{ option[0] }}"
-                />
-                <span class="catalog__option-label">{{ option[1] }}</span>
-              </label>
-            {% endfor %}
-          </div>
-        </fieldset>
-        {# Объём стоит сразу после наличия, как в фильтре bik55.ru #}
-        {% if group.name == "stock" %}
+    {# Технические параметры (не primary) свёрнуты, пока их не откроют кнопкой или не выберут из адреса #}
+    <form
+      class="catalog__filter catalog__filter--collapsed"
+      id="catalog-filter"
+      action="/catalog.html"
+      data-catalog-filter
+    >
+      {# Группа с types относится к одному типу техники и показывается, когда он выбран. #}
+      {# Значения, которых нет у выбранного типа, скрывает скрипт #}
+      {% macro filterGroup(group) %}
+        {% set groupTypes = group.types | join(" ") %}
+        {% if group.kind == "range" %}
           <fieldset class="catalog__group">
-            <legend class="catalog__legend">Объём цистерны</legend>
+            <legend class="catalog__legend">{{ group.label }}</legend>
             <div class="catalog__volume">
               <label class="catalog__volume-field">
                 от
                 <input
                   class="catalog__volume-input"
                   type="text"
-                  name="volume-from"
+                  name="{{ group.name }}-from"
                   inputmode="numeric"
                   maxlength="3"
                   autocomplete="off"
+                  placeholder="{{ group.min }}"
                 />
               </label>
               <label class="catalog__volume-field">
@@ -89,22 +77,59 @@
                 <input
                   class="catalog__volume-input"
                   type="text"
-                  name="volume-to"
+                  name="{{ group.name }}-to"
                   inputmode="numeric"
                   maxlength="3"
                   autocomplete="off"
+                  placeholder="{{ group.max }}"
                 />
-                м³
+                {{ group.unit }}
               </label>
             </div>
           </fieldset>
+        {% else %}
+          <fieldset
+            class="catalog__group"
+            data-catalog-group
+            {% if groupTypes %}data-catalog-types="{{ groupTypes }}" hidden disabled{% endif %}
+          >
+            <legend class="catalog__legend">{{ group.label }}</legend>
+            <div class="catalog__options">
+              {% for option in group.options %}
+                <label class="catalog__option" data-catalog-option>
+                  <input
+                    class="catalog__option-input"
+                    type="checkbox"
+                    name="{{ group.name }}"
+                    value="{{ option.value }}"
+                  />
+                  <span class="catalog__option-label">{{ option.label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </fieldset>
         {% endif %}
-      {% endfor %}
-      {# Итог подбора и сброс стоят в одном ряду с параметрами #}
+      {% endmacro %}
+      {# Основные параметры всегда на виду, технические — в раскрывающейся части #}
+      <div class="catalog__primary">
+        {% for group in catalog.filters %}
+          {% if group.primary %}{{ filterGroup(group) }}{% endif %}
+        {% endfor %}
+      </div>
+      <div class="catalog__extra" data-catalog-extra>
+        {% for group in catalog.filters %}
+          {% if not group.primary %}{{ filterGroup(group) }}{% endif %}
+        {% endfor %}
+      </div>
+      {# Нижняя полоса: слева раскрытие параметров, справа итог подбора и сброс #}
       <div class="catalog__summary">
+        <button class="catalog__more" type="button" aria-expanded="false" data-catalog-more>
+          <span data-catalog-more-label>Все параметры</span>
+          <span class="catalog__more-count" hidden data-catalog-more-count></span>
+        </button>
         <p class="catalog__count" aria-live="polite">
           Найдено:
-          <span data-catalog-count>{{ catalog.items | length }}</span>
+          <span data-catalog-count>{{ catalog.total }}</span>
         </p>
         <button class="catalog__reset" type="reset" disabled data-catalog-reset>
           Сбросить фильтры
@@ -116,50 +141,24 @@
       <span class="catalog__progress-bar" data-catalog-progress-bar></span>
     </div>
     <div class="catalog__results" data-catalog-results data-fullpage-scroller="main">
-      <ul class="catalog__list">
-        {% for item in catalog.items %}
-          {% if item.type == "chassis" %}
-            {% set baseSpec = ["Шасси", item.chassisLabel] %}
-          {% else %}
-            {% set baseSpec = ["Осей", item.axles] %}
-          {% endif %}
-          {% set shapeLabel = "Чемодан" if item.shape == "case" else "Круглое" %}
-          {%
-            set product = {
-              model: item.model,
-              type: item.typeLabel,
-              image: item.image,
-              focus: item.focus,
-              badge: "В наличии" if item.stock == "in" else "Под заказ",
-              badgeMuted: item.stock != "in",
-              specs: [["Объём", item.volume ~ " м³"], ["Секций", item.sections], baseSpec, ["Сечение", shapeLabel]]
-            }
-          %}
-          <li
-            class="catalog__item"
-            data-catalog-item
-            data-type="{{ item.type }}"
-            data-purpose="{{ item.purpose }}"
-            data-stock="{{ item.stock }}"
-            data-volume="{{ item.volume }}"
-            data-sections="{{ item.sections }}"
-            data-shape="{{ item.shape }}"
-            data-suspension="{{ item.suspension }}"
-            data-ssu="{{ item.ssu }}"
-            data-axle="{{ item.axle }}"
-            data-construction="{{ item.construction }}"
-            data-tyres="{{ item.tyres }}"
-            data-pump="{{ item.pump }}"
-            data-drive="{{ item.drive }}"
-            data-chassis="{{ item.chassis }}"
-          >
-            {% include "product-card.njk" %}
-          </li>
-        {% endfor %}
+      <ul class="catalog__list" data-catalog-list>
+        {# Карточки выводит скрипт: загружает public/data/catalog.json и добавляет порциями по мере прокрутки #}
       </ul>
+      {# Метка конца списка: когда она подходит к краю области, добавляется следующая порция #}
+      <div class="catalog__sentinel" aria-hidden="true" data-catalog-sentinel></div>
       <p class="catalog__empty" hidden data-catalog-empty>
         По этим параметрам техники нет. Измените условия или сбросьте фильтры.
       </p>
+      <p class="catalog__empty" hidden data-catalog-error>
+        Не удалось загрузить каталог. Обновите страницу.
+      </p>
     </div>
+    {# Заготовка карточки: скрипт копирует её и подставляет данные модели #}
+    <template data-catalog-template>
+      <li class="catalog__item">
+        {% set product = { template: true } %}
+        {% include "product-card.njk" %}
+      </li>
+    </template>
   </div>
 </section>

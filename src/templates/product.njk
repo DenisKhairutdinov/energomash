@@ -1,0 +1,48 @@
+{# Страница модели на одном экране: слева название, основные характеристики и кнопка, справа фото на три колонки. #}
+{# Разметка пустая: данные модели по ?id= скрипт берёт из public/data/*.json в момент открытия (scripts/modules/product.ts). #}
+<section class="product" data-fullpage-section data-fullpage-label="Модель" data-product>
+  <div class="product__info">
+    <a class="product__back" href="/catalog.html">
+      <svg class="product__back-icon" aria-hidden="true">
+        <use href="#icon-expand-right"></use>
+      </svg>
+      Каталог
+    </a>
+    <div class="product__heading">
+      <div class="product__meta">
+        <p class="product__type" data-product-type></p>
+        <p class="product__code" data-product-code hidden></p>
+      </div>
+      <h1 class="product__title" data-product-title>&nbsp;</h1>
+    </div>
+    <dl class="product__specs" data-product-specs></dl>
+    <div class="product__options" data-product-options hidden>
+      <p class="product__options-title">Опции</p>
+      <ul class="product__options-list" data-product-options-list></ul>
+    </div>
+    <div class="product__buy">
+      <p class="product__status" data-product-status></p>
+      <button
+        class="product__button"
+        type="button"
+        data-modal-open="request"
+        data-modal-kind="price"
+        data-modal-model
+      >
+        Узнать стоимость
+      </button>
+    </div>
+  </div>
+  <div class="product__gallery">
+    <div class="product__media" data-product-media>
+      <svg class="product__icon" aria-hidden="true" data-product-icon>
+        <use href="#icon-ppc"></use>
+      </svg>
+      <span class="product__soon" data-product-soon>Фото скоро появится</span>
+    </div>
+    <div class="product__thumbs" data-product-thumbs hidden></div>
+  </div>
+  <p class="product__error" data-product-error hidden>
+    Такой модели нет в каталоге. <a href="/catalog.html">Вернуться в каталог</a>
+  </p>
+</section>

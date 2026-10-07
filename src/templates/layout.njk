@@ -33,6 +33,10 @@
         </div>
       </div>
     </div>
+    {# Чат и окна лежат вне smooth-wrapper: они не прокручиваются вместе со страницей #}
+    {% include "chat-widget.njk" %}
+    {% include "modal-request.njk" %}
+    {% include "modal-success.njk" %}
     <script type="module" src="/src/scripts/main.ts"></script>
   </body>
 </html>

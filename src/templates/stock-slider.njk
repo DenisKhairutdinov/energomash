@@ -1,118 +1,109 @@
-{# Техника в наличии: слайдер — одна модель крупно. Поверх фото справа внизу плашка с названием модели; #}
+{# Техника в наличии: слайдер — одна модель крупно. Поверх фото справа внизу панель с названием модели; #}
 {# при наведении на слайд она раскрывается и показывает характеристики. #}
-{# В слайдере — подборка последних поступлений, а не весь склад: слева стоит общее число моделей, #}
-{# а на последнем слайде над названием модели есть переход в каталог к остальным. #}
+{# Слайды собирает scripts/modules/stock-slides.ts из каталога (public/data/catalog.json): разная техника в наличии с фото. #}
+{# Он же ставит слева общее число моделей на складе, а на последнем слайде — переход «Ещё N моделей» в каталог. #}
+{# Стрелки листания и индикатор стоят прямо на слайдах; слайды листаются сами (data-slider-autoplay — секунд на слайд). #}
 {# Слайды лежат стопкой, виден помеченный is-active; смену слайдов ведёт scripts/modules/slider.ts #}
-{% import "stock-data.njk" as stock %}
-{% set rest = stock.total - (stock.items | length) %}
 <section
   class="stock-slider"
   data-fullpage-section
   data-fullpage-label="Техника в наличии"
   data-reveal-group
   data-slider
+  data-slider-autoplay="6"
 >
   <div class="stock-slider__head">
     <div class="stock-slider__heading" data-reveal>
       <h2 class="stock-slider__title">Техника<br />в наличии</h2>
     </div>
     <div class="stock-slider__controls" data-reveal>
-      <p class="stock-slider__count">
-        <span class="stock-slider__count-value">{{ stock.total }}</span>
-        <span class="stock-slider__count-label">{{ stock.models(stock.total) }} на складе</span>
+      <p class="stock-slider__count" hidden data-stock-count>
+        <span class="stock-slider__count-value" data-stock-count-value></span>
+        <span class="stock-slider__count-label" data-stock-count-label></span>
       </p>
-      <div class="stock-slider__selection">
-        <span class="stock-slider__selection-label">Новые поступления</span>
-        <div class="stock-slider__progress" aria-hidden="true">
-          <span class="stock-slider__progress-bar" data-slider-progress></span>
-        </div>
-      </div>
-      <div class="stock-slider__nav">
-        <button
-          class="stock-slider__arrow"
-          type="button"
-          aria-label="Предыдущий слайд"
-          data-slider-prev
-        >
-          <svg class="stock-slider__arrow-icon stock-slider__arrow-icon--prev" aria-hidden="true">
-            <use href="#icon-expand-right"></use>
-          </svg>
-        </button>
-        <button
-          class="stock-slider__arrow"
-          type="button"
-          aria-label="Следующий слайд"
-          data-slider-next
-        >
-          <svg class="stock-slider__arrow-icon" aria-hidden="true">
-            <use href="#icon-expand-right"></use>
-          </svg>
-        </button>
-      </div>
       <a class="stock-slider__button" href="/catalog.html?in-stock=1">Смотреть всё наличие</a>
     </div>
   </div>
   <div class="stock-slider__viewport" data-reveal>
-    <div class="stock-slider__track">
-      {% for item in stock.items %}
-        <article class="stock-slider__slide {{ 'is-active' if loop.first }}" data-slider-slide>
-          <div class="stock-slider__media" data-slider-media>
-            <img
-              class="stock-slider__image"
-              src="{{ item.image }}"
-              width="1800"
-              height="1350"
-              alt="{{ item.type }} {{ item.model }}"
-              loading="lazy"
-              data-slider-image
-            />
-            <span class="stock-slider__badge">В наличии</span>
-          </div>
-          <div class="stock-slider__aside" data-slider-panel>
-            {# На последнем слайде подборки над названием модели — переход к остальной технике в наличии #}
-            {% if loop.last and rest > 0 %}
-              <a class="stock-slider__rest" href="/catalog.html?in-stock=1">
-                <span class="stock-slider__rest-text">
-                  <span class="stock-slider__rest-label" data-slider-text>
-                    Вся техника на складе
-                  </span>
-                  <span class="stock-slider__rest-title" data-slider-text>
-                    Ещё {{ rest }} {{ stock.models(rest) }}
-                  </span>
-                </span>
-                <span class="stock-slider__more" aria-hidden="true" data-slider-text>
-                  <svg class="stock-slider__more-icon">
-                    <use href="#icon-expand-right"></use>
-                  </svg>
-                </span>
-              </a>
-            {% endif %}
-            <a class="stock-slider__panel" href="/product.html">
-              <span class="stock-slider__panel-head">
-                <span class="stock-slider__heading">
-                  <span class="stock-slider__type" data-slider-text>{{ item.type }}</span>
-                  <span class="stock-slider__model" data-slider-text>{{ item.model }}</span>
-                </span>
-                <span class="stock-slider__more" aria-hidden="true" data-slider-text>
-                  <svg class="stock-slider__more-icon">
-                    <use href="#icon-expand-right"></use>
-                  </svg>
-                </span>
-              </span>
-              <span class="stock-slider__details">
-                <span class="stock-slider__specs">
-                  {% for spec in item.specs %}
-                    <span class="stock-slider__spec" data-slider-text>
-                      <span class="stock-slider__spec-label">{{ spec[0] }}</span>
-                      <span class="stock-slider__spec-value">{{ spec[1] }}</span>
-                    </span>
-                  {% endfor %}
-                </span>
-              </span>
-            </a>
-          </div>
-        </article>
-      {% endfor %}
+    {# Стрелки лежат поверх слайдов, в нижнем левом углу фото: слайды листаются там же, где их смотрят #}
+    <div class="stock-slider__nav" data-slider-nav>
+      <button
+        class="stock-slider__arrow"
+        type="button"
+        aria-label="Предыдущий слайд"
+        data-slider-prev
+      >
+        <svg class="stock-slider__arrow-icon stock-slider__arrow-icon--prev" aria-hidden="true">
+          <use href="#icon-expand-right"></use>
+        </svg>
+      </button>
+      <button
+        class="stock-slider__arrow"
+        type="button"
+        aria-label="Следующий слайд"
+        data-slider-next
+      >
+        <svg class="stock-slider__arrow-icon" aria-hidden="true">
+          <use href="#icon-expand-right"></use>
+        </svg>
+      </button>
+      {# Индикатор положения стоит рядом со стрелками: сколько слайдов подборки уже пройдено #}
+      <div class="stock-slider__progress" aria-hidden="true">
+        <span class="stock-slider__progress-bar" data-slider-progress></span>
+      </div>
     </div>
+    <div class="stock-slider__track" data-stock-track></div>
   </div>
+  {# Заготовка слайда: скрипт копирует её на каждую модель и подставляет данные по data-slide-* #}
+  <template data-stock-slide-template>
+    <article class="stock-slider__slide" data-slider-slide>
+      <div class="stock-slider__media" data-slider-media>
+        <img
+          class="stock-slider__image"
+          width="1600"
+          height="1200"
+          alt=""
+          decoding="async"
+          data-slider-image
+          data-slide-image
+        />
+        <span class="stock-slider__badge" data-slide-badge>В наличии</span>
+      </div>
+      <div class="stock-slider__aside" data-slider-panel>
+        {# Переход к остальной технике: остаётся только на последнем слайде, число подставляет скрипт #}
+        <a class="stock-slider__rest" href="/catalog.html?in-stock=1" hidden data-stock-rest>
+          <span class="stock-slider__rest-text">
+            <span class="stock-slider__rest-label" data-slider-text>Вся техника на складе</span>
+            <span class="stock-slider__rest-title" data-slider-text data-stock-rest-title></span>
+          </span>
+          <span class="stock-slider__more" aria-hidden="true" data-slider-text>
+            <svg class="stock-slider__more-icon">
+              <use href="#icon-expand-right"></use>
+            </svg>
+          </span>
+        </a>
+        <a class="stock-slider__panel" href="/product.html" data-slide-link>
+          <span class="stock-slider__panel-head">
+            <span class="stock-slider__heading">
+              <span class="stock-slider__type" data-slider-text data-slide-type></span>
+              <span class="stock-slider__model" data-slider-text data-slide-model></span>
+            </span>
+            <span class="stock-slider__more" aria-hidden="true" data-slider-text>
+              <svg class="stock-slider__more-icon">
+                <use href="#icon-expand-right"></use>
+              </svg>
+            </span>
+          </span>
+          <span class="stock-slider__details">
+            <span class="stock-slider__specs" data-slide-specs>
+              <span class="stock-slider__spec" data-slider-text data-slide-spec>
+                <span class="stock-slider__spec-label" data-slide-spec-label></span>
+                <span class="stock-slider__spec-value" data-slide-spec-value></span>
+              </span>
+            </span>
+          </span>
+        </a>
+      </div>
+    </article>
+  </template>
 </section>

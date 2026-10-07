@@ -29,8 +29,10 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
   &__controls {
     display: flex;
     flex-direction: column;
-    gap: rem(24);
+    gap: rem(20);
     align-items: flex-start;
+
+    inline-size: 100%;
   }
 
   // Сколько моделей в наличии всего — крупно: в слайдере только подборка из них
@@ -53,25 +55,27 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
     color: $primary;
   }
 
-  // Подпись подборки и её полоса прогресса
-  &__selection {
+  // Стрелки лежат на слайдах, в нижнем левом углу фото, выше слайдов по слою (при смене слайд получает z-index)
+  &__nav {
+    position: absolute;
+    z-index: 3;
+    inset-block-end: rem(32);
+    inset-inline-start: rem(32);
+
     display: flex;
-    flex-direction: column;
     gap: rem(8);
+    align-items: center;
   }
 
-  &__selection-label {
-    @include caption;
-
-    color: $dark-grey;
-  }
-
-  // Полоса прогресса: акцентная часть растёт слева по мере перелистывания (slider.ts)
+  // Индикатор рядом со стрелками: акцентная часть растёт слева по мере перелистывания (slider.ts)
   &__progress {
     overflow: hidden;
-    inline-size: rem(160);
+
+    inline-size: rem(120);
     block-size: rem(2);
-    background-color: $bg;
+    margin-inline-start: rem(8);
+
+    background-color: $line-dark;
   }
 
   &__progress-bar {
@@ -86,12 +90,8 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
     transition: scale $slow $ease-out;
   }
 
-  &__nav {
-    display: flex;
-    gap: rem(8);
-  }
-
-  // Квадратные стрелки с рамкой, как кнопка-стрелка в карточках каталога: при наведении заливаются
+  // Квадратные стрелки без рамки на тёмной подложке: фото под ними разное, а на светлом небе светлая стрелка бы пропала.
+  // При наведении заливаются акцентным, как кнопки-стрелки на плитках
   &__arrow {
     cursor: pointer;
 
@@ -102,19 +102,16 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
     inline-size: rem(44);
     block-size: rem(44);
     padding: 0;
-    border: 1px solid $primary;
+    border: none;
 
-    color: $primary;
+    color: $secondary;
 
-    background-color: transparent;
+    background-color: $primary;
 
-    transition:
-      color $fast $ease-out,
-      background-color $fast $ease-out;
+    transition: background-color $fast $ease-out;
 
     &:hover {
-      color: $secondary;
-      background-color: $primary;
+      background-color: $accent;
     }
 
     &:focus-visible {
@@ -144,6 +141,7 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
   // Окно слайдера занимает три колонки; слайды лежат в нём стопкой, один поверх другого
   &__viewport {
+    position: relative;
     overflow: hidden;
     grid-column: 2 / -1;
     min-inline-size: 0;
@@ -157,9 +155,16 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
   // Слайд: фото на всю ширину, поверх его правой трети внизу — полупрозрачная панель с названием модели.
   // При наведении на слайд панель раскрывается и показывает характеристики
   &__slide {
+    // Своя область наложения: затемнение слайда не должно ложиться на соседний при смене слайдов
+    isolation: isolate;
+    position: relative;
+
     display: grid;
     grid-area: 1 / 1;
-    grid-template-columns: 2fr 1fr;
+
+    // Ширина правой колонки — по содержимому панели, не меньше двух пятых слайда: название модели в одну строку,
+    // в ряд четыре характеристики. Фото занимает слайд целиком, поэтому у разных слайдов панель может быть разной
+    grid-template-columns: minmax(0, 1fr) auto;
 
     min-inline-size: 0;
     min-block-size: 0;
@@ -188,20 +193,15 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
       inset-block-end: 0;
       inset-inline: 0;
 
-      block-size: 45%;
+      block-size: 70%;
 
       background-image: linear-gradient(to top, $primary80, transparent);
-
-      transition: block-size $reveal-duration $reveal-ease;
     }
   }
 
-  &__slide:hover &__media::after,
-  &__slide:focus-within &__media::after {
-    block-size: 80%;
-  }
-
   &__image {
+    @include photo-grade;
+
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;
@@ -226,7 +226,7 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
   // Правая колонка слайда поверх фото, прижата к низу: панель модели,
   // а на последнем слайде над ней ещё и переход к остальной технике
   &__aside {
-    position: relative;
+    // Не позиционирована: растянутая ссылка панели отсчитывается от слайда и накрывает фото целиком
 
     display: flex;
     grid-column: 2;
@@ -234,11 +234,19 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
     flex-direction: column;
     align-self: end;
 
-    min-inline-size: 0;
+    // Ширина по самому широкому слайду (stock-slides.ts кладёт её в --stock-panel-width): название модели
+    // не переносится, четыре характеристики в ряд, и панель не меняет размер от слайда к слайду
+    inline-size: var(--stock-panel-width, max-content);
+    min-inline-size: rem(576);
+    max-inline-size: 60vw;
   }
 
-  // Переход к остальной технике в наличии: полупрозрачная акцентная плашка над панелью модели
+  // Переход к остальной технике в наличии: полупрозрачная акцентная плашка над панелью модели.
+  // Лежит выше растянутой ссылки панели, иначе клик по ней открывал бы страницу модели
   &__rest {
+    position: relative;
+    z-index: 2;
+
     display: flex;
     gap: rem(16);
     align-items: flex-end;
@@ -267,17 +275,16 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   // На акцентном фоне кнопка-стрелка при наведении заливается светлым, а не акцентным
-  &__rest &__more {
-    transition:
-      color $medium $ease-out,
-      border-color $medium $ease-out,
-      background-color $medium $ease-out;
-  }
-
   &__rest:hover &__more {
-    border-color: $secondary;
     color: $accent;
     background-color: $secondary;
+  }
+
+  &__panel::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: 0;
   }
 
   // Панель без собственного фона: текст лежит на затемнении фотографии.
@@ -287,12 +294,15 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
     flex-direction: column;
 
     min-inline-size: 0;
-    padding: rem(32);
+
+    // Снизу запас под виджет чата: панель дотягивается до нижнего правого угла окна,
+    // а стрелка справа от названия не должна оказаться под виджетом
+    padding: rem(32) rem(32) rem($corner-clearance);
 
     color: $secondary;
   }
 
-  // Стрелка стоит справа от названия модели, по его нижней линии — как в отгрузках и в блоге
+  // Стрелка стоит справа от названия модели, по его нижней линии
   &__panel-head {
     display: flex;
     gap: rem(16);
@@ -316,6 +326,7 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
   &__model {
     @include h2;
 
+    white-space: nowrap;
     transition: color $medium $ease-out;
   }
 
@@ -332,10 +343,11 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
     inline-size: rem(44);
     block-size: rem(44);
-    border: 1px solid $secondary;
+
+    background-color: $primary;
 
     transition:
-      border-color $medium $ease-out,
+      color $medium $ease-out,
       background-color $medium $ease-out;
   }
 
@@ -350,7 +362,6 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   &__panel:hover &__more {
-    border-color: $accent;
     background-color: $accent;
   }
 
@@ -360,48 +371,28 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   // Характеристики свёрнуты, пока курсор не на слайде: высота растёт от нуля, как в плитках отгрузок
-  &__details {
-    display: grid;
-    grid-template-rows: 0fr;
-    opacity: 0;
-    transition:
-      grid-template-rows $reveal-duration $reveal-ease,
-      opacity $medium $ease-out;
-  }
-
-  &__slide:hover &__details,
-  &__slide:focus-within &__details {
-    grid-template-rows: 1fr;
-    opacity: 1;
-  }
-
-  // Характеристики — как в плитках отгрузок: подпись сверху, значение под ней,
-  // колонки разделены вертикальной линией. Здесь колонок две, потому что панель узкая
+  // Характеристики — как в плитках отгрузок: четыре равные колонки, подпись сверху, значение под ней,
+  // между колонками вертикальная линия. Всегда видны под названием модели
   &__specs {
-    overflow: hidden;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: rem(28) rem(16);
-
+    grid-template-columns: repeat(4, minmax(0, rem(160)));
+    gap: rem(16);
     min-block-size: 0;
-
-    // Отступ от названия модели — внутри раскрывающегося блока, чтобы у свёрнутого его не было
-    &::before {
-      content: '';
-      grid-column: 1 / -1;
-      block-size: rem(4);
-    }
   }
 
   &__spec {
     display: flex;
     flex-direction: column;
     gap: rem(2);
+
     min-inline-size: 0;
 
-    &:nth-child(even) {
+    // Отступ от названия модели
+    margin-block-start: rem(20);
+
+    & + & {
       padding-inline-start: rem(16);
-      border-inline-start: 1px solid $dark-grey;
+      border-inline-start: 1px solid $line-dark;
     }
   }
 
@@ -411,29 +402,14 @@ $reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
     color: $light-grey;
   }
 
-  // Длинное значение (модель шасси) в узкой панели переносится, а не вылезает за колонку
   &__spec-value {
     @include lead-bold;
 
-    overflow-wrap: anywhere;
-  }
-
-  // Без курсора (тач-экраны) раскрыть панель нечем — характеристики видны сразу
-  @media (hover: none) {
-    &__details {
-      grid-template-rows: 1fr;
-      opacity: 1;
-    }
-
-    &__media::after {
-      block-size: 80%;
-    }
+    white-space: nowrap;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    &__progress-bar,
-    &__details,
-    &__media::after {
+    &__progress-bar {
       transition: none;
     }
   }
