@@ -77,33 +77,67 @@
 %}
 {# currentPage задаётся на странице в виде "раздел" или "раздел/подраздел" #}
 {% set currentPath = (currentPage or "").split("/") %}
-{# Рекурсивный вывод подменю: глубина вложенности не ограничена. urlSuffix дописывается ко всем ссылкам ветки #}
-{% macro submenu(items, activeId, nested, urlSuffix) %}
-  <div class="menu__dropdown {{ 'menu__dropdown--nested' if nested }}">
-    <ul class="menu__sublist">
-      {% for item in items %}
-        <li class="menu__subitem">
-          <a
-            class="menu__sublink {{ 'menu__sublink--active' if item.id == activeId }}"
-            href="{{ item.url }}{{ urlSuffix }}"
-            {% if item.children %}aria-haspopup="true"{% endif %}
-          >
-            <span>{{ item.title }}</span>
-            {% if item.children %}
+{# Выпадающая панель — сетка на всю ширину шапки, колонки совпадают с сеткой страницы. #}
+{# Если у разделов есть свои подразделы (каталог), они выводятся группами: заголовок группы и плитки. #}
+{# --i — порядковый номер ячейки для очерёдного появления. urlSuffix дописывается ко всем ссылкам #}
+{% macro megamenu(item, activeId, urlSuffix) %}
+  <div class="menu__dropdown">
+    {% if item.children[0].children %}
+      <div class="menu__groups">
+        {% for group in item.children %}
+          {% set groupIndex = loop.index0 %}
+          <div class="menu__group">
+            <a
+              class="menu__group-head menu__cell {{ 'menu__group-head--active' if group.id == activeId }}"
+              href="{{ group.url }}{{ urlSuffix }}"
+              style="--i: {{ groupIndex }}"
+            >
+              <span class="menu__group-title">{{ group.title }}</span>
+              <span class="menu__group-all">
+                Все модели
+                <svg class="menu__arrow" aria-hidden="true">
+                  <use href="#icon-expand-right"></use>
+                </svg>
+              </span>
+            </a>
+            <ul class="menu__tiles menu__tiles--half">
+              {% for child in group.children %}
+                <li class="menu__cell" style="--i: {{ loop.index + 1 }}">
+                  <a class="menu__tile" href="{{ child.url }}{{ urlSuffix }}">
+                    <span>{{ child.title }}</span>
+                    <svg class="menu__arrow" aria-hidden="true">
+                      <use href="#icon-expand-right"></use>
+                    </svg>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <ul class="menu__tiles">
+        {% for child in item.children %}
+          <li class="menu__cell" style="--i: {{ loop.index0 }}">
+            <a
+              class="menu__tile {{ 'menu__tile--active' if child.id == activeId }}"
+              href="{{ child.url }}{{ urlSuffix }}"
+            >
+              <span>{{ child.title }}</span>
               <svg class="menu__arrow" aria-hidden="true">
                 <use href="#icon-expand-right"></use>
               </svg>
-            {% endif %}
-          </a>
-          {% if item.children %}
-            {{ submenu(item.children, "", true, urlSuffix) }}
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
   </div>
 {% endmacro %}
-<nav class="menu" aria-label="Основное меню">
+{# Вид выпадающей панели: compact — компактная сетка под пунктом меню,
+   wide — сетка на всю ширину шапки по колонкам страницы (сохранённый вариант) #}
+{% set menuVariant = "wide" %}
+<nav class="menu menu--{{ menuVariant }}" aria-label="Основное меню">
   <ul class="menu__list">
     {% for item in menuItems %}
       <li class="menu__item">
@@ -115,7 +149,7 @@
           {{ item.title }}
         </a>
         {% if item.children %}
-          {{ submenu(item.children, currentPath[1] if item.id == currentPath[0] else "", false, item.urlSuffix or "") }}
+          {{ megamenu(item, currentPath[1] if item.id == currentPath[0] else "", item.urlSuffix or "") }}
         {% endif %}
       </li>
     {% endfor %}

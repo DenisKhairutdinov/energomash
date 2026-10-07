@@ -1,16 +1,16 @@
-$dropdown-offset: 8;
-$dropdown-padding: 12;
 $dropdown-open: 500ms;
 $dropdown-open-delay: 50ms;
 $dropdown-close: 150ms;
 $dropdown-close-delay: 80ms;
-$dropdown-intent: 100ms;
 
-// Пункты начинают появляться, когда панель уже наполовину развернулась
+// Ячейки начинают появляться, когда подложка уже наполовину развернулась
 $dropdown-items-delay: 120ms;
-$dropdown-stagger: 40ms;
+$dropdown-stagger: 35ms;
 $dropdown-item-shift: 12;
 $dropdown-hover: #f5f5f31f;
+
+// Линии сетки панели: светлые с малой непрозрачностью, как в футере
+$dropdown-line: #f5f5f326;
 $ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
 $corner-length: 6;
 $corner-width: 1px;
@@ -26,36 +26,14 @@ $corner-width: 1px;
   }
 
   // Пункт растянут на всю высоту шапки, чтобы курсор не терял hover по пути к выпадающему списку
+  // Пункт не позиционирован: выпадающая панель отсчитывается от шапки и занимает всю её ширину
   &__item {
-    position: relative;
     display: flex;
     align-items: center;
     block-size: 100%;
   }
 
-  // Подсветка гаснет плавно, а загорается сразу: при быстром движении по списку ничего не мигает
-  &__link,
-  &__sublink {
-    @include body-S;
-
-    display: block;
-
-    padding: rem(8) rem(12);
-
-    color: $primary;
-    white-space: nowrap;
-
-    transition:
-      color $fast $ease-out,
-      background-color $fast $ease-out;
-
-    &:focus-visible {
-      outline: 2px solid $accent;
-      outline-offset: 2px;
-    }
-  }
-
-  // Уголки по четырём углам пункта: восемь линий-градиентов, которые вырастают из углов.
+  // Пункт шапки. Уголки по четырём углам: восемь линий-градиентов, которые вырастают из углов.
   // В покое длина линий нулевая, при наведении и на текущей странице — $corner-length
   &__link {
     $line: linear-gradient($primary, $primary);
@@ -65,6 +43,13 @@ $corner-width: 1px;
     $shown:
       rem($corner-length) $corner-width,
       $corner-width rem($corner-length);
+
+    display: block;
+
+    padding: rem(8) rem(12);
+
+    color: $primary;
+    white-space: nowrap;
 
     background-image: $line, $line, $line, $line, $line, $line, $line, $line;
     background-repeat: no-repeat;
@@ -83,10 +68,17 @@ $corner-width: 1px;
       background-size $medium $ease-out,
       background-color $fast $ease-out;
 
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: 2px;
+    }
+
     &:hover,
     &--active {
       background-size: $shown, $shown, $shown, $shown;
     }
+
+    @include body-S;
   }
 
   &__item:hover > &__link,
@@ -111,22 +103,16 @@ $corner-width: 1px;
     background-color: $accent;
   }
 
-  // Панель тёмная, как плашки в hero и футер: на светлой шапке она читается отдельным слоем.
-  // Открывается в два такта: подложка разворачивается сверху вниз, следом по очереди поднимаются пункты.
+  // Панель — тёмная сетка на всю ширину шапки, сразу под ней. Колонки совпадают с сеткой страницы.
+  // Открывается в два такта: подложка разворачивается сверху вниз, следом по очереди поднимаются ячейки.
   // Закрывается коротким затуханием без движения; всё остальное сбрасывается уже невидимым.
   // Задержка перед закрытием прощает неточное движение курсора
   &__dropdown {
     will-change: opacity;
 
     position: absolute;
-    inset-block-start: calc(100% + #{rem($dropdown-offset)});
-    inset-inline-start: 0;
-
-    min-inline-size: rem(240);
-    padding: rem($dropdown-padding);
-
-    // Рамка и фон нарисованы подложкой ::after; прозрачная рамка сохраняет размеры панели
-    border: 1px solid transparent;
+    inset-block-start: 100%;
+    inset-inline: 0;
 
     visibility: hidden;
     opacity: 0;
@@ -135,61 +121,26 @@ $corner-width: 1px;
       opacity $dropdown-close $ease-out $dropdown-close-delay,
       visibility 0s linear $dropdown-close + $dropdown-close-delay;
 
-    // Невидимый мостик через зазор до родителя, чтобы hover не обрывался
-    &::before {
-      content: '';
-
-      position: absolute;
-      inset-block-end: 100%;
-      inset-inline: 0;
-
-      block-size: rem($dropdown-offset + 1);
-    }
-
-    // Подложка панели: фон, рамка и тень. Разворачивается от верхнего края.
-    // Вложенные панели лежат за её пределами, поэтому разворачивается подложка, а не сама панель
+    // Подложка: фон и тень. Разворачивается от верхнего края
     &::after {
       will-change: scale;
       content: '';
 
       position: absolute;
       z-index: -1;
-      inset: -1px;
+      inset: 0;
       transform-origin: top center;
       scale: 1 0;
-
-      border: 1px solid $dark-grey;
 
       background-color: $primary;
       box-shadow: $shadow-md;
 
       transition: scale 0s linear $dropdown-close + $dropdown-close-delay;
     }
-
-    // Вложенные уровни выезжают вправо от родительского пункта
-    &--nested {
-      inset-block-start: rem(-$dropdown-padding - 1);
-      inset-inline-start: calc(100% + #{rem($dropdown-padding + $dropdown-offset)});
-    }
-
-    // Их подложка разворачивается слева направо — в ту сторону, куда открывается панель
-    &--nested::after {
-      transform-origin: left center;
-      scale: 0 1;
-    }
-  }
-
-  &__dropdown--nested::before {
-    inset-block: 0;
-    inset-inline: auto 100%;
-    inline-size: rem($dropdown-padding + $dropdown-offset + 1);
-    block-size: auto;
   }
 
   &__item:hover > &__dropdown,
-  &__item:focus-within > &__dropdown,
-  &__subitem:hover > &__dropdown,
-  &__subitem:focus-within > &__dropdown {
+  &__item:focus-within > &__dropdown {
     visibility: visible;
     opacity: 1;
     transition:
@@ -198,9 +149,7 @@ $corner-width: 1px;
   }
 
   &__item:hover > &__dropdown::after,
-  &__item:focus-within > &__dropdown::after,
-  &__subitem:hover > &__dropdown::after,
-  &__subitem:focus-within > &__dropdown::after {
+  &__item:focus-within > &__dropdown::after {
     scale: 1;
     transition: scale $dropdown-open $ease-expo $dropdown-open-delay;
   }
@@ -210,32 +159,20 @@ $corner-width: 1px;
     transition: none;
   }
 
-  // Вложенный уровень открывается с небольшой паузой, а соседний в тот же момент исчезает:
-  // панели меняются чисто, а проход курсора по диагонали через соседние пункты ничего не переключает
-  &__subitem:hover > &__dropdown,
-  &__subitem:focus-within > &__dropdown {
-    transition-delay: $dropdown-intent;
+  // Сетка плиток: четыре колонки, как у секций страницы. Линии — правая и нижняя кромки ячеек
+  &__tiles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    // В группе каталога колонок две: группа сама занимает половину ширины
+    &--half {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
-  &__subitem:hover > &__dropdown::after,
-  &__subitem:focus-within > &__dropdown::after {
-    transition-delay: $dropdown-intent;
-  }
-
-  &__sublist:hover > &__subitem:not(:hover) > &__dropdown {
-    transition: all 0s linear $dropdown-intent;
-  }
-
-  // Пункты стоят вплотную: между ними нет мёртвых зон, где подсветка гасла бы на долю секунды
-  &__sublist {
-    display: flex;
-    flex-direction: column;
-  }
-
-  // Пункты проявляются по очереди, поднимаясь снизу. Закрытое состояние сбрасывается без анимации
-  // и только после того, как панель погасла: на закрытии пункты не двигаются
-  &__subitem {
-    position: relative;
+  // Ячейки поднимаются по очереди. Закрытое состояние сбрасывается без анимации
+  // и только после того, как панель погасла: на закрытии ячейки не двигаются
+  &__cell {
     translate: 0 rem($dropdown-item-shift);
     opacity: 0;
     transition:
@@ -243,59 +180,105 @@ $corner-width: 1px;
       opacity 0s linear $dropdown-close + $dropdown-close-delay;
   }
 
-  &__item:hover > &__dropdown > &__sublist > &__subitem,
-  &__item:focus-within > &__dropdown > &__sublist > &__subitem,
-  &__subitem:hover > &__dropdown > &__sublist > &__subitem,
-  &__subitem:focus-within > &__dropdown > &__sublist > &__subitem {
+  &__item:hover > &__dropdown &__cell,
+  &__item:focus-within > &__dropdown &__cell {
     translate: 0;
     opacity: 1;
     transition:
       translate $dropdown-open $ease-expo,
       opacity $dropdown-open $ease-expo;
+    transition-delay: calc(
+      #{$dropdown-open-delay + $dropdown-items-delay} + var(--i, 0) * #{$dropdown-stagger}
+    );
   }
 
-  // Очерёдность: каждый следующий пункт стартует на $dropdown-stagger позже предыдущего
-  @for $i from 1 through 8 {
-    &__item:hover > &__dropdown > &__sublist > &__subitem:nth-child(#{$i}),
-    &__item:focus-within > &__dropdown > &__sublist > &__subitem:nth-child(#{$i}) {
-      transition-delay: $dropdown-open-delay + $dropdown-items-delay + $i * $dropdown-stagger;
-    }
+  // Плитка: название и стрелка. Подложка под курсором загорается сразу, а гаснет плавно
+  &__tile {
+    @include body-M;
 
-    &__subitem:hover > &__dropdown > &__sublist > &__subitem:nth-child(#{$i}),
-    &__subitem:focus-within > &__dropdown > &__sublist > &__subitem:nth-child(#{$i}) {
-      transition-delay: $dropdown-intent + $dropdown-items-delay + $i * $dropdown-stagger;
-    }
-  }
-
-  // Пункт панели под курсором получает подложку светлее фона панели.
-  // Она загорается сразу, а гаснет плавно: при быстром движении по списку ничего не мигает
-  &__sublink {
     display: flex;
-    gap: rem(24);
+    gap: rem(16);
     align-items: center;
     justify-content: space-between;
 
+    block-size: 100%;
+    padding: rem(24) rem(32);
+    border-block-end: 1px solid $dropdown-line;
+    border-inline-end: 1px solid $dropdown-line;
+
     color: $secondary;
+
+    transition:
+      color $fast $ease-out,
+      background-color $fast $ease-out;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $dropdown-hover;
+      transition-duration: 0s;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: -2px;
+    }
+
+    // Текущий раздел
+    &--active {
+      color: $accent;
+    }
   }
 
-  &__sublink:not(.menu__sublink--active):hover,
-  &__subitem:hover > &__sublink:not(.menu__sublink--active),
-  &__subitem:focus-within > &__sublink:not(.menu__sublink--active) {
-    background-color: $dropdown-hover;
-    transition-duration: 0s;
+  // Каталог: две группы по половине ширины, у каждой заголовок и плитки
+  &__groups {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  &__sublink--active {
-    color: $primary;
-    background-color: $secondary;
+  &__group-head {
+    display: flex;
+    gap: rem(16);
+    align-items: baseline;
+    justify-content: space-between;
+
+    padding: rem(24) rem(32);
+    border-block-end: 1px solid $dropdown-line;
+    border-inline-end: 1px solid $dropdown-line;
+
+    color: $secondary;
+
+    transition: color $fast $ease-out;
+
+    &:hover,
+    &:focus-visible,
+    &--active {
+      color: $accent;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: -2px;
+    }
+  }
+
+  &__group-title {
+    @include h4;
+  }
+
+  &__group-all {
+    @include body-S;
+
+    display: flex;
+    gap: rem(4);
+    align-items: center;
+    white-space: nowrap;
   }
 
   &__arrow {
     flex-shrink: 0;
 
-    inline-size: rem(16);
-    block-size: rem(16);
-    margin-inline-end: rem(-4);
+    inline-size: rem(20);
+    block-size: rem(20);
 
     opacity: 0.5;
 
@@ -303,20 +286,71 @@ $corner-width: 1px;
     stroke-width: 2;
 
     transition:
-      translate $dropdown-open $ease-expo,
+      translate $medium $ease-out,
       opacity $fast $ease-out;
   }
 
-  &__subitem:hover > &__sublink > &__arrow,
-  &__subitem:focus-within > &__sublink > &__arrow {
-    translate: rem(3) 0;
+  &__tile:hover &__arrow,
+  &__tile:focus-visible &__arrow,
+  &__group-head:hover &__arrow,
+  &__group-head:focus-visible &__arrow {
+    translate: rem(4) 0;
     opacity: 1;
+  }
+
+  // Компактный вид: панель открывается под своим пунктом и по ширине содержимого.
+  // Те же плитки и линии, но меньше отступы и шрифт, колонок две, у групп каталога — по одной
+  &--compact &__item {
+    position: relative;
+  }
+
+  &--compact &__dropdown {
+    inset-inline: 0 auto;
+    inline-size: max-content;
+  }
+
+  &--compact &__tiles {
+    grid-template-columns: repeat(2, minmax(rem(220), auto));
+  }
+
+  &--compact &__tiles--half {
+    grid-template-columns: minmax(rem(240), auto);
+  }
+
+  &--compact &__groups {
+    grid-template-columns: repeat(2, auto);
+  }
+
+  &--compact &__tile {
+    @include body-S;
+
+    padding: rem(12) rem(16);
+  }
+
+  &--compact &__group-head {
+    padding: rem(12) rem(16);
+  }
+
+  &--compact &__group-title {
+    @include lead-bold;
+
+    font-size: rem(16);
+    line-height: rem(24);
+  }
+
+  &--compact &__group-all {
+    @include caption;
+  }
+
+  &--compact &__arrow {
+    inline-size: rem(16);
+    block-size: rem(16);
   }
 
   @media (prefers-reduced-motion: reduce) {
     &__dropdown,
     &__dropdown::after,
-    &__subitem,
+    &__cell,
     &__arrow {
       transition-delay: 0s !important;
       transition-duration: 0s !important;
