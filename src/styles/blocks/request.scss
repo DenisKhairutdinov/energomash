@@ -10,7 +10,7 @@ $field-size: 48;
 
   color: $primary;
 
-  background-image: linear-gradient(to right, $bg-grey 50%, $bg 50%);
+  background-color: $bg;
 
   &__intro {
     display: flex;
@@ -117,6 +117,7 @@ $field-size: 48;
     min-inline-size: 0;
     min-block-size: 0;
     padding: rem(32);
+    border-inline-start: 1px solid $line-light;
   }
 
   // Подпись над полем, как в окне заявки и фильтрах

@@ -98,7 +98,8 @@ $search-size: 44;
 
     color: $secondary;
 
-    background-color: $primary;
+    background-color: #0d0e13eb;
+    backdrop-filter: $glass-blur;
     box-shadow: $shadow-md;
 
     &[hidden] {

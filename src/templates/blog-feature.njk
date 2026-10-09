@@ -1,13 +1,33 @@
-{# Блог: слева крупно — самая свежая публикация, справа список остальных четырёх. Строка под курсором открывает свою на большом #}
-{# экране; когда курсор ушёл со списка, снова самая свежая (scripts/modules/blog.ts). Большой экран не кликабелен. #}
-{# Данные-заглушки (включая фото), позже придут из БД #}
+{# Блог: справа список из четырёх публикаций, слева на большом экране — открытая. По умолчанию открыта первая #}
+{# строка списка; строка под курсором открывает свою публикацию, а когда курсор ушёл со списка, возвращается первая #}
+{# (scripts/modules/blog.ts). Большой экран не кликабелен — переходить к публикации можно из списка. #}
+{# Данные-заглушки (включая фото, заголовки и описания — «рыба» для разнообразия), позже придут из БД #}
 {%
   set posts = [
-    { day: "01", month: "августа", datetime: "2026-08-01", rubric: "Новости и акции", image: "/src/assets/images/blog-placeholder.jpg" },
-    { day: "24", month: "июля", datetime: "2026-07-24", rubric: "Инженерные решения", image: "/src/assets/images/tech-semitrailer.jpg" },
-    { day: "15", month: "июля", datetime: "2026-07-15", rubric: "Гид по подбору", image: "/src/assets/images/shipment-1.jpg" },
-    { day: "03", month: "июля", datetime: "2026-07-03", rubric: "Опыт эксплуатации", image: "/src/assets/images/shipment-2.jpg" },
-    { day: "20", month: "июня", datetime: "2026-06-20", rubric: "Заводской ритм", image: "/src/assets/images/blog-placeholder.jpg" }
+    {
+      day: "24", month: "июля", datetime: "2026-07-24", rubric: "Инженерные решения",
+      title: "Почему для цистерн выбирают сталь 09Г2С",
+      excerpt: "Рассказываем, чем эта низколегированная сталь лучше обычной на морозе, как она ведёт себя при сварке и почему подходит для северных регионов.",
+      image: "/src/assets/images/tech-semitrailer.jpg"
+    },
+    {
+      day: "15", month: "июля", datetime: "2026-07-15", rubric: "Гид по подбору",
+      title: "Какой объём полуприцепа выбрать для нефти и ГСМ",
+      excerpt: "Сравниваем 18, 26 и 32 кубометра: что выгоднее по числу рейсов, нагрузке на ось и стоимости перевозки одного кубометра.",
+      image: "/src/assets/images/shipment-1.jpg"
+    },
+    {
+      day: "03", month: "июля", datetime: "2026-07-03", rubric: "Опыт эксплуатации",
+      title: "Три зимы на Севере: рассказ перевозчика",
+      excerpt: "Как ведёт себя термоцистерна при сорокаградусном морозе, что проверять перед рейсом и какие доработки мы внесли по итогам эксплуатации.",
+      image: "/src/assets/images/shipment-2.jpg"
+    },
+    {
+      day: "20", month: "июня", datetime: "2026-06-20", rubric: "Заводской ритм",
+      title: "Как собирают полуприцеп: экскурсия по цеху",
+      excerpt: "Показываем этапы сборки цистерны: резка, сварка, испытание на герметичность, покраска и приёмка перед отгрузкой.",
+      image: "/src/assets/images/blog-placeholder.jpg"
+    }
   ]
 %}
 <section
@@ -18,7 +38,12 @@
   data-blog
 >
   <div class="blog-feature__head">
-    <h2 class="blog-feature__title" data-reveal>Блог</h2>
+    <div class="blog-feature__intro">
+      <h2 class="blog-feature__title" data-reveal>Блог</h2>
+      <p class="blog-feature__subtitle" data-reveal>
+        Статьи завода о цистернах, сервисе и эксплуатации техники.
+      </p>
+    </div>
     {# Появление — на обёртке: GSAP ставит элементу inline-стили transform, и подъём кнопки при наведении не работал #}
     <div data-reveal>
       <a class="blog-feature__button" href="/blog.html">Смотреть все</a>
@@ -33,15 +58,17 @@
         data-blog-slide
         {{ 'aria-hidden="true"' | safe if not loop.first }}
       >
-        <img
-          class="blog-feature__image"
-          src="{{ post.image }}"
-          width="1024"
-          height="768"
-          alt=""
-          loading="lazy"
-          data-blog-image
-        />
+        <span class="blog-feature__zoom" data-reveal-image>
+          <img
+            class="blog-feature__image"
+            src="{{ post.image }}"
+            width="1024"
+            height="768"
+            alt=""
+            loading="lazy"
+            data-blog-image
+          />
+        </span>
         <span class="blog-feature__meta">
           <time class="blog-feature__date" datetime="{{ post.datetime }}" data-blog-text>
             <span class="blog-feature__day">{{ post.day }}</span>
@@ -60,12 +87,15 @@
       </div>
     {% endfor %}
   </div>
-  {# В списке — четыре публикации, кроме самой свежей: она стоит на большом экране, пока курсор не на списке. #}
-  {# Строка открытой публикации отмечена is-active #}
+  {# В списке — все четыре публикации; строка открытой публикации отмечена is-active, по умолчанию это первая. #}
   <ul class="blog-feature__list" data-blog-list>
     {% for post in posts %}
-      {% if not loop.first %}
-        <li class="blog-feature__item" data-blog-item="{{ loop.index0 }}" data-reveal>
+      {% if true %}
+        <li
+          class="blog-feature__item {{ 'is-active' if loop.first }}"
+          data-blog-item="{{ loop.index0 }}"
+          data-reveal
+        >
           <a class="blog-feature__link" href="{{ post.url or '/blog-single.html' }}">
             <span class="blog-feature__meta">
               <time class="blog-feature__date" datetime="{{ post.datetime }}">

@@ -37,6 +37,17 @@
     {% include "chat-widget.njk" %}
     {% include "modal-request.njk" %}
     {% include "modal-success.njk" %}
+    {# Полоса прокрутки при постраничной листании скрыта (main.scss, .has-fullpage). Класс ставится сразу при #}
+    {# разборе страницы, а не когда загрузится модуль fullpage.ts: иначе полоса исчезала бы уже после показа страницы #}
+    {# и вся вёрстка сдвигалась на её ширину. Условия те же, что у fullpage.ts: десктоп и больше одной секции #}
+    <script>
+      if (
+        matchMedia('(min-width: 1200px)').matches &&
+        document.querySelectorAll('[data-fullpage-section]').length > 1
+      ) {
+        document.documentElement.classList.add('has-fullpage');
+      }
+    </script>
     <script type="module" src="/src/scripts/main.ts"></script>
   </body>
 </html>

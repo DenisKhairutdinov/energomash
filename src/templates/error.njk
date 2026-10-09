@@ -1,0 +1,61 @@
+{# Страница ошибки. Ждёт переменные из страницы: errorCode (404, 403, 500, 503), errorLabel — подпись над кодом, #}
+{# errorTitle и errorText — заголовок и пояснение, errorActions — кнопки: { text, href } или { text, reload: true }, #}
+{# ghost: true делает кнопку второстепенной. Ниже всегда идут быстрые ссылки по разделам: с ошибки человек должен выйти за один клик #}
+{%
+  set quickLinks = [
+    { title: "Каталог", note: "Вся техника и фильтры", href: "/catalog.html" },
+    { title: "В наличии", note: "Что можно забрать сейчас", href: "/catalog.html?in-stock=1" },
+    { title: "О заводе", note: "Производство и гарантии", href: "/about.html" },
+    { title: "Контакты", note: "Телефон и адрес", href: "/contacts.html" }
+  ]
+%}
+<section
+  class="error"
+  data-fullpage-section
+  data-fullpage-label="Ошибка {{ errorCode }}"
+  data-error
+>
+  <div class="error__side">
+    <p class="error__label">{{ errorLabel }}</p>
+    <p class="error__code" aria-hidden="true">{{ errorCode }}</p>
+  </div>
+  <div class="error__body">
+    <svg class="error__picture" aria-hidden="true">
+      <use href="#icon-ppc"></use>
+    </svg>
+    <div class="error__text-block">
+      <h1 class="error__title">{{ errorTitle }}</h1>
+      <p class="error__text">{{ errorText }}</p>
+      <div class="error__actions">
+        {% for action in errorActions %}
+          {% if action.reload %}
+            <button
+              class="error__button {{ 'error__button--ghost' if action.ghost }}"
+              type="button"
+              data-reload
+            >
+              {{ action.text }}
+            </button>
+          {% else %}
+            <a
+              class="error__button {{ 'error__button--ghost' if action.ghost }}"
+              href="{{ action.href }}"
+            >
+              {{ action.text }}
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    <ul class="error__links">
+      {% for link in quickLinks %}
+        <li class="error__links-item">
+          <a class="error__link" href="{{ link.href }}">
+            <span class="error__link-title">{{ link.title }}</span>
+            <span class="error__link-note">{{ link.note }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

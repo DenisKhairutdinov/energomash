@@ -1,4 +1,6 @@
 import { loadCatalog, loadSpecs, originalPhotoUrl, photoUrl } from './catalog-data.ts';
+import { playProductIntro } from './product-motion.ts';
+import { renderRelated } from './product-related.ts';
 
 const ROOT_SELECTOR = '[data-product]';
 const TYPE_SELECTOR = '[data-product-type]';
@@ -15,6 +17,7 @@ const SPECS_SELECTOR = '[data-product-specs]';
 const OPTIONS_SELECTOR = '[data-product-options]';
 const OPTIONS_LIST_SELECTOR = '[data-product-options-list]';
 const ID_PARAMETER = 'id';
+const LAYER_CLEANUP_DELAY = 1400;
 const MAX_CELLS = 12;
 const WIDE_VALUE_LENGTH = 14;
 const MAX_OPTIONS = 6;
@@ -407,16 +410,32 @@ const renderPhotos = (
     return;
   }
 
-  const image = document.createElement('img');
-
-  image.className = 'product__image';
-  image.alt = `${item.typeLabel} ${item.model}`;
-  image.decoding = 'async';
-  media.prepend(image);
+  // Каждое фото — отдельный слой: новое проявляется поверх прежнего (с лёгким отъездом), а когда оно
+  // загрузилось и проявилось, старые слои убираются. Так смена кадра перетекает, а не мигает
+  let current: HTMLImageElement | undefined;
 
   const show = ({ preview, full }: { preview: string; full: string }): void => {
-    image.classList.remove('is-loaded');
-    image.addEventListener('load', () => image.classList.add('is-loaded'), { once: true });
+    const image = document.createElement('img');
+
+    image.className = 'product__image';
+    image.alt = `${item.typeLabel} ${item.model}`;
+    image.decoding = 'async';
+    image.addEventListener(
+      'load',
+      () => {
+        hideIcon();
+        current = image;
+        image.classList.add('is-loaded');
+        setTimeout(() => {
+          for (const layer of media.querySelectorAll('.product__image')) {
+            if (layer !== current) {
+              layer.remove();
+            }
+          }
+        }, LAYER_CLEANUP_DELAY);
+      },
+      { once: true },
+    );
     image.addEventListener(
       'error',
       () => {
@@ -425,9 +444,9 @@ const renderPhotos = (
       { once: true },
     );
     image.src = full;
+    media.append(image);
   };
 
-  image.addEventListener('load', hideIcon, { once: true });
   show(sources[0]);
 
   if (sources.length < 2) {
@@ -475,7 +494,7 @@ const renderPhotos = (
  * (файлы грузятся в момент открытия, а не зашиты в страницу) и заполняет готовую разметку.
  * Нет модели с таким id — вместо фото показывается сообщение со ссылкой в каталог.
  */
-export const initProduct = (): void => {
+export const initProduct = async (): Promise<void> => {
   const root = document.querySelector<HTMLElement>(ROOT_SELECTOR);
 
   if (!root) {
@@ -573,6 +592,9 @@ export const initProduct = (): void => {
         renderOptions(options, own.length > 0 ? own : pickCategoryOptions(item, items, specs));
       }
     }
+
+    playProductIntro(root);
+    renderRelated(item, items, item.code ? `${item.model} (код ${item.code})` : item.model);
   };
 
   const start = async (): Promise<void> => {
@@ -583,5 +605,5 @@ export const initProduct = (): void => {
     }
   };
 
-  void start();
+  await start();
 };

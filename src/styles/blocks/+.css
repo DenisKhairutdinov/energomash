@@ -4,6 +4,7 @@
 @import "./chat-widget.scss";
 @import "./consent.scss";
 @import "./cta.scss";
+@import "./error.scss";
 @import "./footer.scss";
 @import "./header.scss";
 @import "./hero.scss";
@@ -12,6 +13,8 @@
 @import "./page-end.scss";
 @import "./page-indicator.scss";
 @import "./product-card.scss";
+@import "./product-related.scss";
+@import "./product-trust.scss";
 @import "./product.scss";
 @import "./request.scss";
 @import "./search.scss";

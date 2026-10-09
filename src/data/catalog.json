@@ -30,7 +30,7 @@
     "purposes": [
       {
         "value": "fuel",
-        "label": "ГСМ"
+        "label": "Светлые нефтепродукты"
       },
       {
         "value": "refueler",
@@ -38,7 +38,7 @@
       },
       {
         "value": "oil",
-        "label": "Нефть"
+        "label": "Тёмные нефтепродукты"
       },
       {
         "value": "tech-water",
@@ -71,7 +71,7 @@
         "options": [
           {
             "value": "fuel",
-            "label": "ГСМ",
+            "label": "Светлые нефтепродукты",
             "count": 175
           },
           {
@@ -81,7 +81,7 @@
           },
           {
             "value": "oil",
-            "label": "Нефть",
+            "label": "Тёмные нефтепродукты",
             "count": 295
           },
           {

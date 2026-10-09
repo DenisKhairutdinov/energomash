@@ -15,6 +15,9 @@
   <div class="stock-slider__head">
     <div class="stock-slider__heading" data-reveal>
       <h2 class="stock-slider__title">Техника<br />в наличии</h2>
+      <p class="stock-slider__subtitle">
+        Готовые полуприцепы и цистерны на складе. Отгружаем в течение нескольких дней.
+      </p>
     </div>
     <div class="stock-slider__controls" data-reveal>
       <p class="stock-slider__count" hidden data-stock-count>
@@ -58,15 +61,17 @@
   <template data-stock-slide-template>
     <article class="stock-slider__slide" data-slider-slide>
       <div class="stock-slider__media" data-slider-media>
-        <img
-          class="stock-slider__image"
-          width="1600"
-          height="1200"
-          alt=""
-          decoding="async"
-          data-slider-image
-          data-slide-image
-        />
+        <span class="stock-slider__zoom" data-reveal-image>
+          <img
+            class="stock-slider__image"
+            width="1600"
+            height="1200"
+            alt=""
+            decoding="async"
+            data-slider-image
+            data-slide-image
+          />
+        </span>
         <span class="stock-slider__badge" data-slide-badge>В наличии</span>
       </div>
       <div class="stock-slider__aside" data-slider-panel>

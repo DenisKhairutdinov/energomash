@@ -6,7 +6,11 @@
 
   color: $secondary;
 
-  background-color: $primary;
+  // Фото под колонками: случайное из каталога (page-end-photo.ts кладёт его в --page-end-photo на секцию .page-end),
+  // пока оно не загрузилось — запасной кадр. Сквозь тёмное стекло колонок оно читается размытым пятном цвета
+  background:
+    linear-gradient(#0d0e1366, #0d0e13b3),
+    var(--page-end-photo, url('/src/assets/images/tech-semitrailer.jpg')) center / cover no-repeat;
 
   // Содержимое колонки идёт сверху вниз с одним шагом; второстепенное прижато к низу
   &__column {
@@ -17,6 +21,9 @@
 
     min-block-size: 0;
     padding: rem(32);
+
+    background-color: #0d0e1359;
+    backdrop-filter: $glass-blur;
 
     & + & {
       border-inline-start: 1px solid $line-dark;
@@ -131,7 +138,7 @@
     block-size: rem(20);
 
     stroke: currentcolor;
-    stroke-width: 2;
+    stroke-width: $arrow-stroke;
 
     transition: translate $medium $ease-out;
   }

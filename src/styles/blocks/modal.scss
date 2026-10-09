@@ -28,8 +28,17 @@ $close-size: 40;
   background-color: $primary60;
 
   // Затемнение рисует сам dialog, чтобы оно проявлялось вместе с панелью
+  // Размытие нарастает при открытии окна
   &::backdrop {
     background: transparent;
+    backdrop-filter: blur(8px);
+    transition: backdrop-filter 0.4s $ease-out;
+  }
+
+  &[open]::backdrop {
+    @starting-style {
+      backdrop-filter: blur(0);
+    }
   }
 
   &[open] {
@@ -50,7 +59,6 @@ $close-size: 40;
     min-block-size: min(100%, rem($modal-height));
     max-block-size: 100%;
 
-    background-color: $bg;
     box-shadow: $shadow-md;
   }
 
@@ -112,7 +120,7 @@ $close-size: 40;
 
     color: $secondary;
 
-    background-color: $primary;
+    background-color: #0d0e13bf;
   }
 
   &__label {
@@ -184,9 +192,11 @@ $close-size: 40;
   }
 
   // Светлая половина: форма или подтверждение на её месте
+  // Вся правая половина светлая: панель прозрачная, чтобы тёмная половина слева была стеклом
   &__content {
     min-inline-size: 0;
     padding: rem(32);
+    background-color: $bg;
   }
 
   &__form {
@@ -293,7 +303,7 @@ $close-size: 40;
 
     color: $secondary;
 
-    background-color: $primary;
+    background-color: #0d0e13eb;
   }
 
   // На тёмной панели крестик светлый

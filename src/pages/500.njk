@@ -1,0 +1,13 @@
+{% set pageTitle = "Ошибка сервера — Энергомаш" %}
+{% set errorCode = "500" %}
+{% set errorLabel = "Ошибка сервера" %}
+{% set errorTitle = "Что-то пошло не так на нашей стороне" %}
+{% set errorText = "Страница не открылась из-за сбоя на сервере. Попробуйте обновить её через минуту. Если ошибка повторяется, оставьте заявку или позвоните, мы ответим по телефону." %}
+{% set errorActions = [
+  { text: "Обновить страницу", reload: true },
+  { text: "На главную", href: "/", ghost: true }
+] %}
+{% extends "layout.njk" %}
+{% block content %}
+  {% include "error.njk" %}
+{% endblock %}

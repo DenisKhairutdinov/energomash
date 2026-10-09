@@ -1,0 +1,23 @@
+{# Второй экран страницы модели: слева заголовок и переход в каталог, справа до шести похожих моделей. #}
+{# Модели подбирает scripts/modules/product-related.ts по типу, назначению, объёму и наличию; карточки собираются из той же заготовки, что в каталоге #}
+<section
+  class="product-related"
+  data-product-related
+  data-fullpage-section
+  data-fullpage-label="Похожие модели"
+>
+  <div class="product-related__head">
+    <div class="product-related__intro">
+      <h2 class="product-related__title">Похожие модели</h2>
+      <p class="product-related__text">
+        Техника того же типа и назначения. Сравните комплектации и наличие.
+      </p>
+    </div>
+    <a class="product-related__button" href="/catalog.html" data-related-more>Весь каталог</a>
+  </div>
+  <div class="product-related__list" data-related-list></div>
+  <template data-related-template>
+    {% set product = { template: true } %}
+    {% include "product-card.njk" %}
+  </template>
+</section>

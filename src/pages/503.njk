@@ -1,0 +1,13 @@
+{% set pageTitle = "Технические работы — Энергомаш" %}
+{% set errorCode = "503" %}
+{% set errorLabel = "Технические работы" %}
+{% set errorTitle = "Сайт временно недоступен" %}
+{% set errorText = "Мы обновляем каталог и скоро вернёмся. Заказать технику и узнать наличие можно по телефону: менеджеры на связи в обычном режиме." %}
+{% set errorActions = [
+  { text: "8 (800) 101-22-00", href: "tel:88001012200" },
+  { text: "Обновить страницу", reload: true, ghost: true }
+] %}
+{% extends "layout.njk" %}
+{% block content %}
+  {% include "error.njk" %}
+{% endblock %}

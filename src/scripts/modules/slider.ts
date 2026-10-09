@@ -180,9 +180,23 @@ export const initSliders = (): void => {
       // Пауза — пока курсор на панели с характеристиками или на стрелках: их читают и нажимают. Фото само
       // курсор не останавливает, иначе слайдер почти не листался бы: мышь обычно лежит где-то на нём.
       // Фокус не учитывается: после клика по стрелке он остаётся на ней и навсегда остановил бы автоплей
-      root.addEventListener('pointerover', (event) => {
-        const isOnControl =
-          event.target instanceof Element && event.target.closest(PAUSE_SELECTOR) !== null;
+      // Положение курсора сверяется с рамками панели и стрелок, а не с целью события: ссылка панели растянута
+      // на весь слайд, и цель под курсором у неё везде одна и та же
+      root.addEventListener('pointermove', (event) => {
+        const isOnControl = [...root.querySelectorAll<HTMLElement>(PAUSE_SELECTOR)].some(
+          (control) => {
+            const slide = control.closest(SLIDE_SELECTOR);
+            const box = control.getBoundingClientRect();
+
+            return (
+              (!slide || slide.classList.contains(ACTIVE_CLASS)) &&
+              event.clientX >= box.left &&
+              event.clientX <= box.right &&
+              event.clientY >= box.top &&
+              event.clientY <= box.bottom
+            );
+          },
+        );
 
         if (isOnControl !== isHovered) {
           isHovered = isOnControl;

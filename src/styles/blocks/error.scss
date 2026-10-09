@@ -1,0 +1,182 @@
+$code-size: 200;
+
+// Страница ошибки (404, 403, 500, 503): слева тёмная колонка с кодом, справа заголовок, пояснение, кнопки
+// и быстрые ссылки по разделам. Силуэт полуприцепа лежит внизу слева, правый нижний угол свободен под виджет чата
+.error {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  min-block-size: rem(901);
+  background-color: $bg;
+
+  @include section-full {
+    min-block-size: 0;
+  }
+
+  &__side {
+    // Строка кода выше своей высоты (line-height меньше кегля): без обрезки она давала бы лишние 19px прокрутки
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    min-inline-size: 0;
+    padding: rem(32);
+
+    color: $secondary;
+
+    background-color: $primary;
+  }
+
+  &__label {
+    @include caption;
+
+    margin: 0;
+    color: $light-grey;
+  }
+
+  &__code {
+    margin: 0;
+
+    font-family: Manrope-bold, sans-serif;
+    font-size: rem($code-size);
+    line-height: 0.85;
+    color: $accent;
+    letter-spacing: -0.04em;
+  }
+
+  &__body {
+    position: relative;
+
+    overflow: hidden;
+    display: flex;
+    grid-column: 2 / -1;
+    flex-direction: column;
+    justify-content: space-between;
+
+    min-inline-size: 0;
+    padding: rem(32);
+  }
+
+  // Силуэт — фон под текстом: еле заметный и не мешает читать
+  &__picture {
+    pointer-events: none;
+
+    position: absolute;
+    inset-block-end: rem(120);
+    inset-inline-start: rem(32);
+
+    inline-size: 80%;
+    block-size: 50%;
+
+    opacity: 0.12;
+
+    fill: $primary;
+  }
+
+  &__text-block {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+    align-items: flex-start;
+
+    max-inline-size: rem(720);
+    margin-block-start: rem(64);
+  }
+
+  &__title {
+    @include h1;
+
+    margin: 0;
+  }
+
+  &__text {
+    @include lead;
+
+    margin: 0;
+    color: $primary80;
+  }
+
+  &__actions {
+    display: flex;
+    gap: rem(16);
+    margin-block-start: rem(8);
+  }
+
+  &__button {
+    @include button-L;
+
+    cursor: pointer;
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: $primary;
+
+    transition:
+      translate $medium $ease-out,
+      box-shadow $medium $ease-out,
+      background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $accent;
+    }
+
+    // Второстепенная кнопка: светлая плашка вместо тёмной
+    &--ghost {
+      color: $primary;
+      background-color: $bg-grey;
+
+      &:hover {
+        color: $secondary;
+      }
+    }
+  }
+
+  // Быстрые ссылки по разделам: четыре плитки в ряд, линия сверху. Нижний правый угол остаётся свободным
+  &__links {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: rem(24);
+
+    padding-inline-end: rem($corner-clearance);
+  }
+
+  &__links-item {
+    min-inline-size: 0;
+  }
+
+  &__link {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+
+    padding-block-start: rem(16);
+    border-block-start: 1px solid $line-light;
+
+    transition: border-color $fast $ease-out;
+
+    &:hover {
+      border-color: $accent;
+    }
+  }
+
+  &__link-title {
+    @include lead-bold;
+
+    transition: color $fast $ease-out;
+  }
+
+  &__link:hover &__link-title {
+    color: $accent;
+  }
+
+  &__link-note {
+    @include caption;
+
+    color: $dark-grey;
+  }
+}

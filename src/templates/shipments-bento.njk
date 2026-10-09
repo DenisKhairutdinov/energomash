@@ -41,10 +41,10 @@
 {%
   set tones = [
     { label: "Оригинал", filter: "none" },
-    { label: "Чёрно-белое, светлое", filter: "grayscale(1) brightness(1.08) contrast(0.95)" },
-    { label: "Чёрно-белое, тёмное", filter: "grayscale(1) brightness(0.72) contrast(1.25)" },
-    { label: "Сепия, светлая", filter: "sepia(0.55) contrast(1.05)" },
-    { label: "Сепия, тёмная", filter: "sepia(1) brightness(0.82) contrast(1.1)" }
+    { label: "Чёрно-белое, светлое", filter: "none" },
+    { label: "Чёрно-белое, тёмное", filter: "none" },
+    { label: "Сепия, светлая", filter: "none" },
+    { label: "Сепия, тёмная", filter: "none" }
   ]
 %}
 {# Места плиток в сетке. Без скриптов остаётся эта расстановка: первая крупно, две справа #}
@@ -57,7 +57,12 @@
   data-reveal-group
 >
   <div class="shipments-bento__head">
-    <h2 class="shipments-bento__title" data-reveal>Недавно отгруженная техника</h2>
+    <div class="shipments-bento__intro">
+      <h2 class="shipments-bento__title" data-reveal>Недавно отгруженная техника</h2>
+      <p class="shipments-bento__subtitle" data-reveal>
+        Свежие поставки заказчикам: модели, города и даты отгрузки.
+      </p>
+    </div>
     {# Появление — на обёртке: GSAP ставит элементу inline-стили transform, и подъём кнопки при наведении не работал #}
     <div data-reveal>
       <a class="shipments-bento__button" href="/shipments.html">Смотреть всю технику</a>
@@ -70,16 +75,18 @@
       data-place="{{ places[loop.index0] }}"
     >
       <a class="shipments-bento__link" href="/product.html" data-reveal>
-        <img
-          class="shipments-bento__image"
-          src="{{ item.image }}"
-          width="1800"
-          height="1350"
-          alt="{{ item.type }} {{ item.model }}"
-          loading="lazy"
-          style="--focus: {{ item.focus }}"
-          data-shipments-image
-        />
+        <span class="shipments-bento__zoom" data-reveal-image>
+          <img
+            class="shipments-bento__image"
+            src="{{ item.image }}"
+            width="1800"
+            height="1350"
+            alt="{{ item.type }} {{ item.model }}"
+            loading="lazy"
+            style="--focus: {{ item.focus }}"
+            data-shipments-image
+          />
+        </span>
         <span class="shipments-bento__shipped">
           <time datetime="{{ item.datetime }}">{{ item.date }}</time> · {{ item.city }}
         </span>

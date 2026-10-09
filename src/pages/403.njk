@@ -1,0 +1,13 @@
+{% set pageTitle = "Доступ закрыт — Энергомаш" %}
+{% set errorCode = "403" %}
+{% set errorLabel = "Доступ закрыт" %}
+{% set errorTitle = "У вас нет доступа к этой странице" %}
+{% set errorText = "Раздел закрыт или доступен только сотрудникам и партнёрам. Если вы считаете, что это ошибка, позвоните нам, и мы разберёмся." %}
+{% set errorActions = [
+  { text: "На главную", href: "/" },
+  { text: "8 (800) 101-22-00", href: "tel:88001012200", ghost: true }
+] %}
+{% extends "layout.njk" %}
+{% block content %}
+  {% include "error.njk" %}
+{% endblock %}

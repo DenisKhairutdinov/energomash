@@ -1,6 +1,7 @@
 $thumb-size: 88;
 
-// Страница модели, первый экран: слева серая колонка с названием и кнопкой, справа фото на три колонки
+// Страница модели, первый экран: слева колонка с названием, наличием, кнопкой и характеристиками,
+// справа фото на три колонки
 .product {
   position: relative;
 
@@ -23,12 +24,11 @@ $thumb-size: 88;
     grid-row: 1 / -1;
     flex-direction: column;
     gap: rem(20);
-    justify-content: space-between;
 
     min-block-size: 0;
     padding: rem(32);
 
-    background-color: $white;
+    background-color: $bg;
   }
 
   &__back {
@@ -55,7 +55,7 @@ $thumb-size: 88;
     block-size: rem(20);
 
     stroke: currentcolor;
-    stroke-width: 2;
+    stroke-width: $arrow-stroke;
   }
 
   &__heading {
@@ -101,11 +101,19 @@ $thumb-size: 88;
     }
   }
 
+  // Наличие и кнопка под названием, отделены линиями сверху и снизу
   &__buy {
     display: flex;
+    flex-direction: column;
     gap: rem(16);
-    align-items: center;
-    justify-content: space-between;
+    align-items: flex-start;
+
+    margin-block-end: rem(-20);
+
+    // Нижний отрицательный отступ гасит общий зазор колонки (20px): от кнопки до линии остаётся только padding
+    margin-inline: rem(-32);
+    padding: rem(16) rem(32);
+    border-block-start: 1px solid $line-light;
   }
 
   &__status {
@@ -123,8 +131,10 @@ $thumb-size: 88;
       background-color: $dark-grey;
     }
 
+    // Наличие мягко «дышит»: от точки расходится и гаснет кольцо
     &--in::before {
       background-color: $accent;
+      animation: product-status-pulse 2.4s ease-out infinite;
     }
   }
 
@@ -138,7 +148,10 @@ $thumb-size: 88;
 
     background-color: $primary;
 
-    transition: background-color $fast $ease-out;
+    transition:
+      color $fast $ease-out,
+      border-color $fast $ease-out,
+      background-color $fast $ease-out;
 
     &:hover {
       background-color: $accent;
@@ -164,8 +177,6 @@ $thumb-size: 88;
   }
 
   &__image {
-    @include photo-grade;
-
     position: absolute;
     inset: 0;
 
@@ -175,8 +186,9 @@ $thumb-size: 88;
     opacity: 0;
     object-fit: cover;
 
-    transition: opacity $slow $ease-out;
+    transition: opacity 0.9s $ease-out;
 
+    // Новое фото проявляется поверх прежнего
     &.is-loaded {
       opacity: 1;
     }
@@ -284,22 +296,24 @@ $thumb-size: 88;
   }
 }
 
-
-// Основные характеристики в левой колонке: плитки по две в ряд на белом, вплотную друг к другу.
+// Основные характеристики: плитки по две в ряд, вплотную друг к другу.
 // Плитки тянутся на всю свободную высоту колонки (но не ниже 88px): подпись сверху, значение прижато к низу,
-// так значения образуют ровную нижнюю линию, а подписи — верхнюю. Линия везде 1px: у сетки сверху и слева,
-// у каждой плитки справа и снизу — общие стороны не удваиваются
+// так значения образуют ровную нижнюю линию, а подписи — верхнюю. Ячейки — как карточки каталога: плоские, на тонких
+// линиях (линия — просвет в 1px над цветом линии), без серой заливки; доходят до краёв колонки, при наведении белеют
 .product__specs {
   display: grid;
   grid-auto-flow: dense;
   grid-auto-rows: minmax(rem(88), 1fr);
   grid-template-columns: repeat(2, minmax(0, 1fr));
   flex: 1 1 0;
+  gap: 1px;
 
   min-block-size: 0;
   margin: 0;
-  border-block-start: 1px solid $line-light;
-  border-inline-start: 1px solid $line-light;
+  margin-inline: rem(-32);
+  border-block: 1px solid $line-light;
+
+  background-color: color-mix(in srgb, $primary 12%, $bg);
 }
 
 .product__spec {
@@ -309,12 +323,35 @@ $thumb-size: 88;
   justify-content: space-between;
 
   min-inline-size: 0;
-  padding: rem(14) rem(16);
-  border-block-end: 1px solid $line-light;
-  border-inline-end: 1px solid $line-light;
+  padding: rem(14) rem(32);
+
+  background-color: $bg;
+
+  transition: background-color $medium $ease-out;
+
+  &:hover {
+    background-color: $white;
+  }
 
   &--wide {
     grid-column: 1 / -1;
+  }
+}
+
+@keyframes product-status-pulse {
+  0% {
+    box-shadow: 0 0 0 0 #c8603d80;
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 rem(8) #c8603d00;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product__status::before {
+    animation: none;
   }
 }
 
@@ -350,28 +387,32 @@ $thumb-size: 88;
   color: $dark-grey;
 }
 
-// Опции — ровная сетка по две в ряд, как характеристики, только мельче: подпись слева, маркер-квадрат акцентного цвета
+// Опции — ровная сетка по две в ряд, оформленная как характеристики, только мельче: плоские ячейки на линиях,
+// слева маркер-квадрат акцентного цвета
 .product__options-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
 
   margin: 0;
-  border-block-start: 1px solid $line-light;
-  border-inline-start: 1px solid $line-light;
+  margin-inline: rem(-32);
+  border-block: 1px solid $line-light;
+
+  background-color: color-mix(in srgb, $primary 12%, $bg);
 }
 
 .product__option {
-  @include caption;
-
   display: flex;
   gap: rem(8);
   align-items: center;
 
   min-inline-size: 0;
   min-block-size: rem(36);
-  padding: rem(6) rem(12);
-  border-block-end: 1px solid $line-light;
-  border-inline-end: 1px solid $line-light;
+  padding: rem(6) rem(32);
+
+  background-color: $bg;
+
+  transition: background-color $medium $ease-out;
 
   &::before {
     content: '';
@@ -383,4 +424,10 @@ $thumb-size: 88;
 
     background-color: $accent;
   }
+
+  &:hover {
+    background-color: $white;
+  }
+
+  @include caption;
 }

@@ -1,0 +1,76 @@
+{# Третий экран страницы модели: почему стоит купить у завода и как проходит заказ. Тексты — «рыба», #}
+{# цифры и сроки уточнит заказчик. Сетка как в футере: четыре равные колонки, по одной плитке на колонку, #}
+{# поэтому и преимуществ, и этапов ровно по четыре. Кнопка цены получает название модели от product.ts (data-product-cta) #}
+{%
+  set reasons = [
+    {
+      title: "Собственное производство",
+      text: "Полный цикл на заводе: раскрой, сварка, окраска и испытания цистерн под контролем ОТК."
+    },
+    {
+      title: "Сроки",
+      text: "Техника в наличии отгружается в течение нескольких дней, под заказ — по согласованному графику."
+    },
+    {
+      title: "Гарантия и сервис",
+      text: "Гарантия на цистерну и ходовую часть, склад запчастей и выездной сервис."
+    },
+    {
+      title: "Документы и допуски",
+      text: "ОТТС, сертификаты, помощь с регистрацией и допуском на перевозку опасных грузов."
+    }
+  ]
+%}
+{%
+  set steps = [
+    { title: "Заявка", text: "Оставьте заявку или позвоните: уточним задачу и подберём модель." },
+    { title: "Расчёт и договор", text: "Коммерческое предложение с комплектацией и ценой в тот же день. Возможен лизинг." },
+    { title: "Производство или отгрузка", text: "Со склада за несколько дней или изготовление под заказ." },
+    { title: "Передача", text: "Документы, обучение водителей и гарантийный талон." }
+  ]
+%}
+<section
+  class="product-trust"
+  data-product-trust
+  data-fullpage-section
+  data-fullpage-label="Почему Энергомаш"
+>
+  <div class="product-trust__why">
+    <h2 class="product-trust__title">Почему Энергомаш</h2>
+    <ul class="product-trust__reasons">
+      {% for reason in reasons %}
+        <li class="product-trust__reason" data-trust-item>
+          <span class="product-trust__index">0{{ loop.index }}</span>
+          <h3 class="product-trust__reason-title">{{ reason.title }}</h3>
+          <p class="product-trust__reason-text">{{ reason.text }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="product-trust__how">
+    <h2 class="product-trust__title">Как заказать</h2>
+    <div class="product-trust__actions">
+      <button
+        class="product-trust__button"
+        type="button"
+        data-modal-open="request"
+        data-modal-kind="price"
+        data-modal-model
+        data-product-cta
+      >
+        Узнать стоимость
+      </button>
+      <a class="product-trust__link" href="/leasing.html">Лизинг</a>
+      <a class="product-trust__link" href="/subsidies.html">Субсидии</a>
+    </div>
+    <ol class="product-trust__steps">
+      {% for step in steps %}
+        <li class="product-trust__step" data-trust-item>
+          <span class="product-trust__step-number">0{{ loop.index }}</span>
+          <span class="product-trust__step-title">{{ step.title }}</span>
+          <span class="product-trust__step-text">{{ step.text }}</span>
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>

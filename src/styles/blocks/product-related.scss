@@ -1,0 +1,127 @@
+// Похожие модели: слева колонка с заголовком и кнопкой, справа сетка 3×2 из тех же карточек, что в каталоге,
+// на серой подложке с зазором 8px
+.product-related {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  min-block-size: rem(901);
+  background-color: $bg;
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    gap: rem(32);
+    align-items: flex-start;
+    justify-content: space-between;
+
+    min-inline-size: 0;
+    padding: rem(32);
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: rem(20);
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+    color: $primary;
+  }
+
+  &__text {
+    @include body-L;
+
+    margin: 0;
+    color: $dark-grey;
+  }
+
+  &__button {
+    @include button-M;
+
+    color: $secondary;
+    white-space: nowrap;
+    background-color: $primary;
+    transition: background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $accent;
+    }
+  }
+
+  // Карточки те же, что в каталоге: плоские ячейки сетки 3 × 2 без зазоров, теней и серой подложки,
+  // разделены тонкими линиями. Ряды делят высоту поровну, фото занимает остаток ячейки
+  &__list {
+    --product-card-media-ratio: auto;
+
+    display: grid;
+    grid-column: 2 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+
+    min-block-size: 0;
+
+    background-color: $bg;
+  }
+
+  &__list .product-card {
+    transition: background-color $medium $ease-out;
+
+    &:not(:nth-child(3n)) {
+      border-inline-end: 1px solid $line-light;
+    }
+
+    &:nth-child(-n + 3) {
+      border-block-end: 1px solid $line-light;
+    }
+
+    &:hover {
+      background-color: $white;
+    }
+  }
+
+  &__list .product-card__body {
+    padding: rem(24) rem(32);
+  }
+
+  // Кнопка стоимости и стрелка появляются при наведении или фокусе; место под них занято, карточка не прыгает.
+  // На сенсорных экранах действия видны всегда
+  &__list .product-card__actions {
+    translate: 0 rem(6);
+    opacity: 0;
+    transition:
+      opacity $medium $ease-out,
+      translate $medium $ease-out;
+  }
+
+  &__list .product-card:hover .product-card__actions,
+  &__list .product-card:focus-within .product-card__actions {
+    translate: 0;
+    opacity: 1;
+  }
+
+  // Заглушка без фото: крупный бледный силуэт по центру кадра, как в каталоге
+  &__list .product-card__icon {
+    inset-block: 0;
+
+    inline-size: 76%;
+    block-size: 100%;
+
+    opacity: 0.45;
+
+    fill: $dark-grey;
+  }
+
+  @media (hover: none) {
+    &__list .product-card__actions {
+      translate: 0;
+      opacity: 1;
+    }
+  }
+
+  @include section-full {
+    grid-template-rows: minmax(0, 1fr);
+    min-block-size: 0;
+  }
+}

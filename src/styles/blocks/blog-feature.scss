@@ -26,6 +26,7 @@ $more-size: 44;
     // Длинное слово в заголовке не должно растягивать колонку общей сетки 4 × 1fr
     min-inline-size: 0;
     padding: rem(32);
+    border-inline-end: 1px solid $line-light;
 
     background-color: $bg;
   }
@@ -37,12 +38,31 @@ $more-size: 44;
     color: $primary;
   }
 
+  // Заголовок и подпись под ним: в шапке блока они сидят вместе вверху, кнопка внизу
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__subtitle {
+    @include body-L;
+
+    margin: 0;
+    color: $dark-grey;
+  }
+
   &__button {
     @include button-M;
 
     color: $secondary;
     white-space: nowrap;
     background-color: $primary;
+    transition: background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $accent;
+    }
   }
 
   // Большой экран занимает две колонки; публикации лежат в нём стопкой
@@ -95,6 +115,13 @@ $more-size: 44;
     }
   }
 
+  // Обёртка картинки: на ней идёт приближение при появлении секции, на самой картинке — смена публикаций (blog.ts)
+  &__zoom {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+
   &__image {
     position: absolute;
     inset: 0;
@@ -121,7 +148,7 @@ $more-size: 44;
   }
 
   &__rubric {
-    @include caption;
+    @include body-S;
 
     overflow: hidden;
 
@@ -150,7 +177,7 @@ $more-size: 44;
   }
 
   &__month {
-    @include caption;
+    @include body-S;
   }
 
   &__text {
@@ -229,7 +256,7 @@ $more-size: 44;
     block-size: rem(24);
 
     stroke: currentcolor;
-    stroke-width: 2;
+    stroke-width: $arrow-stroke;
 
     transition: translate $medium $ease-out;
   }
@@ -279,10 +306,10 @@ $more-size: 44;
     transition: background-color $fast $ease-out;
   }
 
-  // Строка выбранной публикации серая. Выбор происходит сразу при наведении (blog.ts), поэтому
+  // Строка выбранной публикации белая. Выбор происходит сразу при наведении (blog.ts), поэтому
   // отдельного стиля наведения нет, а заливка меняется почти мгновенно: без запаздывания за курсором
   &__item.is-active &__link {
-    background-color: $bg-grey;
+    background-color: $white;
   }
 
   // В строке списка стрелка стоит у правого края под рубрикой: у нижней строки она оказывается

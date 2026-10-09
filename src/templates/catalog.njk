@@ -5,7 +5,11 @@
 <section class="catalog" data-fullpage-section data-fullpage-label="Каталог">
   <div class="catalog__intro">
     <h1 class="catalog__title">Каталог</h1>
+    <p class="catalog__lead">
+      Полуприцепы-цистерны и цистерны на шасси завода. Выберите тип техники и уточните параметры в фильтре.
+    </p>
   </div>
+  {# Тип техники: две строки-вкладки и под ними крупный чертёж выбранного типа (показ — стилями через :has) #}
   <div class="catalog__types" role="radiogroup" aria-label="Тип техники">
     <label class="catalog__type">
       <input
@@ -14,15 +18,14 @@
         name="type"
         value="semitrailer"
         form="catalog-filter"
+        checked
       />
       <span class="catalog__type-body">
-        <span class="catalog__type-head">
-          <span class="catalog__type-title">Полуприцепы-<br />цистерны</span>
-          <span class="catalog__type-mark" aria-hidden="true"></span>
+        <span class="catalog__type-text">
+          <span class="catalog__type-title">Полуприцепы-цистерны</span>
+          <span class="catalog__type-count" data-type-count="semitrailer"></span>
         </span>
-        <svg class="catalog__type-image catalog__type-image--ppc" aria-hidden="true">
-          <use href="#icon-ppc"></use>
-        </svg>
+        <span class="catalog__type-mark" aria-hidden="true"></span>
       </span>
     </label>
     <label class="catalog__type">
@@ -34,15 +37,21 @@
         form="catalog-filter"
       />
       <span class="catalog__type-body">
-        <span class="catalog__type-head">
-          <span class="catalog__type-title">Цистерны<br />на шасси</span>
-          <span class="catalog__type-mark" aria-hidden="true"></span>
+        <span class="catalog__type-text">
+          <span class="catalog__type-title">Цистерны на шасси</span>
+          <span class="catalog__type-count" data-type-count="chassis"></span>
         </span>
-        <svg class="catalog__type-image catalog__type-image--shassi" aria-hidden="true">
-          <use href="#icon-shassi"></use>
-        </svg>
+        <span class="catalog__type-mark" aria-hidden="true"></span>
       </span>
     </label>
+    <div class="catalog__type-preview" aria-hidden="true">
+      <svg class="catalog__type-image catalog__type-image--ppc">
+        <use href="#icon-ppc"></use>
+      </svg>
+      <svg class="catalog__type-image catalog__type-image--shassi">
+        <use href="#icon-shassi"></use>
+      </svg>
+    </div>
   </div>
   <div class="catalog__main">
     {# Технические параметры (не primary) свёрнуты, пока их не откроют кнопкой или не выберут из адреса #}
@@ -116,10 +125,13 @@
           {% if group.primary %}{{ filterGroup(group) }}{% endif %}
         {% endfor %}
       </div>
-      <div class="catalog__extra" data-catalog-extra>
-        {% for group in catalog.filters %}
-          {% if not group.primary %}{{ filterGroup(group) }}{% endif %}
-        {% endfor %}
+      {# Обёртка нужна для плавной высоты: её ряд сетки анимируется от 0 до высоты содержимого #}
+      <div class="catalog__extra-wrap">
+        <div class="catalog__extra" data-catalog-extra>
+          {% for group in catalog.filters %}
+            {% if not group.primary %}{{ filterGroup(group) }}{% endif %}
+          {% endfor %}
+        </div>
       </div>
       {# Нижняя полоса: слева раскрытие параметров, справа итог подбора и сброс #}
       <div class="catalog__summary">

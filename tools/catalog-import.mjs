@@ -60,9 +60,9 @@ const TYPES = [
 ];
 
 const PURPOSES = [
-  ['fuel', 'ГСМ'],
+  ['fuel', 'Светлые нефтепродукты'],
   ['refueler', 'АТЗ'],
-  ['oil', 'Нефть'],
+  ['oil', 'Тёмные нефтепродукты'],
   ['tech-water', 'Тех. вода'],
   ['vacuum', 'Вакуумные'],
   ['drinking-water', 'Питьевая вода'],

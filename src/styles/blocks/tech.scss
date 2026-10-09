@@ -112,7 +112,7 @@
     block-size: rem(24);
 
     stroke: currentcolor;
-    stroke-width: 2;
+    stroke-width: $arrow-stroke;
 
     transition: translate $medium $ease-out;
   }

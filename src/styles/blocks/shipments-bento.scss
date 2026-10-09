@@ -9,12 +9,10 @@ $more-size: 44;
   grid-auto-rows: rem(451);
   grid-template-columns: repeat(4, 1fr);
 
-  // Линии между плитками: зазор, сквозь который виден фон секции. Фон — цвет страницы с примесью
-  // тёмного, как у остальных разделителей на светлом ($line-light), только сплошной: сквозь зазор
-  // нет подложки, с которой полупрозрачная линия могла бы смешаться
-  gap: 1px;
-
-  background-color: color-mix(in srgb, $primary 12%, $bg);
+  // Зазоров нет: линии между плитками рисуют полупрозрачные полоски поверх фото (&__item::before), того же цвета
+  // и толщины, что остальные разделители сайта. Раньше зазор в 1px показывал сплошной светлый фон секции:
+  // между тёмными кадрами он выглядел толще и контрастнее
+  background-color: $bg;
 
   @include section-full {
     grid-auto-rows: auto;
@@ -43,12 +41,31 @@ $more-size: 44;
     color: $primary;
   }
 
+  // Заголовок и подпись под ним: в шапке блока они сидят вместе вверху, кнопка внизу
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__subtitle {
+    @include body-L;
+
+    margin: 0;
+    color: $dark-grey;
+  }
+
   &__button {
     @include button-M;
 
     color: $secondary;
     white-space: nowrap;
     background-color: $primary;
+    transition: background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $accent;
+    }
   }
 
   // Место плитки в сетке задаёт data-place: крупная занимает две колонки на всю высоту
@@ -57,6 +74,22 @@ $more-size: 44;
     position: relative;
     min-inline-size: 0;
     min-block-size: 0;
+
+    // Линия слева от плитки и, у нижних плиток, сверху: каждая общая граница рисуется один раз
+    &::before {
+      pointer-events: none;
+      content: '';
+
+      position: absolute;
+      z-index: 3;
+      inset: 0;
+
+      border-inline-start: 1px solid $line-light;
+    }
+
+    &[data-place^='bottom']::before {
+      border-block-start: 1px solid $line-light;
+    }
 
     &[data-place='big-left'] {
       z-index: 1;
@@ -100,6 +133,13 @@ $more-size: 44;
     block-size: 100%;
 
     color: $secondary;
+  }
+
+  // Обёртка картинки: на ней идёт приближение при появлении секции, на самой картинке — наведение
+  &__zoom {
+    position: absolute;
+    inset: 0;
+    display: block;
   }
 
   &__image {
@@ -173,7 +213,7 @@ $more-size: 44;
       inset: 0;
 
       opacity: 0;
-      box-shadow: inset 0 0 0 2px $accent;
+      box-shadow: inset 0 0 0 1px $accent;
 
       transition: opacity $fast $ease-out;
     }
@@ -231,7 +271,8 @@ $more-size: 44;
     block-size: rem($more-size);
 
     // Сверху под стрелкой светлое небо фото, а не затемнение: подложка, как у бейджа отгрузки
-    background-color: $primary;
+    background-color: $glass-clear;
+    backdrop-filter: $glass-strong;
 
     transition: background-color $medium $ease-out;
   }
@@ -241,7 +282,7 @@ $more-size: 44;
     block-size: rem(24);
 
     stroke: currentcolor;
-    stroke-width: 2;
+    stroke-width: $arrow-stroke;
 
     transition: translate $medium $ease-out;
   }
@@ -283,7 +324,7 @@ $more-size: 44;
   }
 
   &__type {
-    @include caption;
+    @include body-S;
   }
 
   &__model {
@@ -336,7 +377,7 @@ $more-size: 44;
   }
 
   &__spec-label {
-    @include caption;
+    @include body-S;
 
     color: $light-grey;
   }

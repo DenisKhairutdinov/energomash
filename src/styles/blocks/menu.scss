@@ -12,8 +12,6 @@ $dropdown-stagger: 35ms;
 $dropdown-item-shift: 12;
 $dropdown-hover: #f5f5f31f;
 $ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
-$corner-length: 6;
-$corner-width: 1px;
 
 .menu {
   block-size: 100%;
@@ -33,17 +31,8 @@ $corner-width: 1px;
     block-size: 100%;
   }
 
-  // Пункт шапки. Уголки по четырём углам: восемь линий-градиентов, которые вырастают из углов.
-  // В покое длина линий нулевая, при наведении и на текущей странице — $corner-length
+  // Пункт шапки. При наведении, фокусе и на текущей странице фон становится серым
   &__link {
-    $line: linear-gradient($primary, $primary);
-    $hidden:
-      0 $corner-width,
-      $corner-width 0;
-    $shown:
-      rem($corner-length) $corner-width,
-      $corner-width rem($corner-length);
-
     display: block;
 
     padding: rem(8) rem(12);
@@ -51,22 +40,7 @@ $corner-width: 1px;
     color: $primary;
     white-space: nowrap;
 
-    background-image: $line, $line, $line, $line, $line, $line, $line, $line;
-    background-repeat: no-repeat;
-    background-position:
-      left top,
-      left top,
-      right top,
-      right top,
-      left bottom,
-      left bottom,
-      right bottom,
-      right bottom;
-    background-size: $hidden, $hidden, $hidden, $hidden;
-
-    transition:
-      background-size $medium $ease-out,
-      background-color $fast $ease-out;
+    transition: background-color $fast $ease-out;
 
     &:focus-visible {
       outline: 2px solid $accent;
@@ -75,7 +49,7 @@ $corner-width: 1px;
 
     &:hover,
     &--active {
-      background-size: $shown, $shown, $shown, $shown;
+      background-color: $bg-grey;
     }
 
     @include body-S;
@@ -83,18 +57,13 @@ $corner-width: 1px;
 
   &__item:hover > &__link,
   &__item:focus-within > &__link {
-    $shown:
-      rem($corner-length) $corner-width,
-      $corner-width rem($corner-length);
-
-    background-size: $shown, $shown, $shown, $shown;
+    background-color: $bg-grey;
   }
 
   // Выделенный пункт (каталог): всегда залит, при наведении перекрашивается в акцентный цвет
   &__link--accent {
     color: $secondary;
     background-color: $primary;
-    background-image: none;
   }
 
   &__link--accent:hover,
@@ -108,8 +77,6 @@ $corner-width: 1px;
   // Закрывается коротким затуханием без движения; всё остальное сбрасывается уже невидимым.
   // Задержка перед закрытием прощает неточное движение курсора
   &__dropdown {
-    will-change: opacity;
-
     position: absolute;
     inset-block-start: 100%;
     inset-inline: 0;
@@ -132,7 +99,8 @@ $corner-width: 1px;
       transform-origin: top center;
       scale: 1 0;
 
-      background-color: $primary;
+      background-color: #0d0e13b8;
+      backdrop-filter: $glass-blur;
       box-shadow: $shadow-md;
 
       transition: scale 0s linear $dropdown-close + $dropdown-close-delay;
@@ -235,6 +203,18 @@ $corner-width: 1px;
     grid-template-columns: repeat(2, 1fr);
   }
 
+  // Линию между группами несёт сама левая группа: она тянется на всю высоту панели. Если рисовать её правыми
+  // границами плиток, ниже последней плитки левой группы (плиток там меньше) линия обрывалась бы, и у нижних
+  // плиток правой группы слева границы не было. Поэтому у плиток и заголовка левой группы правая кромка снята
+  &__group:first-child {
+    border-inline-end: 1px solid $line-dark;
+  }
+
+  &__group:first-child &__group-head,
+  &__group:first-child &__cell:nth-child(even) &__tile {
+    border-inline-end: 0;
+  }
+
   &__group-head {
     display: flex;
     gap: rem(16);
@@ -283,7 +263,7 @@ $corner-width: 1px;
     opacity: 0.5;
 
     stroke: currentcolor;
-    stroke-width: 2;
+    stroke-width: $arrow-stroke;
 
     transition:
       translate $medium $ease-out,

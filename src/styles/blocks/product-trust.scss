@@ -1,0 +1,188 @@
+$trust-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+// Почему Энергомаш и как заказать. Сетка как в футере: четыре равные колонки с отступом 32px внутри, вертикальные
+// линии проходят ровно по границам колонок (480, 960 и 1440px на экране 1920), по одной плитке на колонку.
+// Секция — четыре ряда на всю высоту: полоса с заголовком, ряд из четырёх преимуществ, полоса с заголовком
+// и действиями, ряд из четырёх этапов. Фон — затемнённое фото текущей модели (--trust-photo задаёт
+// product-related.ts), плитки стеклянные
+.product-trust {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: auto minmax(0, 1fr) auto minmax(0, 1fr);
+
+  min-block-size: rem(901);
+
+  color: $secondary;
+
+  background:
+    linear-gradient(#0d0e1380, #0d0e13d9),
+    var(--trust-photo, url('/src/assets/images/shipment-2.jpg')) center / cover no-repeat;
+
+  @include section-full {
+    min-block-size: 0;
+  }
+
+  // Обёртки нужны только разметке: заголовки, плитки и действия встают прямо в сетку секции
+  &__why,
+  &__how {
+    display: contents;
+  }
+
+  // Полоса с заголовком на всю ширину, линии сверху и снизу — на границах рядов.
+  // Ряды заданы явно: 1 — заголовок преимуществ, 2 — плитки, 3 — заголовок этапов и действия, 4 — плитки
+  &__title {
+    @include h2;
+
+    grid-column: 1 / -1;
+    grid-row: 1;
+
+    margin: 0;
+    padding: rem(32);
+    border-block-end: 1px solid $line-dark;
+
+    // То же стекло, что у плиток под полосой
+    background-color: #0d0e1366;
+    backdrop-filter: blur(10px);
+  }
+
+  &__how > &__title {
+    grid-row: 3;
+    border-block-start: 1px solid $line-dark;
+  }
+
+  &__reasons,
+  &__steps {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+
+    min-block-size: 0;
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  &__reasons {
+    grid-row: 2;
+  }
+
+  &__steps {
+    grid-row: 4;
+  }
+
+  &__reason,
+  &__step {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+
+    min-inline-size: 0;
+    padding: rem(32);
+
+    background-color: #0d0e1366;
+    backdrop-filter: blur(10px);
+
+    transition: background-color 0.4s $trust-ease;
+
+    & + & {
+      border-inline-start: 1px solid $line-dark;
+    }
+
+    &:hover {
+      background-color: #c8603dcc;
+    }
+  }
+
+  &__index,
+  &__step-number {
+    @include caption;
+
+    color: $accent;
+    transition: color 0.4s $trust-ease;
+  }
+
+  &__reason:hover &__index,
+  &__step:hover &__step-number {
+    color: $secondary;
+  }
+
+  // Заголовок и текст прижаты к низу плитки, номер остаётся сверху: у всех четырёх плиток они на одной линии
+  &__reason-title,
+  &__step-title {
+    @include h4;
+
+    margin: auto 0 0;
+  }
+
+  // Высота под три строки: заголовки встают на одну линию, даже когда текст короче
+  &__reason-text,
+  &__step-text {
+    @include body-M;
+
+    min-block-size: rem(72);
+    margin: 0;
+    color: $light-grey;
+    transition: color 0.4s $trust-ease;
+  }
+
+  &__reason:hover &__reason-text,
+  &__step:hover &__step-text {
+    color: $secondary;
+  }
+
+  // Последняя плитка не доходит до правого нижнего угла: там стоит виджет чата
+  &__step:last-child {
+    padding-inline-end: rem($corner-clearance + 32);
+  }
+
+  // Действия лежат поверх полосы «Как заказать» у правого края
+  &__actions {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    gap: rem(24);
+    align-items: center;
+    justify-self: end;
+
+    padding-inline-end: rem(32);
+  }
+
+  &__button {
+    @include button-L;
+
+    cursor: pointer;
+
+    color: $primary;
+    white-space: nowrap;
+
+    background-color: $secondary;
+
+    transition:
+      color $fast $ease-out,
+      background-color $fast $ease-out;
+
+    &:hover {
+      color: $secondary;
+      background-color: $accent;
+    }
+  }
+
+  &__link {
+    @include body-M;
+
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: currentcolor;
+    text-underline-offset: rem(6);
+
+    transition: color $fast $ease-out;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+}

@@ -1,4 +1,5 @@
-$corner-length: 6;
+// Высота чипов и полей фильтра — как в фильтре каталога
+$control-size: 34;
 
 // Подсветка значения под курсором — тот же цвет, что у пунктов выпадающего меню
 $option-hover: #f5f5f31f;
@@ -72,11 +73,11 @@ $option-hover: #f5f5f31f;
     text-align: end;
   }
 
-  // Четыре колонки, как у списка УТП ниже: кнопки занимают две правые
+  // Кнопки по своей ширине (размеры из миксина button-L), прижаты к правому краю
   &__actions {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
     gap: rem(16);
+    justify-content: flex-end;
   }
 
   &__button {
@@ -87,24 +88,21 @@ $option-hover: #f5f5f31f;
     white-space: nowrap;
     background-color: $primary;
 
-    &:first-child {
-      grid-column-start: 3;
-    }
-
     &--accent {
       background-color: $accent;
     }
   }
 
+  // Четыре ячейки в ряд без зазоров, общие линии сверху, снизу и между ячейками
   &__utp-list {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: rem(16);
+    border-block: 1px solid $line-light;
+    border-inline-end: 1px solid $line-light;
   }
 
   &__utp {
     @include body-M;
-    @include corners($dark-grey, rem($corner-length));
 
     display: flex;
     align-items: center;
@@ -112,16 +110,18 @@ $option-hover: #f5f5f31f;
 
     block-size: rem(40);
     padding-inline: rem(12);
+    border-inline-start: 1px solid $line-light;
 
     color: $primary;
     text-align: center;
 
-    transition: color $fast $ease-out;
+    transition:
+      color $fast $ease-out,
+      background-color $fast $ease-out;
 
     &:hover {
-      @include corners($accent, rem($corner-length));
-
       color: $accent;
+      background-color: $white;
     }
   }
 
@@ -147,7 +147,8 @@ $option-hover: #f5f5f31f;
 
     color: $secondary;
 
-    background-color: $primary80;
+    background-color: #0d0e1359;
+    backdrop-filter: $glass-blur;
 
     // Чертёж и стрелка красятся через currentcolor, поэтому меняются вместе с текстом
     transition: color $medium $ease-out;
@@ -179,7 +180,7 @@ $option-hover: #f5f5f31f;
     block-size: rem(24);
 
     stroke: currentcolor;
-    stroke-width: 2;
+    stroke-width: $arrow-stroke;
 
     transition: translate $medium $ease-out;
   }
@@ -216,13 +217,17 @@ $option-hover: #f5f5f31f;
 
     color: $secondary;
 
-    background-color: $primary80;
+    background-color: #0d0e1359;
+    backdrop-filter: $glass-blur;
   }
 
+  // h2 по умолчанию жирный, а начертание уже задано миксином (Manrope-medium, как у названий плиток рядом):
+  // без сброса браузер утолщал бы его искусственно
   &__filter-title {
     @include h4;
 
     margin: 0;
+    font-weight: 400;
   }
 
   &__filter-fields {
@@ -248,40 +253,26 @@ $option-hover: #f5f5f31f;
     color: $light-grey;
   }
 
-  &__options,
-  &__volume {
-    min-inline-size: 0;
-    margin: 0;
-    padding: rem(2);
-    border: 1px solid $secondary;
-  }
-
+  // Форма как у фильтра каталога: значения — отдельные чипы высотой $control-size с тонкой рамкой и зазором 4px,
+  // выбранный залит светлым (на тёмном стекле, как в каталоге чёрный на светлом), наведение подсвечивает
   &__options {
     display: flex;
-    gap: rem(2);
+    flex-flow: row wrap;
+    gap: rem(4);
+    align-content: flex-start;
+
     inline-size: 100%;
-    block-size: rem(46);
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    // Высота группы — по числу рядов, а не фиксированная: чипы всегда $control-size, ряды не растягиваются.
+    // Чипы растягиваются только по ширине ряда; разница в числе рядов у типов фильтр не двигает: он прижат к верху
 
     // Скрытая группа назначений не должна занимать место, несмотря на display у видимых
     &[hidden] {
       display: none;
-    }
-
-    // Полуприцепы: четыре назначения плиткой 2×2
-    &--semitrailer {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      block-size: rem(88);
-    }
-
-    // Шасси: семь назначений в те же два ряда — четыре коротких сверху, три длинных снизу.
-    // Высота совпадает с группой полуприцепов, поэтому при переключении типа форма не прыгает
-    &--chassis {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      block-size: rem(88);
     }
   }
 
@@ -289,15 +280,7 @@ $option-hover: #f5f5f31f;
     cursor: pointer;
     position: relative;
     display: flex;
-    flex: 1 0 0;
-  }
-
-  &__options--chassis &__option {
-    grid-column: span 4;
-
-    &:nth-child(-n + 4) {
-      grid-column: span 3;
-    }
+    flex: 1 0 auto;
   }
 
   &__option-input {
@@ -311,7 +294,6 @@ $option-hover: #f5f5f31f;
     opacity: 0;
   }
 
-  // Значение под курсором подсвечивается серым фоном, как пункт выпадающего меню
   &__option-label {
     @include body-S;
 
@@ -320,12 +302,15 @@ $option-hover: #f5f5f31f;
     align-items: center;
     justify-content: center;
 
-    padding: rem(4) rem(8);
+    block-size: rem($control-size);
+    padding-inline: rem(10);
+    border: 1px solid $line-dark;
 
     white-space: nowrap;
 
     transition:
       color $fast $ease-out,
+      border-color $fast $ease-out,
       background-color $fast $ease-out;
   }
 
@@ -333,9 +318,10 @@ $option-hover: #f5f5f31f;
     background-color: $option-hover;
   }
 
-  // Выбранное значение остаётся светлым и под курсором
+  // Выбранное значение остаётся залитым и под курсором
   &__option-input:checked + &__option-label,
   &__option:hover &__option-input:checked + &__option-label {
+    border-color: $secondary;
     color: $primary;
     background-color: $secondary;
   }
@@ -345,39 +331,46 @@ $option-hover: #f5f5f31f;
     outline-offset: 2px;
   }
 
-  // Объём: «от» и «до» делят ширину поровну, как значения в соседних группах
+  // Объём: подписи и поля подряд слева, без общей рамки; поля той же высоты, что чипы
   &__volume {
     @include body-S;
 
     display: flex;
-    gap: rem(16);
+    gap: rem(8);
     align-items: center;
 
     inline-size: 100%;
-    block-size: rem(46);
-    padding: rem(4) rem(14);
+    min-inline-size: 0;
+    block-size: rem($control-size);
+    margin: 0;
+    padding: 0;
+    border: 0;
   }
 
   &__volume-field {
     display: flex;
-    flex: 1 0 0;
-    gap: rem(8);
+    gap: rem(6);
     align-items: center;
 
     min-inline-size: 0;
     block-size: 100%;
 
     white-space: nowrap;
+
+    & + & {
+      margin-inline-start: rem(8);
+    }
   }
 
   &__volume-input {
-    flex: 1 0 0;
+    flex: none;
 
-    inline-size: 100%;
+    inline-size: rem(52);
     min-inline-size: 0;
     block-size: 100%;
-    padding: rem(4);
+    padding: rem(4) rem(8);
     border: 1px solid $secondary;
+    border-radius: 0;
 
     font: inherit;
     color: $secondary;
@@ -399,6 +392,7 @@ $option-hover: #f5f5f31f;
     }
   }
 
+  // «Только в наличии» — такой же чип, как значения в группах (в каталоге это чип группы «Наличие»)
   &__check {
     @include body-S;
 
@@ -407,10 +401,34 @@ $option-hover: #f5f5f31f;
     position: relative;
 
     display: flex;
-    gap: rem(8);
     align-items: center;
 
+    block-size: rem($control-size);
+    padding-inline: rem(10);
+    border: 1px solid $line-dark;
+
     white-space: nowrap;
+
+    transition:
+      color $fast $ease-out,
+      border-color $fast $ease-out,
+      background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $option-hover;
+    }
+
+    &:has(input:checked),
+    &:has(input:checked):hover {
+      border-color: $secondary;
+      color: $primary;
+      background-color: $secondary;
+    }
+
+    &:has(input:focus-visible) {
+      outline: 2px solid $accent;
+      outline-offset: 2px;
+    }
   }
 
   &__check-input {
@@ -424,40 +442,9 @@ $option-hover: #f5f5f31f;
     opacity: 0;
   }
 
-  // Квадрат с рамкой; отметка — акцентный квадрат внутри, вырастает из центра
+  // Квадратик-флажок не нужен: состояние читается по заливке чипа
   &__check-box {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-
-    inline-size: rem(18);
-    block-size: rem(18);
-    border: 1px solid $secondary;
-
-    transition: border-color $fast $ease-out;
-
-    &::before {
-      content: '';
-
-      scale: 0;
-
-      inline-size: rem(10);
-      block-size: rem(10);
-
-      background-color: $accent;
-
-      transition: scale $medium $ease-out;
-    }
-  }
-
-  &__check-input:checked + &__check-box::before {
-    scale: 1;
-  }
-
-  &__check:hover &__check-box,
-  &__check-input:focus-visible + &__check-box {
-    border-color: $accent;
+    display: none;
   }
 
   &__submit {

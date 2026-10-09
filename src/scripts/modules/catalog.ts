@@ -1,5 +1,6 @@
 import { gsap } from 'gsap';
-import { loadCatalog, photoUrl } from './catalog-data.ts';
+import { loadCatalog } from './catalog-data.ts';
+import { createProductCard } from './product-card.ts';
 import { isSearchMatch, parseQuery } from './search-match.ts';
 
 const FILTER_SELECTOR = '[data-catalog-filter]';
@@ -16,6 +17,9 @@ const MORE_SELECTOR = '[data-catalog-more]';
 const MORE_COUNT_SELECTOR = '[data-catalog-more-count]';
 const MORE_LABEL_SELECTOR = '[data-catalog-more-label]';
 const COLLAPSED_CLASS = 'catalog__filter--collapsed';
+const MAIN_SELECTOR = '.catalog';
+const EXTRA_WRAP_SELECTOR = '.catalog__extra-wrap';
+const FILTER_HEIGHT_PROPERTY = '--filter-height';
 const EXTRA_GROUP_SELECTOR = '[data-catalog-extra]';
 const RESULTS_SELECTOR = '[data-catalog-results]';
 const PROGRESS_SELECTOR = '[data-catalog-progress]';
@@ -38,14 +42,21 @@ const KIT_VALUE = 'kit';
 const STOCK_FLAG = 'in-stock';
 const STOCK_FIELD = 'stock';
 const STOCK_IN = 'in';
-const STOCK_BADGE = 'В наличии';
-const PRODUCT_URL = '/product.html?id=';
 // Снятие одного значения может сделать недоступным другое: пересчёт повторяется, пока выбор не устоится
 const NORMALIZE_PASSES = 5;
 // Карточек в порции: четыре ряда по три. Следующая порция добавляется, когда до конца
 // списка остаётся меньше высоты области — пользователь не упирается в пустой край
 const BATCH_SIZE = 12;
 const PRELOAD_MARGIN = '0px 0px 100% 0px';
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+// Появление карточек при прокрутке: карточки, вошедшие в область вместе, выезжают друг за другом
+const PENDING_CLASS = 'is-pending';
+const REVEALED_CLASS = 'is-revealed';
+const REVEAL_VISIBLE_SHARE = 0.12;
+const REVEAL_STAGGER = 70;
+const REVEAL_STAGGER_LIMIT = 420;
+// Сколько карточка остаётся в состоянии is-revealed: за это время играют её переход и приближение фото
+const REVEAL_TIME = 2200;
 
 type ParameterValue = string | number | string[] | null;
 
@@ -68,6 +79,23 @@ interface FilterState {
   volumeTo: number;
   selected: Map<string, Set<string>>;
 }
+
+// Склонение слова «модель» по числу: 1 модель, 2–4 модели, 5–20 и 11–14 моделей
+const pluralModels = (count: number): string => {
+  const lastTwo = count % 100;
+
+  if (lastTwo >= 11 && lastTwo <= 14) {
+    return 'моделей';
+  }
+
+  const last = count % 10;
+
+  if (last === 1) {
+    return 'модель';
+  }
+
+  return last >= 2 && last <= 4 ? 'модели' : 'моделей';
+};
 
 // Пустое поле — «границы нет», а не ноль
 const readNumber = (input: HTMLInputElement | null): number =>
@@ -108,6 +136,36 @@ export const initCatalog = (): void => {
   const volumeFromInput = form.querySelector<HTMLInputElement>(VOLUME_FROM_SELECTOR);
   const volumeToInput = form.querySelector<HTMLInputElement>(VOLUME_TO_SELECTOR);
   const sentinel = document.querySelector<HTMLElement>(SENTINEL_SELECTOR);
+
+  // Появление карточек при прокрутке списка: каждая выезжает снизу с проявлением, а фото в ней чуть приближено
+  // и встаёт на место (стили — .catalog__item.is-pending и .is-revealed). При «уменьшить движение» карточки видны сразу
+  const cardObserver = matchMedia(REDUCED_MOTION_QUERY).matches
+    ? undefined
+    : new IntersectionObserver(
+        (entries, observer) => {
+          const entered = entries.filter((item) => item.isIntersecting);
+
+          for (const [index, entry] of entered.entries()) {
+            const card = entry.target as HTMLElement;
+            const delay = Math.min(index * REVEAL_STAGGER, REVEAL_STAGGER_LIMIT);
+
+            observer.unobserve(card);
+            card.style.setProperty('--reveal-delay', `${delay}ms`);
+            card.classList.remove(PENDING_CLASS);
+            card.classList.add(REVEALED_CLASS);
+
+            // После показа состояние снимается: дальше карточка живёт обычной жизнью (наведение, переходы)
+            setTimeout(() => {
+              card.classList.remove(REVEALED_CLASS);
+              card.style.removeProperty('--reveal-delay');
+            }, REVEAL_TIME + delay);
+          }
+        },
+        {
+          root: document.querySelector<HTMLElement>(RESULTS_SELECTOR),
+          threshold: REVEAL_VISIBLE_SHARE,
+        },
+      );
   const count = document.querySelector<HTMLElement>(COUNT_SELECTOR);
   const empty = document.querySelector<HTMLElement>(EMPTY_SELECTOR);
   const error = document.querySelector<HTMLElement>(ERROR_SELECTOR);
@@ -288,117 +346,6 @@ export const initCatalog = (): void => {
     }
   };
 
-  // Карточка из заготовки: силуэт типа техники, плашка наличия, название, ссылка и характеристики
-  const createCard = (item: CatalogItem): DocumentFragment => {
-    const card = template.content.cloneNode(true) as DocumentFragment;
-    const icon = card.querySelector<SVGElement>('[data-card-icon]');
-    const soon = card.querySelector<HTMLElement>('[data-card-soon]');
-    const code = card.querySelector<HTMLElement>('[data-card-code]');
-    const badge = card.querySelector<HTMLElement>('[data-card-badge]');
-    const type = card.querySelector<HTMLElement>('[data-card-type]');
-    const link = card.querySelector<HTMLAnchorElement>('[data-card-link]');
-    const model = card.querySelector<HTMLElement>('[data-card-model]');
-    const specs = card.querySelector<HTMLElement>('[data-card-specs]');
-    const sample = card.querySelector<HTMLElement>('[data-card-spec]');
-    const price = card.querySelector<HTMLElement>('[data-modal-open]');
-
-    // Окно заявки узнаёт, о какой модели спрашивают; код нужен менеджеру, чтобы отличить одноимённые модели
-    if (price) {
-      price.dataset.modalModel = item.code ? `${item.model} (код ${item.code})` : item.model;
-    }
-
-    icon?.querySelector('use')?.setAttribute('href', `#icon-${item.icon}`);
-    icon?.setAttribute('aria-label', `${item.typeLabel} ${item.model}`);
-
-    // Есть фото — оно занимает место силуэта и проявляется, когда загрузится. Нет фото (или оно не загрузилось) —
-    // остаётся силуэт техники с подписью «фото скоро появится»
-    const photoSource = item.photos.map((name) => photoUrl(name)).find((url) => url !== undefined);
-
-    if (photoSource && icon) {
-      const photo = document.createElement('img');
-
-      photo.className = 'product-card__image';
-      photo.dataset.cardPhoto = '';
-      photo.src = photoSource;
-      photo.alt = `${item.typeLabel} ${item.model}`;
-      photo.loading = 'lazy';
-      photo.decoding = 'async';
-      photo.addEventListener(
-        'load',
-        () => {
-          photo.classList.add('is-loaded');
-        },
-        { once: true },
-      );
-      photo.addEventListener(
-        'error',
-        () => {
-          photo.replaceWith(icon);
-
-          if (soon) {
-            soon.hidden = false;
-          }
-        },
-        { once: true },
-      );
-      icon.replaceWith(photo);
-    } else if (soon) {
-      soon.hidden = false;
-    }
-
-    // Код модели — плашкой на фото; в заголовке остаётся только название
-    if (code) {
-      if (item.code) {
-        code.textContent = `Код ${item.code}`;
-        code.hidden = false;
-      } else {
-        code.remove();
-      }
-    }
-
-    if (badge) {
-      if (item.stock.status === STOCK_IN) {
-        badge.textContent = STOCK_BADGE;
-      } else {
-        badge.remove();
-      }
-    }
-
-    if (type) {
-      type.textContent = item.typeLabel;
-    }
-
-    if (link) {
-      link.href = `${PRODUCT_URL}${encodeURIComponent(item.id)}`;
-    }
-
-    if (model) {
-      model.textContent = item.model;
-    }
-
-    if (specs && sample) {
-      sample.remove();
-
-      for (const [label, value] of item.specs) {
-        const spec = sample.cloneNode(true) as HTMLElement;
-        const specLabel = spec.querySelector<HTMLElement>('[data-card-spec-label]');
-        const specValue = spec.querySelector<HTMLElement>('[data-card-spec-value]');
-
-        if (specLabel) {
-          specLabel.textContent = label;
-        }
-
-        if (specValue) {
-          specValue.textContent = String(value);
-        }
-
-        specs.append(spec);
-      }
-    }
-
-    return card;
-  };
-
   // Полоса под фильтром: доля прокрученного списка. Если список помещается целиком, полосы нет
   const updateProgress = (): void => {
     if (!results || !progress || !progressBar) {
@@ -423,11 +370,24 @@ export const initCatalog = (): void => {
     const fragment = document.createDocumentFragment();
 
     for (const item of batch) {
-      fragment.append(createCard(item));
+      fragment.append(createProductCard(template, item));
+    }
+
+    // Карточки прячутся сразу при вставке, до первого кадра: иначе они мелькнули бы и только потом выехали
+    const cards = [...fragment.children];
+
+    if (cardObserver) {
+      for (const card of cards) {
+        card.classList.add(PENDING_CLASS);
+      }
     }
 
     list.append(fragment);
     renderedCount += batch.length;
+
+    for (const card of cards) {
+      cardObserver?.observe(card);
+    }
 
     if (results && sentinel) {
       const resultsBox = results.getBoundingClientRect();
@@ -444,6 +404,7 @@ export const initCatalog = (): void => {
   const applyFilter = (state: FilterState): void => {
     matches = items.filter((item) => isMatch(item, state));
     renderedCount = 0;
+    cardObserver?.disconnect();
     list.replaceChildren();
     renderBatch();
 
@@ -542,7 +503,11 @@ export const initCatalog = (): void => {
   // Предустановка из адреса: тип, затем группы этого типа, затем значения
   const applyQuery = (): void => {
     const parameters = new URLSearchParams(location.search);
-    const type = parameters.get(TYPE_FIELD);
+    const requested = parameters.get(TYPE_FIELD);
+    // Без предустановки (или с неизвестным типом) выбран первый тип
+    const type = typeInputs.some((input) => input.value === requested)
+      ? requested
+      : typeInputs[0]?.value;
 
     if (parameters.get(STOCK_FLAG) === '1') {
       parameters.append(STOCK_FIELD, STOCK_IN);
@@ -567,22 +532,9 @@ export const initCatalog = (): void => {
     }
   };
 
-  // Повторный клик по выбранному типу снимает выбор: снова показывается вся техника
+  // Тип выбран всегда и сам не снимается: повторный клик по выбранному ничего не меняет.
+  // Поле стоит вне формы, поэтому его change до формы не всплывает
   for (const input of typeInputs) {
-    let wasChecked = false;
-
-    input.addEventListener('pointerdown', () => {
-      wasChecked = input.checked;
-    });
-    input.addEventListener('click', () => {
-      if (!wasChecked) {
-        return;
-      }
-
-      input.checked = false;
-      update();
-    });
-    // Поле стоит вне формы, поэтому его change до формы не всплывает
     input.addEventListener('change', update);
   }
 
@@ -618,6 +570,38 @@ export const initCatalog = (): void => {
     setExpanded(form.classList.contains(COLLAPSED_CLASS));
     syncMore();
   });
+
+  // Фильтр лежит поверх списка (catalog.scss), а список отступает на высоту свёрнутого фильтра: полная высота
+  // минус высота дополнительных параметров. Пока параметры раскрываются, сумма не меняется, список не дёргается
+  const main = form.closest<HTMLElement>(MAIN_SELECTOR);
+  const extraWrap = form.querySelector<HTMLElement>(EXTRA_WRAP_SELECTOR);
+
+  if (main) {
+    new ResizeObserver(() => {
+      const collapsedHeight = form.offsetHeight - (extraWrap?.offsetHeight ?? 0);
+
+      main.style.setProperty(FILTER_HEIGHT_PROPERTY, `${collapsedHeight}px`);
+    }).observe(form);
+  }
+
+  // Раскрытые параметры прячутся, когда колесо крутят не над фильтром: пользователь листает каталог,
+  // и открытая панель только занимает высоту. Крутить колесо над самим фильтром можно, он остаётся открытым
+  document.addEventListener(
+    'wheel',
+    (event) => {
+      if (form.classList.contains(COLLAPSED_CLASS)) {
+        return;
+      }
+
+      if (event.target instanceof Node && form.contains(event.target)) {
+        return;
+      }
+
+      setExpanded(false);
+      syncMore();
+    },
+    { passive: true, capture: true },
+  );
 
   if (results) {
     // Высота области меняется вместе с окном
@@ -661,6 +645,29 @@ export const initCatalog = (): void => {
 
       console.error('Каталог не загрузился:', loadError);
       return;
+    }
+
+    // Сколько моделей у каждого типа техники: подпись в плитках слева (навесное оборудование не считается)
+    for (const counter of document.querySelectorAll<HTMLElement>('[data-type-count]')) {
+      const total = items.filter(
+        (item) => item.type === counter.dataset.typeCount && item.params.kit !== KIT_VALUE,
+      ).length;
+
+      counter.textContent = `${total} ${pluralModels(total)}`;
+    }
+
+    // Поиск из шапки без явного типа в адресе: если у выбранного по умолчанию типа совпадений нет, а у другого есть,
+    // выбирается тот, где модель нашлась, а не пустой список
+    if (searchTokens.length > 0 && !new URLSearchParams(location.search).has(TYPE_FIELD)) {
+      const hasMatches = (type: string): boolean =>
+        items.some((item) => item.type === type && isSearchMatch(item, searchTokens));
+      const checked = typeInputs.find((input) => input.checked);
+      const fallback = typeInputs.find((input) => hasMatches(input.value));
+
+      if (checked && fallback && !hasMatches(checked.value)) {
+        checked.checked = false;
+        fallback.checked = true;
+      }
     }
 
     form.addEventListener('change', update);

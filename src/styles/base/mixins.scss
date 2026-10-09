@@ -6,36 +6,36 @@
   font-family: Manrope-bold, sans-serif;
   font-size: rem(56);
   line-height: rem(64);
+  hyphens: none;
   text-transform: uppercase;
   letter-spacing: -0.035em;
-  hyphens: none;
 }
 
 @mixin h2 {
   font-family: Manrope-bold, sans-serif;
   font-size: rem(48);
   line-height: rem(52);
+  hyphens: none;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  hyphens: none;
 }
 
 @mixin h3 {
   font-family: Manrope-medium, sans-serif;
   font-size: rem(32);
   line-height: rem(36);
+  hyphens: none;
   text-transform: uppercase;
   letter-spacing: -0.025em;
-  hyphens: none;
 }
 
 @mixin h4 {
   font-family: Manrope-medium, sans-serif;
   font-size: rem(24);
   line-height: rem(28);
+  hyphens: none;
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  hyphens: none;
 }
 
 @mixin lead {
@@ -238,12 +238,6 @@
     $width $length;
 
   background-size: $size, $size, $size, $size;
-}
-
-// Единая цветокоррекция фотографий техники. Значение лежит в CSS-переменной --photo-filter (main.scss),
-// поэтому его можно подбирать на лету: в DevTools поменять --photo-filter на элементе html
-@mixin photo-grade {
-  filter: var(--photo-filter);
 }
 
 // Секция на десктопе занимает экран целиком за вычетом шапки (нужно для постраничной прокрутки)

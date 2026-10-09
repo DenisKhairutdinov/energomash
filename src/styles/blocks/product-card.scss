@@ -63,8 +63,6 @@ $wide-size: 528;
   }
 
   &__image {
-    @include photo-grade;
-
     position: absolute;
     inset: 0;
 
@@ -133,11 +131,12 @@ $wide-size: 528;
     color: $secondary;
     white-space: nowrap;
 
-    background-color: $accent;
+    background-color: $glass-accent;
+    backdrop-filter: $glass-strong;
 
     // Техника под заказ не спорит с той, что есть на складе
     &--muted {
-      background-color: $primary80;
+      background-color: #0d0e1380;
     }
   }
 
@@ -155,7 +154,8 @@ $wide-size: 528;
     color: $secondary;
     white-space: nowrap;
 
-    background-color: $primary;
+    background-color: $primary80;
+    backdrop-filter: blur(8px);
 
     &[hidden] {
       display: none;
@@ -222,7 +222,11 @@ $wide-size: 528;
   }
 
   // Квадратная кнопка-стрелка: при наведении на карточку заливается акцентным
+  // Стрелка — подсказка, а не кнопка: клик по ней проходит к растянутой ссылке на модель. Без pointer-events: none
+  // иконка при наведении сдвигается (translate), становится выше растянутой ссылки по слою и перехватывает нажатие
   &__more {
+    pointer-events: none;
+
     display: flex;
     flex-shrink: 0;
     align-items: center;
@@ -245,7 +249,7 @@ $wide-size: 528;
     block-size: rem(24);
 
     stroke: currentcolor;
-    stroke-width: 2;
+    stroke-width: $arrow-stroke;
 
     transition: translate $medium $ease-out;
   }

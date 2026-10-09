@@ -1,4 +1,5 @@
 import { loadCatalog, originalPhotoUrl, photoUrl } from './catalog-data.ts';
+import { addRevealImages } from './reveal.ts';
 
 const ROOT_SELECTOR = '[data-slider]';
 const COUNT_SELECTOR = '[data-stock-count]';
@@ -198,6 +199,8 @@ export const initStockSlides = async (): Promise<void> => {
     }
 
     track.replaceChildren(...slides);
+    // Фото слайдов приближаются при появлении секции, как фон hero
+    addRevealImages(root, [...root.querySelectorAll('[data-reveal-image]')]);
 
     // Панель на всех слайдах одной ширины — по самой широкой: иначе от слайда к слайду она прыгала бы.
     // Мерить можно только после загрузки шрифтов, иначе ширина названий окажется чужой

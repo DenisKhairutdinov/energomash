@@ -1,0 +1,13 @@
+{% set pageTitle = "Страница не найдена — Энергомаш" %}
+{% set errorCode = "404" %}
+{% set errorLabel = "Страница не найдена" %}
+{% set errorTitle = "Такой страницы нет" %}
+{% set errorText = "Возможно, ссылка устарела или в адресе опечатка. Найти технику можно через поиск в шапке или в каталоге: там все модели с характеристиками и наличием." %}
+{% set errorActions = [
+  { text: "На главную", href: "/" },
+  { text: "В каталог", href: "/catalog.html", ghost: true }
+] %}
+{% extends "layout.njk" %}
+{% block content %}
+  {% include "error.njk" %}
+{% endblock %}
