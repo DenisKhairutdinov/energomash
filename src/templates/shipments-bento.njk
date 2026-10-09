@@ -35,18 +35,9 @@
     }
   ]
 %}
-{# Миниатюры отгрузки: одно и то же фото в разных оттенках. Пока настоящих кадров нет, смену фото показывают #}
-{# цветовые фильтры: оригинал, светлое и тёмное чёрно-белое, светлая и тёмная сепия. Наведение на миниатюру ставит #}
-{# её фильтр на основное фото (scripts/modules/shipments.ts) #}
-{%
-  set tones = [
-    { label: "Оригинал", filter: "none" },
-    { label: "Чёрно-белое, светлое", filter: "none" },
-    { label: "Чёрно-белое, тёмное", filter: "none" },
-    { label: "Сепия, светлая", filter: "none" },
-    { label: "Сепия, тёмная", filter: "none" }
-  ]
-%}
+{# Кадры отгрузки (пока общий набор заглушек: свой первым, остальные следом). Наведение на миниатюру меняет #}
+{# фото плитки так же, как на странице модели (scripts/modules/photo-switcher.ts) #}
+{% set galleryPool = ["/src/assets/images/shipment-1.jpg", "/src/assets/images/shipment-2.jpg", "/src/assets/images/tech-semitrailer.jpg"] %}
 {# Места плиток в сетке. Без скриптов остаётся эта расстановка: первая крупно, две справа #}
 {% set places = ["big-left", "top-right", "bottom-right"] %}
 <section
@@ -116,23 +107,19 @@
         </span>
       </a>
       {# Миниатюры вне ссылки: кнопки внутри <a> недопустимы. Видны только на открытой (крупной) плитке #}
+      {% set gallery = [item.image] %}
+      {% for source in galleryPool %}
+        {% if source != item.image %}{% set gallery = (gallery.push(source), gallery) %}{% endif %}
+      {% endfor %}
       <div class="shipments-bento__thumbs" role="group" aria-label="Фотографии отгрузки">
-        {% for tone in tones %}
+        {% for source in gallery %}
           <button
             class="shipments-bento__thumb {{ 'is-active' if loop.first }}"
             type="button"
-            aria-label="Фото {{ loop.index }}: {{ tone.label }}"
+            aria-label="Фото {{ loop.index }}"
             data-shipments-thumb
-            data-filter="{{ tone.filter }}"
           >
-            <img
-              src="{{ item.image }}"
-              width="96"
-              height="72"
-              alt=""
-              loading="lazy"
-              style="filter: {{ tone.filter }}"
-            />
+            <img src="{{ source }}" width="88" height="66" alt="" loading="lazy" />
           </button>
         {% endfor %}
       </div>

@@ -240,6 +240,50 @@
   background-size: $size, $size, $size, $size;
 }
 
+// Миниатюра фото (страница модели и «Недавно отгруженная техника»): кнопка 4 : 3 с тенью, отделяющей её от кадра,
+// без обводки (рамка 1px прозрачная, чтобы размер не менялся), только у активной рамка акцентная,
+// у неактивных приглушённая яркость
+@mixin photo-thumb($width: 88) {
+  cursor: pointer;
+
+  overflow: hidden;
+
+  inline-size: rem($width);
+  block-size: rem($width * 0.75);
+  padding: 0;
+  border: 1px solid transparent;
+
+  opacity: 0.7;
+  background-color: $primary;
+
+  // Фон не заходит под рамку: иначе прозрачная рамка выглядела бы тёмной обводкой
+  background-clip: padding-box;
+  box-shadow:
+    rem(0) rem(4) rem(12) #0006,
+    rem(0) rem(1) rem(3) #0004;
+
+  transition: opacity $fast $ease-out;
+
+  &:hover,
+  &.is-active {
+    opacity: 1;
+  }
+
+  &.is-active {
+    border-color: $accent;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+}
+
 // Секция на десктопе занимает экран целиком за вычетом шапки (нужно для постраничной прокрутки)
 @mixin section-full {
   @media (min-width: $breakpoint-lg) {

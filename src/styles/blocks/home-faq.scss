@@ -1,0 +1,249 @@
+// Вопросы и ответы на главной. Схема каталога: цвет страницы, плоские строки на тонких линиях, белое наведение.
+$faq-time: 420ms;
+$faq-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+// Колонка с заголовком справа, слева три колонки со строками-вопросами: после блога (колонка слева) блок зеркальный,
+// и порядок экранов главной получается «слева, справа, слева, справа» (отгрузки, наличие, блог, вопросы)
+.home-faq {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  min-block-size: rem(901);
+  background-color: $bg;
+
+  @include section-full {
+    min-block-size: 0;
+  }
+
+  &__head {
+    display: flex;
+    grid-column: 4;
+    grid-row: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    min-inline-size: 0;
+    padding: rem(32);
+    border-inline-start: 1px solid $line-light;
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+    color: $primary;
+  }
+
+  &__subtitle {
+    @include body-L;
+
+    margin: 0;
+    color: $dark-grey;
+  }
+
+  &__button {
+    @include button-M;
+
+    cursor: pointer;
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: $primary;
+
+    transition: background-color $fast $ease-out;
+
+    &:hover {
+      background-color: $accent;
+    }
+  }
+
+  // Строки делят высоту экрана поровну; открытая строка растёт за счёт ответа
+  &__list {
+    display: flex;
+    grid-column: 1 / span 3;
+    grid-row: 1;
+    flex-direction: column;
+
+    min-block-size: 0;
+  }
+
+  // Высота строк фиксированная и считается от высоты окна: шесть строк плюс запас под один открытый ответ (около 110px)
+  // занимают экран. Поэтому при открытии растёт только открытая строка: верхние стоят на месте, нижние плавно съезжают
+  // вниз, а не пересчитывают высоту все разом (так делалось, пока строки делили экран поровну, и блоки «прыгали»)
+  &__item {
+    --faq-row: calc((100svh - #{rem($header-height + 110)}) / 6);
+
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+
+    border-block-end: 1px solid $line-light;
+
+    transition: background-color $medium $ease-out;
+
+    &:last-child {
+      border-block-end: 0;
+    }
+
+    &:hover,
+    &.is-open {
+      background-color: $white;
+    }
+  }
+
+  &__question {
+    cursor: pointer;
+
+    display: flex;
+
+    // Вопрос всегда одной высоты, открыт ответ или нет: под ним ответ только добавляет высоту
+    flex: none;
+    gap: rem(24);
+    align-items: center;
+
+    block-size: var(--faq-row);
+    min-block-size: rem(96);
+    padding: rem(24) rem(32);
+
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: -2px;
+    }
+  }
+
+  &__index {
+    @include caption;
+
+    inline-size: rem(32);
+    color: $accent;
+  }
+
+  &__text {
+    @include h4;
+
+    flex: 1;
+    min-inline-size: 0;
+    color: $primary;
+    text-wrap: balance;
+  }
+
+  // Плюс из двух линий в квадрате с рамкой: при открытии вертикальная линия сходит на ноль, остаётся минус
+  &__mark {
+    position: relative;
+
+    flex-shrink: 0;
+
+    inline-size: rem(36);
+    block-size: rem(36);
+    border: 1px solid $primary;
+
+    transition:
+      background-color $medium $ease-out,
+      border-color $medium $ease-out;
+
+    &::before,
+    &::after {
+      content: '';
+
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      translate: -50% -50%;
+
+      background-color: $primary;
+
+      transition:
+        scale $medium $ease-out,
+        background-color $medium $ease-out;
+    }
+
+    &::before {
+      inline-size: rem(14);
+      block-size: 1px;
+    }
+
+    &::after {
+      inline-size: 1px;
+      block-size: rem(14);
+    }
+  }
+
+  &__item:hover &__mark,
+  &__item.is-open &__mark {
+    border-color: $accent;
+    background-color: $accent;
+  }
+
+  &__item:hover &__mark::before,
+  &__item:hover &__mark::after,
+  &__item.is-open &__mark::before,
+  &__item.is-open &__mark::after {
+    background-color: $secondary;
+  }
+
+  &__item.is-open &__mark::after {
+    scale: 1 0;
+  }
+
+  // Ответ в обёртке-сетке: ряд идёт от 0fr (закрыто) до 1fr (на высоту текста), и строка раскрывается плавно.
+  // Атрибут open держит скрипт (home-faq.ts) до конца анимации закрытия, поэтому закрытие тоже плавное
+  &__body {
+    display: grid;
+    grid-template-rows: 0fr;
+
+    // Мягкая кривая с плавным стартом и длиннее общей $medium: кривая $ease-out стартует очень резко (в первом кадре
+    // строка проходила почти половину пути), и раскрытие выглядело как дёрганье
+    transition: grid-template-rows $faq-time $faq-ease;
+  }
+
+  &__item.is-open &__body {
+    grid-template-rows: 1fr;
+  }
+
+  &__answer {
+    @include body-L;
+
+    overflow: hidden;
+
+    max-inline-size: rem(760);
+    min-block-size: 0;
+    margin: 0;
+    padding: 0 rem(32) 0 rem(88);
+
+    color: $dark-grey;
+
+    opacity: 0;
+
+    transition:
+      opacity $faq-time $faq-ease,
+      padding-block-end $faq-time $faq-ease;
+  }
+
+  &__item.is-open &__answer {
+    padding-block-end: rem(24);
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__body,
+    &__answer,
+    &__mark::before,
+    &__mark::after {
+      transition: none;
+    }
+  }
+}
+

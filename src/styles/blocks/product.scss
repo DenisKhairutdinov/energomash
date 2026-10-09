@@ -183,14 +183,15 @@ $thumb-size: 88;
     inline-size: 100%;
     block-size: 100%;
 
-    opacity: 0;
     object-fit: cover;
 
-    transition: opacity 0.9s $ease-out;
+    // Смена кадра шторкой слева направо, как смена слайдов на главной: новый слой открывается поверх прежнего
+    clip-path: inset(0 100% 0 0);
 
-    // Новое фото проявляется поверх прежнего
+    transition: clip-path 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+
     &.is-loaded {
-      opacity: 1;
+      clip-path: inset(0);
     }
   }
 
@@ -234,39 +235,7 @@ $thumb-size: 88;
   }
 
   &__thumb {
-    cursor: pointer;
-
-    overflow: hidden;
-
-    inline-size: rem($thumb-size);
-    block-size: rem($thumb-size * 0.75);
-    padding: 0;
-
-    // Обводки у неактивных нет (рамка прозрачная, чтобы размер не менялся), вместо неё тень: миниатюры лежат
-    // на фото, и тень отделяет их от кадра. У активной — акцентная рамка
-    border: 1px solid transparent;
-
-    opacity: 0.7;
-    background-color: $primary;
-    box-shadow:
-      rem(0) rem(4) rem(12) #0006,
-      rem(0) rem(1) rem(3) #0004;
-
-    transition: opacity $fast $ease-out;
-
-    &:hover,
-    &.is-active {
-      opacity: 1;
-    }
-
-    &.is-active {
-      border-color: $accent;
-    }
-
-    &:focus-visible {
-      outline: 2px solid $accent;
-      outline-offset: 2px;
-    }
+    @include photo-thumb($thumb-size);
   }
 
   &__thumb-image {

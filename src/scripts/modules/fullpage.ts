@@ -11,9 +11,9 @@ const HEADER_SELECTOR = '[data-header]';
 const FORM_FIELDS_SELECTOR = 'input, textarea, select, [contenteditable="true"]';
 const DESKTOP_QUERY = '(min-width: 1200px)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
-const DURATION = 0.7;
-// Кривая без разгона: страница трогается сразу после жеста и плавно тормозит у цели
-const EASE = 'power3.out';
+const DURATION = 0.9;
+// Кривая без разгона: страница трогается сразу после жеста и долго, мягко садится у цели, как тяжёлая масса
+const EASE = 'power4.out';
 const INNER_DURATION = 0.6;
 // Пауза между событиями колеса, после которой жест считается новым, мс
 const GESTURE_GAP = 180;

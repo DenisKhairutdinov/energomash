@@ -2,9 +2,14 @@
 {% extends "layout.njk" %}
 {% block content %}
   {% include "hero.njk" %}
-  {% include "shipments-bento.njk" %}
+  {# Порядок по воронке: товар, доверие (отгрузки, география), как купить (лизинг), сомнения (вопросы), контент (блог). #}
+  {# Заголовки секций чередуются: наличие справа, отгрузки слева, география справа, лизинг слева, вопросы справа, блог слева #}
   {% include "stock-slider.njk" %}
   {# Запасной вариант блока наличия — карточки 3×2: {% raw %}{% include "stock-teaser.njk" %}{% endraw %} #}
+  {% include "shipments-bento.njk" %}
+  {% include "geography.njk" %}
+  {% include "leasing-calc.njk" %}
+  {% include "home-faq.njk" %}
   {# Секция «Технологии и условия» пока скрыта: {% raw %}{% include "tech.njk" %}{% endraw %} #}
   {% include "blog-feature.njk" %}
 {% endblock %}

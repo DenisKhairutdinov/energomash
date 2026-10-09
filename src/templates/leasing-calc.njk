@@ -1,0 +1,180 @@
+{# Калькулятор лизинга на главной. Тёмная секция с фото и стеклянными ячейками, как у футера и «Техники в наличии». #}
+{# Композиция: слева заголовок и субсидия, в центре выбор партнёра и три поля, справа результат на акцентном стекле. #}
+{# Партнёры — компании, аккредитованные по программе Минпромторга, из раздела лизинга на bik55.ru. Условия лежат в data-атрибутах: #}
+{# published = true только там, где аванс и срок взяты с сайта самого партнёра (Балтийский лизинг), у остальных ориентир, #}
+{# его нужно заменить данными партнёра. rate (годовое удорожание) партнёры не публикуют — значение условное у всех. #}
+{%
+  set leasingPartners = [
+    { id: "baltlease", name: "Балтийский лизинг", advance: 5, term: 60, minPrice: 500000, rate: 16, published: true, url: "https://baltlease.ru/calc/" },
+    { id: "vtb", name: "ВТБ Лизинг", advance: 10, term: 60, minPrice: 0, rate: 16, published: false },
+    { id: "alfa", name: "Альфа-Лизинг", advance: 10, term: 60, minPrice: 0, rate: 16, published: false },
+    { id: "europlan", name: "Европлан", advance: 10, term: 60, minPrice: 0, rate: 16, published: false },
+    { id: "sber", name: "СберЛизинг", advance: 10, term: 60, minPrice: 0, rate: 16, published: false },
+    { id: "sovcombank", name: "Совкомбанк Лизинг", advance: 10, term: 60, minPrice: 0, rate: 16, published: false },
+    { id: "interleasing", name: "Интерлизинг", advance: 10, term: 60, minPrice: 0, rate: 16, published: false }
+  ]
+%}
+<section
+  class="leasing"
+  data-leasing
+  data-fullpage-section
+  data-fullpage-label="Лизинг"
+  data-reveal-group
+>
+  <div class="leasing__head">
+    <div class="leasing__intro">
+      <h2 class="leasing__title" data-reveal>Лизинг<br />и субсидия</h2>
+      <p class="leasing__subtitle" data-reveal>
+        Выберите лизинговую компанию и посчитайте платёж за минуту. Все партнёры аккредитованы
+        по программе Минпромторга.
+      </p>
+    </div>
+    <label class="leasing__subsidy">
+      <input class="leasing__switch" type="checkbox" checked data-leasing-subsidy />
+      <span class="leasing__toggle" aria-hidden="true"></span>
+      <span class="leasing__subsidy-title">Учесть субсидию Минпромторга</span>
+      <span class="leasing__subsidy-text">
+        Государство компенсирует 10% стоимости техники, не более 500&nbsp;000&nbsp;₽ на единицу.
+        Работает только при лизинге, при покупке за наличные не действует. Правила —
+        <a
+          class="leasing__doc-link"
+          href="https://base.garant.ru/56911053/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >постановление Правительства №649</a
+        >.
+      </span>
+    </label>
+  </div>
+
+  {# Блоки со стеклом без data-reveal: opacity, clip-path и filter на родителе делают его «корнем фона», и backdrop-filter #}
+  {# вложенных ячеек перестаёт видеть фото секции (размытие пропадает или появляется с задержкой) #}
+  <div class="leasing__main">
+    <div class="leasing__partners" role="radiogroup" aria-labelledby="leasing-partners-title">
+      <div class="leasing__partners-head">
+        <span class="leasing__partners-title" id="leasing-partners-title">Лизинговый партнёр</span>
+        <span class="leasing__partners-hint">Выберите компанию, условия пересчитаются</span>
+      </div>
+      <div class="leasing__partners-list">
+      {% for partner in leasingPartners %}
+        <label class="leasing__partner">
+          <input
+            class="leasing__partner-input"
+            type="radio"
+            name="leasing-partner"
+            value="{{ partner.id }}"
+            data-name="{{ partner.name }}"
+            data-advance="{{ partner.advance }}"
+            data-term="{{ partner.term }}"
+            data-min-price="{{ partner.minPrice }}"
+            data-rate="{{ partner.rate }}"
+            data-published="{{ 'true' if partner.published else 'false' }}"
+            {% if partner.url %}data-url="{{ partner.url }}"{% endif %}
+            {% if loop.first %}checked{% endif %}
+          />
+          <span class="leasing__partner-name">{{ partner.name }}</span>
+        </label>
+      {% endfor %}
+      </div>
+    </div>
+
+    <label class="leasing__field leasing__field--price">
+      <span class="leasing__label">Стоимость техники</span>
+      <span class="leasing__value leasing__value--input">
+        <input
+          class="leasing__price"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          value="6 000 000"
+          aria-label="Стоимость техники, рублей"
+          data-leasing-price
+        />
+        <span class="leasing__unit">₽</span>
+      </span>
+      <input
+        class="leasing__range"
+        type="range"
+        min="500000"
+        max="15000000"
+        step="100000"
+        value="6000000"
+        aria-label="Стоимость техники, ползунок"
+        data-leasing-price-range
+      />
+      <span class="leasing__hint" data-leasing-hint></span>
+    </label>
+
+    <label class="leasing__field">
+      <span class="leasing__label">Первоначальный взнос</span>
+      <span class="leasing__value">
+        <output class="leasing__number" data-leasing-advance-output>20</output>
+        <span class="leasing__unit">%</span>
+      </span>
+      <input
+        class="leasing__range"
+        type="range"
+        min="5"
+        max="49"
+        step="1"
+        value="20"
+        aria-label="Первоначальный взнос, процентов"
+        data-leasing-advance
+      />
+    </label>
+
+    <label class="leasing__field">
+      <span class="leasing__label">Срок лизинга</span>
+      <span class="leasing__value">
+        <output class="leasing__number" data-leasing-term-output>36</output>
+        <span class="leasing__unit">мес.</span>
+      </span>
+      <input
+        class="leasing__range"
+        type="range"
+        min="12"
+        max="60"
+        step="6"
+        value="36"
+        aria-label="Срок лизинга, месяцев"
+        data-leasing-term
+      />
+    </label>
+  </div>
+
+  <div class="leasing__result">
+    <div class="leasing__payment-box">
+      <span class="leasing__label">Платёж в месяц</span>
+      <span class="leasing__payment" data-leasing-payment>—</span>
+    </div>
+    <dl class="leasing__summary">
+      <div class="leasing__row">
+        <dt>Аванс</dt>
+        <dd data-leasing-advance-sum>—</dd>
+      </div>
+      <div class="leasing__row" data-leasing-subsidy-row>
+        <dt>Субсидия</dt>
+        <dd data-leasing-subsidy-sum>—</dd>
+      </div>
+      <div class="leasing__row">
+        <dt>Всего платежей</dt>
+        <dd data-leasing-total>—</dd>
+      </div>
+      <div class="leasing__row">
+        <dt>Переплата</dt>
+        <dd data-leasing-overpay>—</dd>
+      </div>
+    </dl>
+    <div class="leasing__bottom">
+      <p class="leasing__note" data-leasing-note></p>
+      <button
+        class="leasing__button"
+        type="button"
+        data-modal-open="request"
+        data-modal-kind="call"
+      >
+        Получить расчёт
+      </button>
+    </div>
+  </div>
+</section>

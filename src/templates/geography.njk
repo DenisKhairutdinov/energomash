@@ -1,0 +1,47 @@
+{# География поставок: слева на три четверти ширины интерактивная карта России с делением на регионы (регионы, куда #}
+{# поставлена техника, залиты акцентным, при наведении всплывает карточка), справа колонка с заголовком, легендой и итогами. #}
+{# Разметку карты строит tools/geography-map.mjs; регионы с поставками и цифры в нём — данные-заглушки. #}
+<section
+  class="geography"
+  data-geography
+  data-fullpage-section
+  data-fullpage-label="География поставок"
+  data-reveal-group
+>
+  {# Карта раскрывается шторкой (data-reveal="wipe"): подсказка со стеклом внутри не должна попадать под анимацию прозрачности #}
+  <div class="geography__map" data-reveal="wipe">
+    <div class="geography__stage" data-geography-stage>
+      {% include "geography-map.njk" %}
+      <div class="geography__tooltip" data-geography-tooltip hidden>
+        <span class="geography__tooltip-label" data-geography-tooltip-label></span>
+        <strong class="geography__tooltip-name" data-geography-tooltip-name></strong>
+        <span class="geography__tooltip-units" data-geography-tooltip-units></span>
+        <span class="geography__tooltip-cities" data-geography-tooltip-cities></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="geography__head">
+    <div class="geography__intro">
+      <h2 class="geography__title" data-reveal>География<br />поставок</h2>
+      <p class="geography__subtitle" data-reveal>
+        Техника «Энергомаш» работает от Урала до Дальнего Востока. Наведите на регион на карте,
+        чтобы увидеть детали.
+      </p>
+      <ul class="geography__legend" data-reveal>
+        <li class="geography__legend-item geography__legend-item--delivered">Были поставки</li>
+        <li class="geography__legend-item">Пока без поставок</li>
+      </ul>
+    </div>
+    <dl class="geography__totals" data-reveal>
+      <div class="geography__total">
+        <dt>Регионов</dt>
+        <dd data-geography-regions>—</dd>
+      </div>
+      <div class="geography__total">
+        <dt>Единиц техники</dt>
+        <dd data-geography-units>—</dd>
+      </div>
+    </dl>
+  </div>
+</section>

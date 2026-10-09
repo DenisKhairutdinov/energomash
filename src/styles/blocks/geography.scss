@@ -1,0 +1,322 @@
+// География поставок. Слева на три четверти ширины карта России с делением на регионы: фон белый, карта светло-серая,
+// регионы с поставками залиты акцентным, при наведении всплывает стеклянная карточка с данными региона.
+// Справа колонка с заголовком, легендой и итогами
+.geography {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  min-block-size: rem(901);
+  background-color: $white;
+
+  &__map {
+    display: flex;
+    grid-column: 1 / span 3;
+    grid-row: 1;
+    align-items: center;
+    justify-content: center;
+
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  // Сцена повторяет пропорции viewBox: SVG, метка завода и карточка считаются от её размера
+  &__stage {
+    position: relative;
+    aspect-ratio: 1440 / 900;
+    inline-size: 100%;
+  }
+
+  &__svg {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  // Регион: светло-серый, белая граница между регионами; с поставками — акцентный, при наведении темнеет
+  &__region {
+    cursor: default;
+
+    fill: $bg-grey;
+    stroke: $white;
+    stroke-linejoin: round;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+
+    transition: fill $fast $ease-out;
+
+    &:hover,
+    &.is-active {
+      fill: $light-grey;
+    }
+
+    &.is-delivered {
+      cursor: pointer;
+      fill: $accent;
+    }
+
+    &:focus-visible {
+      outline: none;
+      stroke: $primary;
+      stroke-width: 2;
+    }
+  }
+
+  // Разрезанные линией перемены дат регионы (Чукотка) не обводятся сами, чтобы не было шва внутри
+  &__region[data-seam] {
+    stroke: none;
+  }
+
+  &__borders {
+    pointer-events: none;
+  }
+
+  &__border {
+    fill: none;
+    stroke: $white;
+    stroke-linejoin: round;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  &__region.is-delivered:hover,
+  &__region.is-delivered.is-active {
+    fill: $accent80;
+  }
+
+  // Завод в Челябинске: чёрная метка с пульсирующим кольцом и подписью
+  &__hub {
+    pointer-events: none;
+
+    position: absolute;
+    inset-block-start: var(--y);
+    inset-inline-start: var(--x);
+    translate: -50% -50%;
+
+    display: flex;
+    align-items: center;
+  }
+
+  &__hub-dot {
+    position: relative;
+    inline-size: rem(12);
+    block-size: rem(12);
+    background-color: $primary;
+
+    &::before {
+      content: '';
+
+      position: absolute;
+      inset: -50%;
+
+      border: 1px solid $primary;
+
+      animation: geography-pulse 2.4s ease-out infinite;
+    }
+  }
+
+  &__hub-name {
+    @include body-S;
+
+    position: absolute;
+    inset-inline-start: calc(100% + #{rem(8)});
+
+    padding: rem(4) rem(8);
+
+    color: $secondary;
+    white-space: nowrap;
+
+    background-color: $primary;
+  }
+
+  // Карточка региона: стеклянная плашка у курсора. Положение задаёт geography.ts через translate
+  &__tooltip {
+    pointer-events: none;
+
+    position: absolute;
+    z-index: 3;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+
+    min-inline-size: rem(260);
+    max-inline-size: rem(340);
+    padding: rem(20) rem(24);
+
+    color: $secondary;
+
+    background-color: #0d0e13b3;
+    backdrop-filter: $glass-strong;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__tooltip-label {
+    @include caption;
+
+    color: $accent;
+  }
+
+  // Названия длинные («Ханты-Мансийский автономный округ — Югра»), поэтому не заглавными и не крупно
+  &__tooltip-name {
+    @include lead;
+
+    font-weight: 500;
+    text-transform: none;
+  }
+
+  &__tooltip-units {
+    @include lead-bold;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  &__tooltip-cities {
+    @include body-S;
+
+    color: $light-grey;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  &__head {
+    display: flex;
+    grid-column: 4;
+    grid-row: 1;
+    flex-direction: column;
+    gap: rem(32);
+    justify-content: space-between;
+
+    min-inline-size: 0;
+    padding: rem(32);
+    border-inline-start: 1px solid $line-light;
+
+    background-color: $bg;
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+    color: $primary;
+  }
+
+  &__subtitle {
+    @include body-L;
+
+    margin: 0;
+    color: $dark-grey;
+  }
+
+  // Легенда карты: квадрат цвета региона и подпись
+  &__legend {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  &__legend-item {
+    @include body-M;
+
+    display: flex;
+    gap: rem(12);
+    align-items: center;
+    color: $primary;
+
+    &::before {
+      content: '';
+      inline-size: rem(16);
+      block-size: rem(16);
+      background-color: $bg-grey;
+    }
+
+    &--delivered::before {
+      background-color: $accent;
+    }
+  }
+
+  // Итоги внизу колонки; справа оставлено место под виджет чата
+  &__totals {
+    display: flex;
+    gap: rem(32);
+    margin: 0;
+    padding-inline-end: rem($corner-clearance);
+  }
+
+  &__total {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+
+    dt {
+      @include caption;
+
+      order: 2;
+      color: $dark-grey;
+    }
+
+    dd {
+      @include h1;
+
+      margin: 0;
+      color: $accent;
+    }
+  }
+
+  // Появление секции (geography.ts): регионы с поставками наливаются акцентным по очереди, с запада на восток.
+  // Анимация, а не переход: после неё ховер работает без задержки. До появления эти регионы серые
+  @media (prefers-reduced-motion: no-preference) {
+    &:not(.is-revealed) &__region.is-delivered {
+      fill: $bg-grey;
+    }
+
+    &.is-revealed &__region.is-delivered {
+      animation: geography-region-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s) backwards;
+    }
+  }
+
+  @include section-full {
+    min-block-size: 0;
+  }
+}
+
+@keyframes geography-region-in {
+  from {
+    fill: $bg-grey;
+  }
+
+  to {
+    fill: $accent;
+  }
+}
+
+@keyframes geography-pulse {
+  from {
+    scale: 0.6;
+    opacity: 0.9;
+  }
+
+  to {
+    scale: 2.4;
+    opacity: 0;
+  }
+}

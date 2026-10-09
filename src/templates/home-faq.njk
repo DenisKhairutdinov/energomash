@@ -1,0 +1,71 @@
+{# Вопросы и ответы на главной, перед заявкой и футером. Тексты — «рыба», ответы уточнит заказчик. #}
+{# Слева заголовок, подпись и кнопка консультации, справа три колонки со строками-вопросами; одновременно открыт один ответ (scripts/modules/home-faq.ts). #}
+{# Класс home-faq, а не faq: у страницы /faq.html свой блок #}
+{%
+  set questions = [
+    {
+      question: "Сколько времени занимает изготовление?",
+      answer: "Техника в наличии отгружается в течение нескольких дней. Изготовление под заказ занимает от четырёх недель в зависимости от комплектации."
+    },
+    {
+      question: "Можно ли купить технику в лизинг?",
+      answer: "Да, работаем с лизинговыми компаниями-партнёрами и помогаем подготовить пакет документов для одобрения."
+    },
+    {
+      question: "Какая гарантия и как устроен сервис?",
+      answer: "Гарантия распространяется на цистерну и ходовую часть. Склад запчастей и выездные бригады сокращают простои техники."
+    },
+    {
+      question: "Какие документы выдаются вместе с техникой?",
+      answer: "ОТТС, сертификаты соответствия, паспорт и гарантийный талон. Помогаем с регистрацией и допуском на перевозку опасных грузов."
+    },
+    {
+      question: "Как доставляется техника?",
+      answer: "Полуприцепы доезжают своим ходом с тягачом заказчика, цистерны на шасси отправляем по согласованному маршруту."
+    },
+    {
+      question: "Можно ли изменить комплектацию под задачу?",
+      answer: "Да: объём и число секций, насосное и сливное оборудование, подвеска, тип шасси. Подберём вариант под вашу перевозку."
+    }
+  ]
+%}
+<section
+  class="home-faq"
+  data-fullpage-section
+  data-fullpage-label="Вопросы и ответы"
+  data-reveal-group
+>
+  <div class="home-faq__head">
+    <div class="home-faq__intro">
+      <h2 class="home-faq__title" data-reveal>Вопросы<br />и ответы</h2>
+      <p class="home-faq__subtitle" data-reveal>
+        Коротко о сроках, лизинге, гарантии и документах. Остальное расскажет менеджер.
+      </p>
+    </div>
+    {# Кнопка открывает окно заявки (вид «call»). Появление — на обёртке: GSAP ставит inline-стили transform, и подъём кнопки при наведении не работал #}
+    <div data-reveal>
+      <button
+        class="home-faq__button"
+        type="button"
+        data-modal-open="request"
+        data-modal-kind="call"
+      >
+        Получить консультацию
+      </button>
+    </div>
+  </div>
+  <div class="home-faq__list" data-reveal>
+    {% for item in questions %}
+      <details class="home-faq__item">
+        <summary class="home-faq__question">
+          <span class="home-faq__index">0{{ loop.index }}</span>
+          <span class="home-faq__text">{{ item.question }}</span>
+          <span class="home-faq__mark" aria-hidden="true"></span>
+        </summary>
+        <div class="home-faq__body">
+          <p class="home-faq__answer">{{ item.answer }}</p>
+        </div>
+      </details>
+    {% endfor %}
+  </div>
+</section>

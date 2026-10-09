@@ -1,0 +1,531 @@
+// Калькулятор лизинга. Тёмная секция с фото и стеклом, как футер и «Техника в наличии»: ячейки на тонких светлых
+// линиях, при наведении светлеют, акцент — только у результата и выбранного партнёра.
+// Композиция: слева колонка с заголовком и субсидией, в центре выбор партнёра и три поля, справа результат
+.leasing {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  min-block-size: rem(901);
+
+  color: $secondary;
+
+  // Фото под стеклом: читается размытым пятном цвета, поэтому поверх него тёмная вуаль, как у футера
+  background:
+    linear-gradient(#0d0e1366, #0d0e13b3),
+    url('/src/assets/images/tech-semitrailer.jpg') center / cover no-repeat;
+
+  @include section-full {
+    min-block-size: 0;
+  }
+
+  &__head,
+  &__main,
+  &__result {
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  // Левая колонка: заголовок сверху, плашка субсидии внизу. Заголовок слева, а платёж справа — так глазу удобнее
+  // читать: от условий к результату
+  &__head {
+    display: flex;
+    grid-column: 1;
+    grid-row: 1;
+    flex-direction: column;
+    gap: rem(32);
+    justify-content: space-between;
+
+    padding: rem(32);
+
+    background-color: $glass-clear;
+    backdrop-filter: $glass-blur;
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__title {
+    @include h2;
+
+    margin: 0;
+  }
+
+  &__subtitle {
+    @include body-L;
+
+    margin: 0;
+    color: $light-grey;
+  }
+
+  // Субсидия: акцентная стеклянная плашка с переключателем; выключена — гаснет в обычное стекло
+  &__subsidy {
+    cursor: pointer;
+
+    position: relative;
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: rem(12) rem(16);
+    align-items: center;
+
+    padding: rem(24);
+
+    background-color: $glass-accent;
+    backdrop-filter: $glass-blur;
+
+    transition: background-color $medium $ease-out;
+
+    &:has(input:not(:checked)) {
+      background-color: #f5f5f31a;
+    }
+
+    &:hover {
+      background-color: $accent;
+    }
+  }
+
+  &__switch {
+    cursor: pointer;
+
+    position: absolute;
+    inset: 0;
+
+    margin: 0;
+
+    opacity: 0;
+  }
+
+  // Переключатель: тонкая квадратная дорожка и квадратный ползунок, как все отметки на сайте
+  &__toggle {
+    position: relative;
+
+    grid-column: 2;
+    grid-row: 1;
+
+    inline-size: rem(44);
+    block-size: rem(24);
+
+    background-color: #0d0e1366;
+
+    &::after {
+      content: '';
+
+      position: absolute;
+      inset-block: rem(3);
+      inset-inline-start: rem(3);
+
+      inline-size: rem(18);
+
+      background-color: $secondary;
+
+      transition: translate $medium $ease-out;
+    }
+  }
+
+  &__switch:checked + &__toggle::after {
+    translate: rem(20) 0;
+  }
+
+  &__switch:focus-visible + &__toggle {
+    outline: 2px solid $secondary;
+    outline-offset: 2px;
+  }
+
+  &__subsidy-title {
+    @include lead-bold;
+
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  &__subsidy-text {
+    @include body-S;
+
+    grid-column: 1 / -1;
+    color: $secondary;
+  }
+
+  // Ссылка на документ лежит под невидимым переключателем, который растянут на всю плашку, поэтому выше него
+  &__doc-link {
+    position: relative;
+    z-index: 1;
+
+    color: $secondary;
+    text-decoration: underline;
+    text-decoration-color: #f5f5f366;
+    text-underline-offset: rem(3);
+
+    transition: text-decoration-color $fast $ease-out;
+
+    &:hover {
+      text-decoration-color: $secondary;
+    }
+  }
+
+  // Центр: партнёры сверху, ниже цена на всю ширину, затем взнос и срок рядом
+  &__main {
+    display: grid;
+    grid-column: 2 / span 2;
+    grid-row: 1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto repeat(2, minmax(0, 1fr));
+
+    border-inline: 1px solid $line-dark;
+  }
+
+  &__partners {
+    display: flex;
+    grid-column: 1 / -1;
+    flex-direction: column;
+
+    min-inline-size: 0;
+    border-block-end: 1px solid $line-dark;
+  }
+
+  // Заголовок — отдельная строка над рядом партнёров: название слева, подсказка справа
+  &__partners-head {
+    display: flex;
+    gap: rem(16);
+    align-items: baseline;
+    justify-content: space-between;
+
+    padding: rem(24) rem(32);
+    border-block-end: 1px solid $line-dark;
+
+    background-color: $glass-clear;
+    backdrop-filter: $glass-blur;
+  }
+
+  &__partners-title {
+    @include h4;
+
+    font-weight: 400;
+  }
+
+  &__partners-hint {
+    @include body-S;
+
+    color: $light-grey;
+  }
+
+  // Семь партнёров в один ряд
+  &__partners-list {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  &__partner {
+    cursor: pointer;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-block-size: rem(72);
+    padding: rem(8);
+
+    text-align: center;
+
+    background-color: $glass-clear;
+    backdrop-filter: $glass-blur;
+
+    transition:
+      background-color $fast $ease-out,
+      color $fast $ease-out;
+
+    &:not(:first-child) {
+      border-inline-start: 1px solid $line-dark;
+    }
+
+    &:hover {
+      background-color: #f5f5f31a;
+    }
+
+    // Выбранный партнёр — белая ячейка, как активная вкладка каталога
+    &:has(input:checked) {
+      color: $primary;
+      background-color: $white;
+    }
+
+    &:has(input:focus-visible) {
+      outline: 2px solid $accent;
+      outline-offset: -2px;
+    }
+  }
+
+  &__partner-input {
+    pointer-events: none;
+    position: absolute;
+    opacity: 0;
+  }
+
+  &__partner-name {
+    @include body-S;
+  }
+
+  &__field {
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+    justify-content: space-between;
+
+    min-inline-size: 0;
+    padding: rem(32);
+
+    background-color: $glass-clear;
+    backdrop-filter: $glass-blur;
+
+    transition: background-color $medium $ease-out;
+
+    &--price {
+      grid-column: 1 / -1;
+      border-block-end: 1px solid $line-dark;
+    }
+
+    // Срок стоит правее взноса, между ними линия
+    &:last-of-type {
+      border-inline-start: 1px solid $line-dark;
+    }
+
+    &:hover,
+    &:focus-within {
+      background-color: #0d0e1380;
+    }
+  }
+
+  &__label {
+    @include caption;
+
+    color: $light-grey;
+  }
+
+  // Значение крупно, единица измерения рядом и мельче
+  &__value {
+    display: flex;
+    gap: rem(8);
+    align-items: baseline;
+  }
+
+  &__number,
+  &__price {
+    @include h1;
+
+    color: $secondary;
+  }
+
+  // Поле цены выглядит как поле ввода: рамка, светлая подложка и курсор-текст; при фокусе рамка светлеет
+  &__value--input {
+    align-items: center;
+
+    padding: rem(16) rem(24);
+    border: 1px solid $line-dark;
+
+    background-color: #f5f5f314;
+
+    transition:
+      border-color $fast $ease-out,
+      background-color $fast $ease-out;
+
+    &:hover {
+      background-color: #f5f5f326;
+    }
+
+    &:focus-within {
+      border-color: $secondary;
+      background-color: #f5f5f326;
+    }
+  }
+
+  &__price {
+    cursor: text;
+
+    inline-size: 100%;
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+
+    background-color: transparent;
+    outline: none;
+  }
+
+  &__unit {
+    @include h3;
+
+    color: $light-grey;
+  }
+
+  &__hint {
+    @include body-S;
+
+    min-block-size: 1lh;
+    color: $light-grey;
+    transition: color $fast $ease-out;
+
+    // Цена ниже минимальной суммы сделки партнёра: подсказка становится акцентной
+    &.is-warning {
+      color: $accent;
+    }
+  }
+
+  // Бегунок: тонкая линия, закрашенная до текущего значения, и квадратная ручка
+  &__range {
+    cursor: pointer;
+
+    inline-size: 100%;
+    block-size: rem(24);
+    margin: 0;
+
+    appearance: none;
+    background-color: transparent;
+    background-image: linear-gradient($accent, $accent), linear-gradient($line-dark, $line-dark);
+    background-repeat: no-repeat;
+    background-position:
+      left center,
+      left center;
+    background-size:
+      var(--fill, 0%) 2px,
+      100% 2px;
+    outline: none;
+
+    &::-webkit-slider-thumb {
+      inline-size: rem(18);
+      block-size: rem(18);
+      border: 0;
+
+      appearance: none;
+      background-color: $secondary;
+
+      transition: background-color $fast $ease-out;
+    }
+
+    &::-moz-range-thumb {
+      inline-size: rem(18);
+      block-size: rem(18);
+      border: 0;
+      border-radius: 0;
+
+      background-color: $secondary;
+    }
+
+    &:hover::-webkit-slider-thumb,
+    &:focus-visible::-webkit-slider-thumb {
+      background-color: $accent;
+    }
+
+    &:hover::-moz-range-thumb,
+    &:focus-visible::-moz-range-thumb {
+      background-color: $accent;
+    }
+  }
+
+  // Правая колонка: платёж крупно сверху на акцентном стекле, ниже итоги, внизу пояснение и кнопка
+  &__result {
+    display: flex;
+    grid-column: 4;
+    grid-row: 1;
+    flex-direction: column;
+
+    background-color: $glass-clear;
+    backdrop-filter: $glass-blur;
+  }
+
+  &__payment-box {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+    justify-content: flex-end;
+
+    min-block-size: rem(220);
+    padding: rem(32);
+
+    background-color: $glass-accent;
+    backdrop-filter: $glass-blur;
+
+    .leasing__label {
+      color: $secondary;
+    }
+  }
+
+  &__payment {
+    @include h1;
+
+    overflow-wrap: anywhere;
+  }
+
+  &__summary {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  &__row {
+    display: flex;
+    flex: 1 0 0;
+    gap: rem(16);
+    align-items: center;
+    justify-content: space-between;
+
+    padding: rem(12) rem(32);
+    border-block-end: 1px solid $line-dark;
+
+    &[hidden] {
+      display: none;
+    }
+
+    dt {
+      @include body-M;
+
+      color: $light-grey;
+    }
+
+    dd {
+      @include lead-bold;
+
+      margin: 0;
+    }
+  }
+
+  &__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+    align-items: flex-start;
+
+    padding: rem(24) rem(32) rem(32);
+  }
+
+  &__note {
+    @include body-S;
+
+    margin: 0;
+    color: $light-grey;
+  }
+
+  &__button {
+    @include button-M;
+
+    cursor: pointer;
+
+    color: $primary;
+    white-space: nowrap;
+
+    background-color: $white;
+
+    transition:
+      background-color $fast $ease-out,
+      color $fast $ease-out;
+
+    &:hover {
+      color: $secondary;
+      background-color: $accent;
+    }
+  }
+}

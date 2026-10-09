@@ -1,4 +1,5 @@
 import { loadCatalog, loadSpecs, originalPhotoUrl, photoUrl } from './catalog-data.ts';
+import { bindPhotoThumbs, createPhotoSwitcher } from './photo-switcher.ts';
 import { playProductIntro } from './product-motion.ts';
 import { renderRelated } from './product-related.ts';
 
@@ -17,7 +18,6 @@ const SPECS_SELECTOR = '[data-product-specs]';
 const OPTIONS_SELECTOR = '[data-product-options]';
 const OPTIONS_LIST_SELECTOR = '[data-product-options-list]';
 const ID_PARAMETER = 'id';
-const LAYER_CLEANUP_DELAY = 1400;
 const MAX_CELLS = 12;
 const WIDE_VALUE_LENGTH = 14;
 const MAX_OPTIONS = 6;
@@ -410,42 +410,13 @@ const renderPhotos = (
     return;
   }
 
-  // Каждое фото — отдельный слой: новое проявляется поверх прежнего (с лёгким отъездом), а когда оно
-  // загрузилось и проявилось, старые слои убираются. Так смена кадра перетекает, а не мигает
-  let current: HTMLImageElement | undefined;
-
-  const show = ({ preview, full }: { preview: string; full: string }): void => {
-    const image = document.createElement('img');
-
-    image.className = 'product__image';
-    image.alt = `${item.typeLabel} ${item.model}`;
-    image.decoding = 'async';
-    image.addEventListener(
-      'load',
-      () => {
-        hideIcon();
-        current = image;
-        image.classList.add('is-loaded');
-        setTimeout(() => {
-          for (const layer of media.querySelectorAll('.product__image')) {
-            if (layer !== current) {
-              layer.remove();
-            }
-          }
-        }, LAYER_CLEANUP_DELAY);
-      },
-      { once: true },
-    );
-    image.addEventListener(
-      'error',
-      () => {
-        image.src = preview;
-      },
-      { once: true },
-    );
-    image.src = full;
-    media.append(image);
-  };
+  // Показ слоями и миниатюры — общий код со страницей отгрузок (photo-switcher.ts)
+  const show = createPhotoSwitcher({
+    host: media,
+    layerClass: 'product__image',
+    alt: `${item.typeLabel} ${item.model}`,
+    onShown: hideIcon,
+  });
 
   show(sources[0]);
 
@@ -465,25 +436,11 @@ const renderPhotos = (
     preview.src = source.preview;
     preview.alt = '';
     button.append(preview);
-    // Фото меняется при наведении на миниатюру (и при фокусе с клавиатуры); клик оставлен для сенсорных экранов
-    const select = (): void => {
-      if (button.classList.contains('is-active')) {
-        return;
-      }
-
-      for (const other of buttons) {
-        other.classList.toggle('is-active', other === button);
-      }
-
-      show(source);
-    };
-
-    button.addEventListener('pointerenter', select);
-    button.addEventListener('focus', select);
-    button.addEventListener('click', select);
 
     return button;
   });
+
+  bindPhotoThumbs(buttons, (index) => show(sources[index]));
 
   thumbs.replaceChildren(...buttons);
   thumbs.hidden = false;

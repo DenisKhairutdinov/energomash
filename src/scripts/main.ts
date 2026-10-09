@@ -4,6 +4,9 @@ import { initBlog } from './modules/blog.ts';
 import { initCatalog } from './modules/catalog.ts';
 import { initErrorPage } from './modules/error-page.ts';
 import { initFilter } from './modules/filter.ts';
+import { initGeography } from './modules/geography.ts';
+import { initHomeFaq } from './modules/home-faq.ts';
+import { initLeasingCalc } from './modules/leasing-calc.ts';
 import { initRequestForm } from './modules/forms/request-form.ts';
 import { hasFullpageSections, initFullpage } from './modules/fullpage.ts';
 import { initRequestModal } from './modules/modals/request-modal.ts';
@@ -19,6 +22,9 @@ import { initStockSlides } from './modules/stock-slides.ts';
 import { initWaterRipples } from './modules/water-ripples.ts';
 
 initFilter();
+initHomeFaq();
+initGeography();
+initLeasingCalc();
 initCatalog();
 // Слайды наличия берутся из каталога, поэтому слайдер запускается, когда они на месте
 void initStockSlides().then(initSliders);

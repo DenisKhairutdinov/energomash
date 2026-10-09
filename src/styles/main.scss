@@ -42,6 +42,14 @@ a {
     opacity: 0;
   }
 
+  // Панели-шторки (data-reveal="wipe") скрыты обрезкой, а не прозрачностью: у стеклянных блоков размытие фона
+  // внутри анимируемой прозрачности включалось с задержкой
+  .js [data-reveal-group] [data-reveal='wipe'] {
+    visibility: visible;
+    opacity: 1;
+    clip-path: inset(0% 100% 0% 0%);
+  }
+
   .js [data-reveal-group] [data-reveal-image] {
     transform: scale(1.06);
   }

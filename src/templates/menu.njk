@@ -142,7 +142,7 @@
     {% for item in menuItems %}
       <li class="menu__item">
         <a
-          class="menu__link {{ 'menu__link--accent' if item.accent }} {{ 'menu__link--active' if item.id == currentPath[0] }}"
+          class="menu__link menu__link--{{ item.id }} {{ 'menu__link--accent' if item.accent }} {{ 'menu__link--active' if item.id == currentPath[0] }}"
           href="{{ item.url }}"
           {% if item.id == currentPage %}aria-current="page"{% endif %}
         >

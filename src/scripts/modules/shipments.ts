@@ -1,11 +1,11 @@
 import { gsap } from 'gsap';
 import { Flip } from 'gsap/Flip';
+import { bindPhotoThumbs, createPhotoSwitcher } from './photo-switcher.ts';
 
 const ROOT_SELECTOR = '[data-shipments]';
 const ITEM_SELECTOR = '[data-shipments-item]';
 const IMAGE_SELECTOR = '[data-shipments-image]';
 const THUMB_SELECTOR = '[data-shipments-thumb]';
-const ACTIVE_CLASS = 'is-active';
 const HOVER_QUERY = '(hover: hover)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 const BIG_PREFIX = 'big';
@@ -15,6 +15,30 @@ const EASE = 'power3.out';
 type Side = 'left' | 'right';
 
 const isBig = (item: HTMLElement): boolean => item.dataset.place?.startsWith(BIG_PREFIX) ?? false;
+
+// Фото плитки и её миниатюры; возвращает функцию возврата к первому кадру или ничего, если у плитки нет кадров
+const bindTilePhotos = (item: HTMLElement): (() => void) | undefined => {
+  const image = item.querySelector<HTMLImageElement>(IMAGE_SELECTOR);
+  const thumbs = [...item.querySelectorAll<HTMLButtonElement>(THUMB_SELECTOR)];
+
+  if (!image || thumbs.length === 0) {
+    return undefined;
+  }
+
+  // Адрес кадра — src картинки миниатюры: в сборке Vite подменяет пути только в src, а не в data-атрибутах
+  const sources = thumbs.map((thumb) => thumb.querySelector('img')?.src ?? '');
+  const show = createPhotoSwitcher({
+    host: image.parentElement ?? item,
+    layerClass: 'shipments-bento__layer',
+    alt: image.alt,
+    styleFrom: image,
+  });
+  const select = bindPhotoThumbs(thumbs, (index) =>
+    show({ preview: sources[index], full: sources[index] }),
+  );
+
+  return () => select(0);
+};
 
 /**
  * Отгрузки: плитка под курсором раскрывается до размера крупной и показывает характеристики.
@@ -35,8 +59,8 @@ export const initShipments = (): void => {
   for (const root of roots) {
     const items = [...root.querySelectorAll<HTMLElement>(ITEM_SELECTOR)];
     let isAnimating = false;
-    // Сброс оттенка фото у каждой плитки: заполняется ниже, вместе с обработчиками миниатюр
-    const resetTone = new Map<HTMLElement, () => void>();
+    // Возврат первого кадра у каждой плитки: заполняется ниже, вместе с обработчиками миниатюр
+    const resetPhoto = new Map<HTMLElement, () => void>();
 
     const activate = (item: HTMLElement): void => {
       if (isAnimating || isBig(item)) {
@@ -52,7 +76,7 @@ export const initShipments = (): void => {
 
       for (const [index, other] of others.entries()) {
         other.dataset.place = `${index === 0 ? 'top' : 'bottom'}-${oppositeSide}`;
-        resetTone.get(other)?.();
+        resetPhoto.get(other)?.();
       }
 
       isAnimating = true;
@@ -74,33 +98,15 @@ export const initShipments = (): void => {
       });
     };
 
-    // Миниатюры: наведение на кадр ставит его оттенок на основное фото плитки (оно плавно перекрашивается,
-    // transition filter в стилях). С клавиатуры то же делает фокус, а нажатие ничего не открывает: миниатюры вне ссылки
+    // Миниатюры: тот же показ слоями и те же события (наведение, фокус, клик), что у миниатюр на странице модели.
+    // Нажатие ничего не открывает: миниатюры вне ссылки
     for (const item of items) {
-      const image = item.querySelector<HTMLImageElement>(IMAGE_SELECTOR);
-      const thumbs = [...item.querySelectorAll<HTMLButtonElement>(THUMB_SELECTOR)];
+      // Плитка перестала быть крупной (миниатюры скрылись) — на ней снова первый кадр
+      const reset = bindTilePhotos(item);
 
-      const select = (thumb: HTMLButtonElement): void => {
-        for (const other of thumbs) {
-          other.classList.toggle(ACTIVE_CLASS, other === thumb);
-        }
-
-        if (image) {
-          image.style.filter = thumb.dataset.filter ?? '';
-        }
-      };
-
-      for (const thumb of thumbs) {
-        thumb.addEventListener('pointerenter', () => select(thumb));
-        thumb.addEventListener('focus', () => select(thumb));
+      if (reset) {
+        resetPhoto.set(item, reset);
       }
-
-      // Плитка перестала быть крупной (миниатюры скрылись) — на ней снова оригинальное фото
-      resetTone.set(item, () => {
-        if (thumbs[0]) {
-          select(thumbs[0]);
-        }
-      });
     }
 
     for (const item of items) {

@@ -157,8 +157,32 @@ $more-size: 44;
       filter $slow $ease-out;
   }
 
+  // Слой фото при переключении миниатюрой: проявляется поверх прежнего (photo-switcher.ts)
+  &__layer {
+    position: absolute;
+    inset: 0;
+
+    inline-size: 100%;
+    block-size: 100%;
+
+    object-fit: cover;
+    object-position: var(--focus, 50%) center;
+
+    // Смена кадра шторкой слева направо, как смена слайдов на главной: новый слой открывается поверх прежнего
+    clip-path: inset(0 100% 0 0);
+
+    transition:
+      clip-path 0.8s cubic-bezier(0.76, 0, 0.24, 1),
+      scale $zoom-duration $zoom-ease;
+
+    &.is-loaded {
+      clip-path: inset(0);
+    }
+  }
+
   // При наведении фото чуть приближается внутри своей рамки, как в карточках каталога
-  &__link:hover &__image {
+  &__link:hover &__image,
+  &__link:hover &__layer {
     scale: 1.04;
   }
 
@@ -187,56 +211,7 @@ $more-size: 44;
   }
 
   &__thumb {
-    cursor: pointer;
-
-    position: relative;
-
-    overflow: hidden;
-
-    inline-size: rem(96);
-    block-size: rem(72);
-    padding: 0;
-    border: none;
-
-    opacity: 0.65;
-    background-color: $primary;
-
-    transition: opacity $fast $ease-out;
-
-    // Обводка активной миниатюры — слой поверх картинки: у остальных кадров на картинке цветовой фильтр,
-    // он создаёт свой слой наложения, и обычный outline кнопки оказывался под ним, видна была только первая
-    &::after {
-      content: '';
-
-      position: absolute;
-      z-index: 1;
-      inset: 0;
-
-      opacity: 0;
-      box-shadow: inset 0 0 0 1px $accent;
-
-      transition: opacity $fast $ease-out;
-    }
-
-    &:hover,
-    &.is-active {
-      opacity: 1;
-    }
-
-    &.is-active::after {
-      opacity: 1;
-    }
-
-    &:focus-visible {
-      outline: 2px solid $accent;
-      outline-offset: 2px;
-    }
-
-    img {
-      inline-size: 100%;
-      block-size: 100%;
-      object-fit: cover;
-    }
+    @include photo-thumb;
   }
 
   // Когда и куда ушла техника — то, что отличает отгрузку от карточки каталога

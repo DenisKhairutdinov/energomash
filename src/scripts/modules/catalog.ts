@@ -476,10 +476,21 @@ export const initCatalog = (): void => {
     }
   };
 
+  // Пункты меню следуют за фильтром: акцентным «Каталог» бывает только на странице каталога без «в наличии»
+  const syncMenu = (): void => {
+    const isStock = optionInputs.some(
+      (input) => input.name === STOCK_FIELD && input.value === STOCK_IN && input.checked,
+    );
+
+    document.querySelector('.menu__link--catalog')?.classList.toggle('is-current', !isStock);
+    document.querySelector('.menu__link--stock')?.classList.toggle('is-current', isStock);
+  };
+
   // Пересчёт по ходу ввода: без снятия выбора
-  const refresh = (): void => {
+  const refresh =(): void => {
     const state = readState();
 
+    syncMenu();
     syncOptions(state);
     applyFilter(state);
     syncMore();

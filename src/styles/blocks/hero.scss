@@ -101,14 +101,17 @@ $option-hover: #f5f5f31f;
     border-inline-end: 1px solid $line-light;
   }
 
+  // Мельче прежнего (14px вместо 16px) и с акцентным маркером перед текстом, как у опций на странице модели:
+  // ряд читается списком преимуществ, а не четырьмя крупными кнопками
   &__utp {
-    @include body-M;
+    @include body-S;
 
     display: flex;
+    gap: rem(8);
     align-items: center;
     justify-content: center;
 
-    block-size: rem(40);
+    block-size: rem(44);
     padding-inline: rem(12);
     border-inline-start: 1px solid $line-light;
 
@@ -118,6 +121,17 @@ $option-hover: #f5f5f31f;
     transition:
       color $fast $ease-out,
       background-color $fast $ease-out;
+
+    &::before {
+      content: '';
+
+      flex-shrink: 0;
+
+      inline-size: rem(6);
+      block-size: rem(6);
+
+      background-color: $accent;
+    }
 
     &:hover {
       color: $accent;
