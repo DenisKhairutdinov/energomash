@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 1024">
+  <defs>
+    <filter id="ambient" x="-20%" y="-100%" width="140%" height="300%"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="occlusion" x="-20%" y="-100%" width="140%" height="300%"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="contact" x="-30%" y="-150%" width="160%" height="400%"><feGaussianBlur stdDeviation="2.8"/></filter>
+  </defs>
+  <!-- Continuous perspective footprint of cab, tractor frame, coupling and full trailer. -->
+  <path d="M54 654 C94 640 258 644 390 661 L625 682 C883 699 1134 731 1469 770 Q1510 778 1502 801 Q1495 820 1447 816 L1220 791 C920 772 662 737 380 714 L99 698 Q45 691 54 654Z" fill="#111b24" opacity=".18" filter="url(#ambient)"/>
+  <path d="M65 665 Q210 653 382 677 L624 700 Q1000 732 1489 784 L1491 798 Q1120 780 852 751 L612 730 Q347 701 80 688Z" fill="#0a121a" opacity=".28" filter="url(#occlusion)"/>
+  <g fill="#070c11" opacity=".70" filter="url(#contact)">
+    <ellipse cx="155" cy="681" rx="43" ry="6"/>
+    <ellipse cx="475" cy="704" rx="48" ry="6"/>
+    <ellipse cx="850" cy="735" rx="45" ry="6"/>
+    <ellipse cx="990" cy="752" rx="44" ry="6"/>
+    <ellipse cx="1135" cy="771" rx="43" ry="6"/>
+    <ellipse cx="1285" cy="787" rx="43" ry="6"/>
+  </g>
+</svg>
