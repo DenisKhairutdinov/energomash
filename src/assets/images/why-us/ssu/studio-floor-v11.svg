@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 1024" preserveAspectRatio="none">
+<defs>
+ <linearGradient id="floor" x2="0" y2="1"><stop stop-color="#75818a" stop-opacity="0"/><stop offset=".17" stop-color="#87919a" stop-opacity=".55"/><stop offset=".6" stop-color="#71808c" stop-opacity=".76"/><stop offset="1" stop-color="#485967" stop-opacity="0"/></linearGradient>
+ <linearGradient id="fade" x2="0" y2="1"><stop stop-color="white" stop-opacity="0"/><stop offset=".2" stop-color="white"/><stop offset=".76" stop-color="white"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient>
+ <mask id="m"><rect y="535" width="1536" height="489" fill="url(#fade)"/></mask>
+ <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".65" numOctaves="2" seed="9"/><feColorMatrix type="saturate" values="0"/></filter>
+</defs>
+<rect y="535" width="1536" height="489" fill="url(#floor)"/>
+<g mask="url(#m)">
+ <rect y="535" width="1536" height="489" filter="url(#grain)" opacity=".035"/>
+ <g fill="none" stroke="#c1c8ce" stroke-width="1.2" opacity=".13">
+  <path d="M-100 615 L1636 790 M-100 745 L1636 920 M-100 905 L1000 1024"/>
+  <path d="M340 550 L-220 1024 M780 550 L820 1024 M1220 550 L1800 1024"/>
+ </g>
+</g></svg>
