@@ -17,7 +17,8 @@
 /* ===== why-us-inline ===== */
 :root:has([data-why-us]){--bg:#f5f5f3;--text:#0d0e13;--accent:#c8603d;--mono:'DM Mono',monospace;--display:'Manrope',sans-serif;}
 :root:has([data-why-us]) *{box-sizing:border-box;}
-body:has([data-why-us]){margin:0;background:var(--text);font-family:var(--display);}
+/* в черновике было на body; на сайте фон и шрифт задаём только блоку, чтобы не задеть форму и футер */
+.why-us{font-family:var(--display);}
   .why-us{position:relative;background:var(--text);color:var(--bg);min-block-size:100vh;isolation:isolate;}
   .why-us__top{position:absolute;z-index:3;inset-block-start:28px;inset-inline:36px;display:flex;justify-content:space-between;font-size:12px;text-transform:uppercase;letter-spacing:.12em;}
   .why-us__slide{position:absolute;inset:0;min-block-size:100vh;overflow:hidden;opacity:1;visibility:visible;transition:opacity .5s ease,visibility .5s ease;}
@@ -168,7 +169,7 @@ body:has([data-why-us]){margin:0;background:var(--text);font-family:var(--displa
     .why-us__nav{gap:18px;}
     .why-us__tab{font-size:14px;padding-inline-end:0;white-space:nowrap;}
   }
-  @media(prefers-reduced-motion:reduce){.why-us body:has([data-why-us]) *{animation:none!important;transition:none!important;}}
+  @media(prefers-reduced-motion:reduce){.why-us *{animation:none!important;transition:none!important;}}
 .livery-lab__booth{position:absolute;inset:0;display:block;}
 .livery-lab__booth img{display:block;inline-size:100%;block-size:100%;object-fit:cover;}
 .livery-lab__booth::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0d0e1366,transparent 40%,transparent 80%,#0d0e1388);}
@@ -317,7 +318,7 @@ body:has([data-why-us]){margin:0;background:var(--text);font-family:var(--displa
  .ssu-scene__controls output{font-size:15px;margin-top:10px;}
  .ssu-scene__controls p{font-size:11px;margin-top:4px;}
 }
-@media(prefers-reduced-motion:reduce){.ssu-scene body:has([data-why-us]) *{animation:none!important;transition:none!important;}}
+@media(prefers-reduced-motion:reduce){.ssu-scene *{animation:none!important;transition:none!important;}}
 
 /* ===== ssu-floor-v11 ===== */
 /* Floor and wheel contacts share the original 1536 x 1024 image coordinates. */
