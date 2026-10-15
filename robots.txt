@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /403.html
+Disallow: /500.html
+Disallow: /503.html
+
+Sitemap: https://bik55.ru/sitemap.xml
